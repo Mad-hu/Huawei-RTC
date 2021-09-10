@@ -1,0 +1,67 @@
+.title-bar {
+  -webkit-app-region: drag;
+  height: 40px;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+  background: #fff;
+  border: 1px solid #eee;
+  .title-left {
+    display: flex;
+    align-items: center;
+    .title-bar-logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 5px;
+      font-family: "iconfont" !important;
+      font-size: 27px;
+      text-align: center;
+      color: #7a2c9e;
+      -webkit-app-region: no-drag;
+    }
+    span {
+      font-size: 16px;
+      color: #333;
+    }
+  }
+
+  .title-bar-btns {
+    display: flex;
+    -webkit-app-region: no-drag;
+    .title-bar-btn {
+      width: 24px;
+      height: 24px;
+      margin: 0 10px;
+      font-size: 14px;
+      color: #fff;
+      font-family: "iconfont" !important;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(
+        200.96deg,
+        #fedc2a -29.09%,
+        #dd5789 51.77%,
+        #7a2c9e 129.35%
+      );
+      border-radius: 5px;
+      transition: 0.2s;
+      &:hover {
+        box-shadow: 0px 0px 5px 2px #dd5789;
+        // transform: scale(1.1);
+      }
+    }
+    .bar-min {
+    }
+    .bar-max {
+    }
+    .bar-close {
+    }
+    .bar-refresh {
+
+    }
+  }
+}
