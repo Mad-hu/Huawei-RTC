@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 11:21:31
- * @LastEditTime: 2021-09-02 11:46:07
+ * @LastEditTime: 2021-09-13 13:53:13
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -50,15 +50,5 @@ export default defineConfig({
     port: 8088, // 设置服务启动端口号
     open: true, // 设置服务启动时是否自动打开浏览器
     cors: true, // 允许跨域
-
-    // 设置代理，根据项目实际情况配置
-    proxy: {
-      "/api_dev": {
-        target: "https://test-tczx-admin.tctm.life",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace("/api_dev", ""),
-      },
-    },
   },
 });
