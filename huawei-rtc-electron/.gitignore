@@ -51,3 +51,4 @@ npm-debug.log.*
 sdk/*.tar.gz
 src/sdk/*
 rtcLog
+log
