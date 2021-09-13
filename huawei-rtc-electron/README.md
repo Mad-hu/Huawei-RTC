@@ -39,6 +39,7 @@ yarn package
      - components     react components
      - interface      ts interface
      - pages          UI pages
+       - index.tsx    router and webview url config
      - services       components servcies
    - assets           react image sourse ...
    - iconfont         iconfont dir
