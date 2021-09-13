@@ -52,3 +52,5 @@ sdk/*.tar.gz
 src/sdk/*
 rtcLog
 log
+*.lock
+huaweiAddonlog.txt

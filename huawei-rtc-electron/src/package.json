@@ -6,7 +6,8 @@
   "main": "./main.prod.js",
   "scripts": {
     "electron-rebuild": "node -r ../.erb/scripts/BabelRegister.js ../.erb/scripts/ElectronRebuild.js",
-    "postinstall": "yarn electron-rebuild"
+    "postinstall": "yarn electron-rebuild",
+    "preinstall": "node ..//script//Preinstall.js"
   },
   "license": "MIT",
   "dependencies": {
