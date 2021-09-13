@@ -21,6 +21,7 @@ git clone https://github.com/Mad-hu/Huawei-RTC.git
 cd huawei-rtc-classroom
 yarn
 yarn dev
+cd ..
 // 启动 react electron 项目
 cd huawei-rtc-electron
 yarn
