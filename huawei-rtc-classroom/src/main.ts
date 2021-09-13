@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 11:21:31
- * @LastEditTime: 2021-09-10 14:33:13
+ * @LastEditTime: 2021-09-13 17:25:40
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -21,5 +21,3 @@ app.use(router).use(store).use(ElButton).use(ElInput).use(ElDialog).use(ElRadio)
 
 // 挂载实例
 app.mount("#app");
-
-const win: any = window;

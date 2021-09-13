@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-10 13:12:01
- * @LastEditTime: 2021-09-10 15:53:05
+ * @LastEditTime: 2021-09-13 17:57:33
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -32,6 +32,8 @@ import { mapGetters, mapMutations } from "vuex";
 import { defineComponent } from "vue";
 import { messageFloatError } from "../../services/message/message-float.service";
 import { RoomNameState } from "../../services/state-manager/classroom-state.service";
+import { UserInfoState } from "../../services/state-manager/user-state.service";
+import { loadingHide, loadingShow } from "../../services/loading.service";
 
 export default defineComponent({
   name: "Login",
@@ -39,26 +41,30 @@ export default defineComponent({
     return {
       roomName: "",
       userName: "",
-      role: "1"
+      role: "1",
     };
   },
-  computed: {
-    ...mapGetters("user", ["isLogin"]),
-  },
+  computed: {},
   methods: {
-    ...mapMutations("user", ["saveUserInfoToCookie"]),
-    async login() {
-      if(this.roomName == '' || this.userName == '') {
-        messageFloatError('用户或教室不能为空')
-        return;
-      }
-      RoomNameState.roomName = this.roomName;
-      const userId = parseInt((Math.random() * 100000).toFixed(0));
-      const data = { userName: this.userName, userId, role: this.role == '1' ? 'teacher': 'student' };
-      console.log(data);
-      this.saveUserInfoToCookie(data);
-      this.$router.push("/classroom");
-    }
+    login() {
+      try {
+        if (this.roomName == "" || this.userName == "") {
+          messageFloatError("用户或教室不能为空");
+          return;
+        }
+        loadingShow("loading...");
+        RoomNameState.roomName = this.roomName;
+        const userId = parseInt((Math.random() * 100000).toFixed(0));
+        UserInfoState.userName = this.userName;
+        UserInfoState.userId = userId;
+        UserInfoState.role = this.role == "1" ? "teacher" : "student";
+        console.log("UserInfoState:", UserInfoState);
+        setTimeout(() => {
+          loadingHide();
+          this.$router.push("/classroom");
+        }, 1000);
+      } catch (error) {}
+    },
   },
 });
 </script>

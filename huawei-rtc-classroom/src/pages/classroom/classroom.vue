@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-09-10 17:04:56
+ * @LastEditTime: 2021-09-13 17:40:02
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -60,6 +60,7 @@ import { msgType } from "../../services/bjysdk/bjysdk.service";
 import _ from "lodash";
 import { RTCEventType } from "../../services/abstract/rtc.abstract";
 import { getBjySdk } from "../../services/electron.service";
+import { UserInfoState } from "../../services/state-manager/user-state.service";
 
 @Options({
   components: {
@@ -77,7 +78,7 @@ export default class Classroom extends Vue {
   control_address = "";
   control_session = "";
   mounted() {
-    this.userInfoStore = this.$store.state.user.userInfo;
+    this.userInfoStore = UserInfoState;
     console.log('this.userInfoStore:', this.userInfoStore);
     try {
       loadingShow("初始化RTC/RTM/Control SDK");

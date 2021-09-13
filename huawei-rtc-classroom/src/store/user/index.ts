@@ -1,9 +1,11 @@
-/**
- * @Author: Yupeng Zhang
+/*
+ * @Author: Yandong Hu
+ * @github: https://github.com/Mad-hu
+ * @Date: 2021-09-10 13:12:01
+ * @LastEditTime: 2021-09-13 17:29:19
+ * @LastEditors: Yandong Hu
  * @Description:
- * @Date: 2021-08-04
  */
-
 import Cookies from "js-cookie";
 const userModule = {
   namespaced: true,
@@ -43,21 +45,23 @@ const userModule = {
       commit: any;
     }) {
 
-      const val = Cookies.get("user");
+      // const val = Cookies.get("user");
 
-      if (!val) {
-        return;
-      }
+      // if (!val) {
+      //   return;
+      // }
 
-      // 判断是否已取值 值不存在则取值
-      if (!state.userInfo.userId) {
-        const data = JSON.parse(decodeURIComponent(decodeURIComponent(val)));
-        commit("saveUserInfo", data);
-      }
+      // // 判断是否已取值 值不存在则取值
+      // if (!state.userInfo.userId) {
+      //   const data = JSON.parse(decodeURIComponent(decodeURIComponent(val)));
+      //   commit("saveUserInfo", data);
+      // } else {
+      //   // 重新设置cookie
+      //   const expireTime = new Date(new Date().getTime() + 30 * 60 * 1000);
+      //   Cookies.set("user", val, { expires: expireTime });
+      // }
 
-      // 重新设置cookie
-      const expireTime = new Date(new Date().getTime() + 30 * 60 * 1000);
-      Cookies.set("user", val, { expires: expireTime });
+
     },
   },
 };

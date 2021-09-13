@@ -2,32 +2,21 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-11 09:49:22
- * @LastEditTime: 2021-09-10 13:32:07
+ * @LastEditTime: 2021-09-13 17:37:09
  * @LastEditors: Yandong Hu
  * @Description:
  */
 
 import { reactive } from "vue";
 
-interface TeacherInfo {
+interface UserInfo {
   userName: string,
   userId: number,
   role: string
 }
-interface StudentInfo {
-  userName: string,
-  userId: number,
-  role: string
-}
-const studentInfo: StudentInfo = {
+const userInfo: UserInfo = {
   userName: '',
   userId: 0,
-  role: 'student'
+  role: ''
 };
-const teacherInfo: TeacherInfo = {
-  userName: '',
-  userId: 0,
-  role: 'teacher'
-};
-export const TeacherInfoState = reactive(studentInfo);
-export const StudentInfoState = reactive(teacherInfo);
+export const UserInfoState = reactive(userInfo);
