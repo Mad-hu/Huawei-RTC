@@ -73,7 +73,16 @@
         }
       ]
     },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": false
+    },
     "win": {
+      "requestedExecutionLevel": "highestAvailable",
       "target": [
         "nsis"
       ]

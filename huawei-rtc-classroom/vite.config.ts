@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 11:21:31
- * @LastEditTime: 2021-09-13 13:53:13
+ * @LastEditTime: 2021-09-18 09:48:12
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -12,12 +12,21 @@ import path from "path";
 import styleImport from "vite-plugin-style-import";
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import ViteComponents, { AntDesignVueResolver } from 'vite-plugin-components';
+// import legacy from '@vitejs/plugin-legacy';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: './',
+  build: {
+    outDir: "../huawei-rtc-electron/src/vue-classroom/",
+    emptyOutDir: true,
+    sourcemap: true,
+    // assetsDir: './assets',
+    // target: 'esnext'
+  },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"),
+      "@": path.join(__dirname, "src"),
     },
   },
   plugins: [
@@ -44,6 +53,10 @@ export default defineConfig({
         },
       ],
     }),
+    // legacy({
+    //   targets: ['ie >= 11'],
+    //   additionalLegacyPolyfills: ['regenerator-runtime/runtime']
+    // })
   ],
   server: {
     host: "0.0.0.0",

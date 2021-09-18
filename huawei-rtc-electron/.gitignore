@@ -54,3 +54,4 @@ rtcLog
 log
 *.lock
 huaweiAddonlog.txt
+src/vue-classroom/*

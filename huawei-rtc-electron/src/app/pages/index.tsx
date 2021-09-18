@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2021-09-10 15:32:31
+ * @LastEditTime: 2021-09-18 09:52:51
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -39,7 +39,8 @@ export default class App extends React.Component<Props, State> {
 
   webviewListen() {
     const webview: any = document.getElementById('webview-0');
-    webview.src = `http://localhost:8088/login`;
+
+    webview.src = `http://localhost:8088`;
     // 对loadingView得一些操作。
     webview.addEventListener('did-fail-load', (errorCode: any, errorDescription: any, validatedURL: any, isMainFrame: any) => {
       this.setState({

@@ -2,15 +2,14 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 11:21:31
- * @LastEditTime: 2021-09-10 13:54:53
+ * @LastEditTime: 2021-09-18 09:47:46
  * @LastEditors: Yandong Hu
  * @Description:
  */
 import store from "../store";
-import { createWebHistory, createRouter } from "vue-router";
-import Classroom from "../pages/classroom/Classroom.vue";
+import { createRouter, createWebHashHistory } from "vue-router";
 const router = createRouter({
-  history: createWebHistory(), // 路由模式
+  history: createWebHashHistory(), // 路由模式
   routes: [
     { path: "/", redirect: "/login" },
     {
@@ -21,7 +20,7 @@ const router = createRouter({
     {
       path: "/classroom",
       name: "classroom",
-      component: () => Classroom,
+      component: () => import("@/pages/classroom/Classroom.vue"),
     }
   ],
 });
