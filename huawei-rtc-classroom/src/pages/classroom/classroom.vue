@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-09-29 17:09:49
+ * @LastEditTime: 2021-09-29 18:02:05
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -175,18 +175,20 @@ export default class Classroom extends Vue {
           userId: userId,
           available: available
         });
-        const shareBoxDiv = <HTMLDivElement>document.getElementById('share-box');
-        const shareBoxBodyDiv = document.createElement("div");
-        shareBoxBodyDiv.id = `share-${userId}`;
-        shareBoxBodyDiv.style.width = '100%';
-        shareBoxBodyDiv.style.height = '100%';
-        shareBoxDiv.appendChild(shareBoxBodyDiv);
-        const renderRemoteScreenShareState = RtcService().startRenderRemoteScreenShare(userId, shareBoxBodyDiv);
-        if(renderRemoteScreenShareState == 0) {
-          messageFloatError(`subscribe remote stream error, code:${renderRemoteScreenShareState}`);
-        }
+        setTimeout(() => {
+          const shareBoxDiv = <HTMLDivElement>document.getElementById('share-box');
+          const shareBoxBodyDiv = document.createElement("div");
+          shareBoxBodyDiv.id = `share-${userId}`;
+          shareBoxBodyDiv.style.width = '100%';
+          shareBoxBodyDiv.style.height = '100%';
+          shareBoxDiv.appendChild(shareBoxBodyDiv);
+          const renderRemoteScreenShareState = RtcService().startRenderRemoteScreenShare(userId, shareBoxBodyDiv);
+          if(renderRemoteScreenShareState == 0) {
+            messageFloatError(`subscribe remote stream error, code:${renderRemoteScreenShareState}`);
+          }
+        }, 1500);
       } else {
-        ShareState.remoteShareList
+        RtcService().stopRenderRemoteScreenShare(userId);
         _.remove(ShareState.remoteShareList, (item) => item.userId == userId);
       }
     });

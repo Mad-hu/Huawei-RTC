@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-09-02 15:48:14
+ * @LastEditTime: 2021-09-29 18:11:11
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -53,6 +53,7 @@ export default class ToolsBar extends Vue {
   shareScreen() {
     const shareSelectDialog: any = this.$refs['shareSelectDialogRef'];
     shareSelectDialog.dialogVisible = true;
+    shareSelectDialog.getScreenList();
   }
   audioAction() {
     this.localUser = UserListState.lists.find((item) => item.isLocal)!;

@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-08-13 13:43:00
+ * @LastEditTime: 2021-09-29 18:13:30
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -54,6 +54,7 @@ export default class StudentList extends Vue {
     height: 108px;
     background-color: #666;
     border: 1px solid #fff;
+    overflow: hidden;
   }
   .close {
     position: absolute;
