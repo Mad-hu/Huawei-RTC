@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 14:14:38
- * @LastEditTime: 2021-08-17 10:03:21
+ * @LastEditTime: 2021-09-29 17:08:24
  * @LastEditors: Yandong Hu
  * @Description: RTC模块基础代理
  */
@@ -39,7 +39,15 @@ export enum RTCEventType {
     /**
      * 离开房间/频道
      */
-    userOffline = 'userOffline'
+    userOffline = 'userOffline',
+    /**
+     * 本地共享后回调
+     */
+    screenCaptureStarted = 'screenCaptureStarted',
+    /**
+     * 远端开启，停止共享流后，触发此回调
+     */
+    userSubStreamAvailable = 'userSubStreamAvailable'
 }
 export interface RTCInitOpts {
     userId?: number,
@@ -129,4 +137,55 @@ export abstract class RTCBaseProvider extends EventEmitter {
 
     abstract setLocalVideo(type: boolean): void;
     abstract setLocalAudio(type: boolean): void;
+
+    /**
+     * 获取屏幕可共享对象列表
+     *
+     * @abstract
+     * @return {*}  {*}
+     * @memberof RTCBaseProvider
+     */
+     abstract getScreenSources(): any;
+
+     /**
+      * 选择屏幕共享对象
+      *
+      * @abstract
+      * @return {*}  {number}
+      * @memberof RTCBaseProvider
+      */
+     abstract selectScreenShare(item: any): number;
+     /**
+      * 开始共享自己的屏幕
+      *
+      * @abstract
+      * @return {*}  {number}
+      * @memberof RTCBaseProvider
+      */
+     abstract startScreenShare(): number;
+     /**
+      * 停止共享自己的屏幕
+      *
+      * @abstract
+      * @return {*}  {number}
+      * @memberof RTCBaseProvider
+      */
+     abstract stopScreenShare(): number;
+
+     /**
+      * 开始渲染远端屏幕共享
+      *
+      * @abstract
+      * @return {*}  {number}
+      * @memberof RTCBaseProvider
+      */
+     abstract startRenderRemoteScreenShare(userId: string, view: HTMLDivElement): number;
+     /**
+      * 停止渲染远端屏幕共享
+      *
+      * @abstract
+      * @return {*}  {number}
+      * @memberof RTCBaseProvider
+      */
+     abstract stopRenderRemoteScreenShare(userId: string): number;
 }

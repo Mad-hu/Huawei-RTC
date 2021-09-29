@@ -2,22 +2,35 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-08-11 16:59:34
+ * @LastEditTime: 2021-09-29 17:05:18
  * @LastEditors: Yandong Hu
  * @Description:
 -->
 <template>
-  <div class="main-boards" id="board"></div>
+  <div class="main-boards" id="board">
+    <div v-if="shareState.remoteShareList.length != 0" id="share-box"></div>
+    <div class="share-msg" v-if="shareState.screenShareState">
+      <span>正在共享屏幕...</span>
+      <el-button type="primary" size="small" @click="stopScreenShare()">结束共享</el-button>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-property-decorator';
+import { RtcService } from '../../services/rtc.service';
+import { ShareState } from '../../services/state-manager/classroom-state.service';
 
 @Options({
   components: {
   },
 })
 export default class MainBoards extends Vue {
+  shareState = ShareState;
+  stopScreenShare() {
+    const stopState = RtcService().stopScreenShare();
+    this.shareState.screenShareState = stopState == 0 ? false : true;
+  }
 }
 </script>
 
@@ -26,5 +39,21 @@ export default class MainBoards extends Vue {
     height: calc(~"100vh - 188px");
     flex-grow: 1;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .share-msg {
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    height: 60px;
+    justify-content: space-between;
+  }
+  .share-msg-enable {
+    display: block;
+  }
+  .share-msg-disable {
+    display: none;
   }
 </style>

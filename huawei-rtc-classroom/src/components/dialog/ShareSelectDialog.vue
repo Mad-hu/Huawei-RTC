@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-02 13:47:55
- * @LastEditTime: 2021-09-02 18:10:19
+ * @LastEditTime: 2021-09-29 17:05:53
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -16,7 +16,12 @@
           v-for="item in windowLists"
           :class="[item.id == selectIndex? 'window-item-select' : '']"
           @click="selectIndex = item.id"
-          ></div>
+          >
+            <img :src="item.base64Data">
+            <div class="sourse-name">
+              {{item.sourceName == 'Monitor_1' ? '桌面' : item.sourceName}}
+            </div>
+          </div>
       </div>
       <div class="btns">
         <el-button type="primary" @click="shareSubmitAction()">开始共享</el-button>
@@ -27,28 +32,48 @@
 
 <script lang="ts">
 import { ref } from "vue";
-import { Options, Vue } from "vue-property-decorator";
+import { Options, Ref, Vue } from "vue-property-decorator";
 import { messageFloatError } from "../../services/message/message-float.service";
+import { RtcService } from "../../services/rtc.service";
+import { ShareState } from "../../services/state-manager/classroom-state.service";
 
 @Options({
   components: {},
 })
 export default class ShareSelectDialog extends Vue {
   windowLists: any = [];
-  dialogVisible = ref(false);
+  dialogVisible = false;
   selectIndex = 0;
+  screens: any;
   mounted() {
     console.log("ShareSelectDialog mounted:!");
-    for(let i = 0; i <= 2; i++) {
+    this.screens = RtcService().getScreenSources().sourceInfos;
+    this.screens.map((item: any, index: number) => {
+      const base64Data = btoa(String.fromCharCode.apply(null, item.icon));
       this.windowLists.push({
-        id: i,
-        name: '小明' + i
+        id: index,
+        base64Data: 'data:image/jpg;base64,' + base64Data,
+        sourceId: item.sourceId,
+        sourceName: item.sourceName,
+        type: item.type,
+        icon: item.icon
       })
-    }
+    })
+    console.log('screens:', this.screens);
   }
   shareSubmitAction() {
-    console.log("开始共享屏幕", this.windowLists[this.selectIndex]);
-    messageFloatError('sdk not support! please change other sdk try again!');
+    if(ShareState.remoteShareList.length != 0) {
+      messageFloatError('多人共享正在开发，后续更新。');
+      return;
+    }
+    const selectState = RtcService().selectScreenShare(this.screens[this.selectIndex]);
+    if(selectState == 0) {
+      const shareState = RtcService().startScreenShare();
+      ShareState.screenShareState = shareState == 0 ? true: false;
+      this.dialogVisible = false;
+    } else {
+      messageFloatError('share error code' + selectState);
+    }
   }
 }
 </script>
@@ -92,8 +117,23 @@ export default class ShareSelectDialog extends Vue {
     border-radius: 5px;
     margin: 5px;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
     &:hover {
       border: 2px solid #00ffff;
+    }
+    img {
+      height: 100%;
+    }
+    .sourse-name {
+      color: #fff;
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 20px;
+      line-height: 20px;
+      text-align: center;
+      background-color: #666;
     }
   }
   .window-item-select {

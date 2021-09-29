@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 10:46:37
- * @LastEditTime: 2021-08-18 11:56:26
+ * @LastEditTime: 2021-09-29 17:08:45
  * @LastEditors: Yandong Hu
  * @Description: 华为云RTC Electron SDK
  */
@@ -126,5 +126,26 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
   }
   setUserRole(roleType: any): number | void {
     return engine.setUserRole(roleType);
+  }
+
+  getScreenSources(type = 0) {
+    console.log('getScreenSources type: ', type);
+    return engine.getScreenCaptureSources(type);
+  }
+  selectScreenShare(item: any): number {
+    return engine.selectScreenCaptureTarget(item, {disableCaptureMouse: true});
+    // engine.selectScreenCaptureTarget(info: HRTCScreenCaptureSourceInfo, optionalInfo: HRTCSrceenCaptureOptionalInfo)
+  }
+  startScreenShare(): number {
+    return engine.startScreenCapture();
+  }
+  stopScreenShare(): number {
+    return engine.stopScreenCapture();
+  }
+  startRenderRemoteScreenShare(userId: string, view: HTMLDivElement): number {
+    return engine.startRemoteSubStreamView(userId, view);
+  }
+  stopRenderRemoteScreenShare(userId: string): number {
+    return engine.stopRemoteSubStreamView(userId);
   }
 }

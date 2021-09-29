@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-09 17:25:55
- * @LastEditTime: 2021-09-10 15:52:21
+ * @LastEditTime: 2021-09-29 17:09:37
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -43,9 +43,26 @@ const userList: UserListType = {
   lists: []
 }
 const UserListState = reactive(userList);
-const ShareState = reactive({
-  share: false
-})
+
+interface RemoteShareType {
+  /**
+   * 用户id
+   */
+  userId: string,
+  /**
+   * true表示远端开启屏幕共享，false表示远端停止屏幕共享
+   */
+  available: boolean
+}
+interface ShareStateValueType {
+  screenShareState: boolean,
+  remoteShareList: RemoteShareType[]
+}
+const shareStateValue: ShareStateValueType = {
+  screenShareState: false, // 本地是否有屏幕共享
+  remoteShareList: [] // 远端共享列表, 暂时只支持单人共享
+}
+const ShareState = reactive(shareStateValue);
 
 const ControlUserIdState = reactive({
   userId: ''

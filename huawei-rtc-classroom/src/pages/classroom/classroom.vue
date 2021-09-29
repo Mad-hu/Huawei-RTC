@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-09-13 17:40:02
+ * @LastEditTime: 2021-09-29 17:09:49
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -48,6 +48,7 @@ import { RtcService } from "../../services/rtc.service";
 import {
   ControlUserIdState,
   RoomNameState,
+  ShareState,
   UserListState,
 } from "../../services/state-manager/classroom-state.service";
 import { RtmService } from "../../services/rtm.service";
@@ -162,6 +163,32 @@ export default class Classroom extends Vue {
 
     RtcService().on(RTCEventType.leaveRoom, (roomId, userId, reason) => {
       console.log(roomId, userId, reason);
+    });
+    RtcService().on(RTCEventType.screenCaptureStarted, () => {
+      console.log('screen capture started!');
+    });
+    RtcService().on(RTCEventType.userSubStreamAvailable, (roomId, userId , available) => {
+      console.log('user sub stream available!', roomId, userId, available);
+      if(available) {
+        if(userId == RtcService().getUserLocalId()) return;
+        ShareState.remoteShareList.push({
+          userId: userId,
+          available: available
+        });
+        const shareBoxDiv = <HTMLDivElement>document.getElementById('share-box');
+        const shareBoxBodyDiv = document.createElement("div");
+        shareBoxBodyDiv.id = `share-${userId}`;
+        shareBoxBodyDiv.style.width = '100%';
+        shareBoxBodyDiv.style.height = '100%';
+        shareBoxDiv.appendChild(shareBoxBodyDiv);
+        const renderRemoteScreenShareState = RtcService().startRenderRemoteScreenShare(userId, shareBoxBodyDiv);
+        if(renderRemoteScreenShareState == 0) {
+          messageFloatError(`subscribe remote stream error, code:${renderRemoteScreenShareState}`);
+        }
+      } else {
+        ShareState.remoteShareList
+        _.remove(ShareState.remoteShareList, (item) => item.userId == userId);
+      }
     });
   }
   userJoin(userInfo: any) {
