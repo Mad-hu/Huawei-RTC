@@ -1,0 +1,21 @@
+{
+  "name": "tczx-sdk-services",
+  "version": "0.0.1",
+  "description": "rtc rtm ... sdk base services",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mad-hu",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "agora-rtm-sdk": "^1.4.3",
+    "electron": "^5.0.13",
+    "events": "^3.3.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.4.3"
+  }
+}
