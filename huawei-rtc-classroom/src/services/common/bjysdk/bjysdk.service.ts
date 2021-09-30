@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 16:08:31
- * @LastEditTime: 2021-08-17 16:05:52
+ * @LastEditTime: 2021-09-30 11:43:02
  * @LastEditors: Yandong Hu
  * @Description: 百家云sdk
  */
@@ -11,10 +11,7 @@
 import { EventEmitter } from 'events';
 import { getBjySdk, getBrowserWindow, getCurrentWindow, getScreen } from "../electron.service";
 import { ControlEventType } from './bjysdk.service.interface';
-const VITE_SERVER = import.meta.env.VITE_SERVER;
-const VITE_SERVER_KEY = import.meta.env.VITE_SERVER_KEY;
-const VITE_CONTROL_ACCOUNT = import.meta.env.VITE_CONTROL_ACCOUNT;
-const VITE_CONTROL_PASS = import.meta.env.VITE_CONTROL_PASS;
+
 let win: any;
 let bjysdk: any;
 // 百家云sdk的一些变量
@@ -114,11 +111,7 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
    * @param {string} message JSON String
    * @return {*}
    */
-  public login() {
-    const openid = VITE_CONTROL_ACCOUNT;
-    const openkey = VITE_CONTROL_PASS;
-    // const VITE_SERVER = import.meta.env.VITE_SERVER;
-    // const VITE_SERVER_KEY = import.meta.env.VITE_SERVER_KEY;
+  public login(openid: string, openkey: string) {
     const mode = '0';
     if (slclient != slClientInvalid) {
       bjysdk.clientLoginWithOpenID(slclient,openid,openkey,"",false);

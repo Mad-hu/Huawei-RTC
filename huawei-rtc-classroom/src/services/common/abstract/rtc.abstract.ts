@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 14:14:38
- * @LastEditTime: 2021-09-29 17:08:24
+ * @LastEditTime: 2021-09-30 11:48:08
  * @LastEditors: Yandong Hu
  * @Description: RTC模块基础代理
  */
@@ -51,7 +51,7 @@ export enum RTCEventType {
 }
 export interface RTCInitOpts {
     userId?: number,
-    domain: string
+    domain: any
 }
 export interface RTCLoginOpts {
     userName?: string,
@@ -63,11 +63,11 @@ export abstract class RTCBaseProvider extends EventEmitter {
      * 初始化RTC SDK
      *
      * @abstract
-     * @param {number} [appId] RTC Appid
+     * @param {any} [appId] RTC Appid
      * @param {RTCInitOpts} [opt] other options
      * @memberof RTCBaseDelegate
      */
-    abstract init(appId?: number, opt?: RTCInitOpts): void;
+    abstract init(appId?: any, opt?: RTCInitOpts): void;
 
     /**
      * 加入房间/频道

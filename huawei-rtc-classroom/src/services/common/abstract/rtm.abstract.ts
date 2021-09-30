@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 14:14:38
- * @LastEditTime: 2021-08-13 16:07:08
+ * @LastEditTime: 2021-09-30 11:41:14
  * @LastEditors: Yandong Hu
  * @Description: RTC模块基础代理
  */
@@ -89,11 +89,11 @@ export abstract class RTMBaseProvider extends EventEmitter {
      * 初始化RTC SDK
      *
      * @abstract
-     * @param {number} [appId] RTC Appid
+     * @param {any} [appId] RTC Appid
      * @param {RTCInitOpts} [opt] other options
      * @memberof RTCBaseDelegate
      */
-    abstract init(appId?: number, opt?: RTMInitOpts): void;
+    abstract init(appId?: any, opt?: RTMInitOpts): void;
     abstract login(user: any): void;
 
     /**

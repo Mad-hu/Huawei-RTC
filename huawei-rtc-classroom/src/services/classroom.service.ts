@@ -2,15 +2,15 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-11 11:01:44
- * @LastEditTime: 2021-08-18 11:52:31
+ * @LastEditTime: 2021-09-30 11:56:12
  * @LastEditors: Yandong Hu
  * @Description:
  */
 
-import { rtmTextMessageCategory } from "./abstract/rtm.abstract";
-import { RemoteControlService, RemoteType } from "./remote-control.service";
-import { RtcService } from "./rtc.service";
-import { RtmService } from "./rtm.service";
+import { rtmTextMessageCategory } from "./common/abstract/rtm.abstract";
+import { RemoteControlService, RemoteType } from "./common/remote-control.service";
+import { RtcService } from "./common/rtc.service";
+import { RtmService } from "./common/rtm.service";
 import { UserListState, UserType } from "./state-manager/classroom-state.service";
 
 function controlSDKInit(type: RemoteType) {
@@ -20,8 +20,8 @@ function controlSDKInit(type: RemoteType) {
     return RemoteControlService().bjysdkRemoteInit();
   }
 }
-function controlSDKLogin() {
-  RemoteControlService().login();
+function controlSDKLogin(openid: string, openkey: string) {
+  RemoteControlService().login(openid, openkey);
 }
 function controlCreateSession() {
   return RemoteControlService().createDesktopsession('create');

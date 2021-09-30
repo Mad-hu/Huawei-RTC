@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 18:13:10
- * @LastEditTime: 2021-08-12 11:36:49
+ * @LastEditTime: 2021-09-30 11:41:29
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -10,8 +10,6 @@
 import { RTMBaseProvider, rtmTextMessageCategory, RtmTextMessageCategory } from "../../../abstract/rtm.abstract";
 import AgoraRTM, { RtmChannel, RtmClient, RtmEvents, RtmTextMessage } from 'agora-rtm-sdk';
 import EventEmitter from "events";
-const agora_rtc_appId = import.meta.env.VITE_AGORA_RTC_APPID;
-
 export default class AgoraRTMSdkWebService extends RTMBaseProvider {
   /**
    * RTM 初始化后的对象
@@ -21,9 +19,9 @@ export default class AgoraRTMSdkWebService extends RTMBaseProvider {
   * RTM 连接的频道
   */
   chan!: RtmChannel;
-  init(appId?: number, opt?: any): void {
+  init(appId?: any, opt?: any): void {
     EventEmitter.defaultMaxListeners = 20;
-    this.rtmClient = AgoraRTM.createInstance(`${agora_rtc_appId}`);
+    this.rtmClient = AgoraRTM.createInstance(`${appId}`);
   }
   async login(user: any) {
     await this.rtmClient.login({ uid: `${user.userId}` });

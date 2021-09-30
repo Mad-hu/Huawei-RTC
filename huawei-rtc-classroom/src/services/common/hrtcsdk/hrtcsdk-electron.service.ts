@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 10:46:37
- * @LastEditTime: 2021-09-29 17:08:45
+ * @LastEditTime: 2021-09-30 11:48:26
  * @LastEditors: Yandong Hu
  * @Description: 华为云RTC Electron SDK
  */
@@ -10,8 +10,7 @@
 import { RTCBaseProvider, RTCEventType, RTCInitOpts, RTCLoginOpts } from "../abstract/rtc.abstract";
 import { getHRTCEngine, isElectron } from "../electron.service"
 import { HRTCVideoDisplayMode } from "./hrtcsdk.service.interface";
-const huawei_rtc_appId = import.meta.env.VITE_HUAWEI_RTC_APPID;
-const huawei_rtc_domain = import.meta.env.VITE_HUAWEI_DOMAIN;
+
 let engine: any;
 let sdkinit = false;
 let userJoinId = 0;
@@ -32,13 +31,13 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     }
     this.sdkEvent();
   }
-  init(appId?: number, opt?: RTCInitOpts): any {
+  init(appId?: any, opt?: RTCInitOpts): any {
     if (sdkinit) {
       console.warn('rtc is already init.');
       return ;
     }
-    const id = appId || huawei_rtc_appId;
-    const domain = opt && opt.domain || huawei_rtc_domain;
+    const id = appId;
+    const domain = opt!.domain;
     engine.initialize(id, domain);
     engine.setExternalVideoFrameOutput(true, true,{format: 0,bufferType:0});
     engine.enableSmallVideoStream(true, {width: 320, height: 180, frameRate: 30, bitrate: 600, disableAdjustRes: true, streamType: 1});

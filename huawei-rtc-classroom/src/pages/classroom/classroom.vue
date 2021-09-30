@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-09-29 18:02:05
+ * @LastEditTime: 2021-09-30 12:01:20
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -44,25 +44,30 @@ import {
   messageFloatError,
   MessageType,
 } from "../../services/message/message-float.service";
-import { RtcService } from "../../services/rtc.service";
+import { RtcService } from "../../services/common/rtc.service";
 import {
   ControlUserIdState,
   RoomNameState,
   ShareState,
   UserListState,
 } from "../../services/state-manager/classroom-state.service";
-import { RtmService } from "../../services/rtm.service";
-import { rtmTextMessageCategory } from "../../services/abstract/rtm.abstract";
+import { RtmService } from "../../services/common/rtm.service";
+import { rtmTextMessageCategory } from "../../services/common/abstract/rtm.abstract";
 import {
   RemoteControlService,
   RemoteType,
-} from "../../services/remote-control.service";
-import { msgType } from "../../services/bjysdk/bjysdk.service";
+} from "../../services/common/remote-control.service";
+import { msgType } from "../../services/common/bjysdk/bjysdk.service";
 import _ from "lodash";
-import { RTCEventType } from "../../services/abstract/rtc.abstract";
-import { getBjySdk } from "../../services/electron.service";
+import { RTCEventType } from "../../services/common/abstract/rtc.abstract";
+import { getBjySdk } from "../../services/common/electron.service";
 import { UserInfoState } from "../../services/state-manager/user-state.service";
+const agora_rtc_appId = import.meta.env.VITE_AGORA_RTC_APPID;
+const VITE_CONTROL_ACCOUNT = import.meta.env.VITE_CONTROL_ACCOUNT;
+const VITE_CONTROL_PASS = import.meta.env.VITE_CONTROL_PASS;
 
+const huawei_rtc_appId = import.meta.env.VITE_HUAWEI_RTC_APPID;
+const huawei_rtc_domain = import.meta.env.VITE_HUAWEI_DOMAIN;
 @Options({
   components: {
     StudentList,
@@ -101,7 +106,7 @@ export default class Classroom extends Vue {
    * initial　rtc sdk
    */
   initRtc() {
-    RtcService().init();
+    RtcService().init(huawei_rtc_appId, {domain: huawei_rtc_domain});
     this.rtcEvent();
     RtcService().joinRoom(this.channel, this.userInfoStore.userId, {
       userName: this.userInfoStore.userName,
@@ -112,7 +117,7 @@ export default class Classroom extends Vue {
    * initial　rtm sdk
    */
   initRtm() {
-    RtmService().init();
+    RtmService().init(agora_rtc_appId);
     this.rtmEvent();
     RtmService().login({
       userId: this.userInfoStore.userId,
@@ -276,7 +281,7 @@ export default class Classroom extends Vue {
       if (userId == RtcService().getUserLocalId()) {
         try {
           controlSDKInit(RemoteType.client);
-          controlSDKLogin();
+          controlSDKLogin(`${VITE_CONTROL_ACCOUNT}`, `${VITE_CONTROL_PASS}`);
           const loadAddressTimer = setInterval(() => {
             if (this.control_address != "") {
               // this.control_session = RemoteControlService().createDesktopsession('create');

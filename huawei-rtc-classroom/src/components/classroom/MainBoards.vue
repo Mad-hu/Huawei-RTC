@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-09-29 17:05:18
+ * @LastEditTime: 2021-09-30 11:58:38
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-property-decorator';
-import { RtcService } from '../../services/rtc.service';
+import { RtcService } from '../../services/common/rtc.service';
 import { ShareState } from '../../services/state-manager/classroom-state.service';
 
 @Options({
