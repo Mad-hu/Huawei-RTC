@@ -1,10 +1,11 @@
 {
-  "name": "tczx-sdk-services",
+  "name": "hrtc-sdk-services",
   "version": "0.0.1",
   "description": "rtc rtm ... sdk base services",
   "scripts": {
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "tsc && npm publish"
   },
   "author": "Mad-hu",
   "license": "MIT",

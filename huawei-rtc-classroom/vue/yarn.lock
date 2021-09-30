@@ -1415,6 +1415,15 @@ hosted-git-info@^2.1.4:
   resolved "https://nexus.tctm.life/repository/npm-group/hosted-git-info/-/hosted-git-info-2.8.9.tgz#dffc0bf9a21c02209090f2aa69429e1414daf3f9"
   integrity sha512-mxIDAb9Lsm6DoOJ7xH+5+X4y1LU/4Hi50L9C5sIswK3JzULS4bwk1FvjdBgvYR4bzT4tuUQiC15FE2f5HbLvYw==
 
+hrtc-sdk-services@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/hrtc-sdk-services/-/hrtc-sdk-services-0.0.1.tgz#dd8da9843955717ee1a934a09c712a5ba3d11eee"
+  integrity sha512-ZvNQ2vqB0lQ+/zlcElfqqhZDTHFWAqUzGFGRYepw7ODlShnc3J6UPFbBJZIKnPQZmJ1Tclat9kkAy5LMcJ7Faw==
+  dependencies:
+    agora-rtm-sdk "^1.4.3"
+    electron "^5.0.13"
+    events "^3.3.0"
+
 html-tags@^3.1.0:
   version "3.1.0"
   resolved "https://nexus.tctm.life/repository/npm-group/html-tags/-/html-tags-3.1.0.tgz#7b5e6f7e665e9fb41f30007ed9e0d41e97fb2140"

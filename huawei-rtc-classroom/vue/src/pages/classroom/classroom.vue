@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-09-30 12:01:20
+ * @LastEditTime: 2021-09-30 17:25:57
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -44,30 +44,32 @@ import {
   messageFloatError,
   MessageType,
 } from "../../services/message/message-float.service";
-import { RtcService } from "../../services/common/rtc.service";
 import {
   ControlUserIdState,
   RoomNameState,
   ShareState,
   UserListState,
 } from "../../services/state-manager/classroom-state.service";
-import { RtmService } from "../../services/common/rtm.service";
-import { rtmTextMessageCategory } from "../../services/common/abstract/rtm.abstract";
+import _ from "lodash";
+import { UserInfoState } from "../../services/state-manager/user-state.service";
+
 import {
+  RtcService,
+  RtmService,
   RemoteControlService,
   RemoteType,
-} from "../../services/common/remote-control.service";
-import { msgType } from "../../services/common/bjysdk/bjysdk.service";
-import _ from "lodash";
-import { RTCEventType } from "../../services/common/abstract/rtc.abstract";
-import { getBjySdk } from "../../services/common/electron.service";
-import { UserInfoState } from "../../services/state-manager/user-state.service";
-const agora_rtc_appId = import.meta.env.VITE_AGORA_RTC_APPID;
+} from "hrtc-sdk-services";
+import { msgType } from "hrtc-sdk-services/bjysdk/bjysdk.service";
+import { RTCEventType } from "hrtc-sdk-services/abstract/rtc.abstract";
+import { getBjySdk } from "hrtc-sdk-services/electron.service";
+import { rtmTextMessageCategory } from "hrtc-sdk-services/abstract/rtm.abstract";
+
+const VITE_AGORA_RTC_APPID = import.meta.env.VITE_AGORA_RTC_APPID;
 const VITE_CONTROL_ACCOUNT = import.meta.env.VITE_CONTROL_ACCOUNT;
 const VITE_CONTROL_PASS = import.meta.env.VITE_CONTROL_PASS;
 
-const huawei_rtc_appId = import.meta.env.VITE_HUAWEI_RTC_APPID;
-const huawei_rtc_domain = import.meta.env.VITE_HUAWEI_DOMAIN;
+const VITE_HUAWEI_RTC_APPID = import.meta.env.VITE_HUAWEI_RTC_APPID;
+const VITE_HUAWEI_DOMAIN = import.meta.env.VITE_HUAWEI_DOMAIN;
 @Options({
   components: {
     StudentList,
@@ -106,7 +108,7 @@ export default class Classroom extends Vue {
    * initial　rtc sdk
    */
   initRtc() {
-    RtcService().init(huawei_rtc_appId, {domain: huawei_rtc_domain});
+    RtcService().init(VITE_HUAWEI_RTC_APPID, {domain: VITE_HUAWEI_DOMAIN});
     this.rtcEvent();
     RtcService().joinRoom(this.channel, this.userInfoStore.userId, {
       userName: this.userInfoStore.userName,
@@ -117,7 +119,7 @@ export default class Classroom extends Vue {
    * initial　rtm sdk
    */
   initRtm() {
-    RtmService().init(agora_rtc_appId);
+    RtmService().init(VITE_AGORA_RTC_APPID);
     this.rtmEvent();
     RtmService().login({
       userId: this.userInfoStore.userId,

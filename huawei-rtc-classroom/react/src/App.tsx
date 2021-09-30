@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-30 13:33:13
- * @LastEditTime: 2021-09-30 16:38:29
+ * @LastEditTime: 2021-09-30 17:12:41
  * @LastEditors: Yandong Hu
  * @Description: 
  */
@@ -10,10 +10,11 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 // import { RtcService } from './services/common/rtc.service';
-// import { RtcService } from 'tczx-sdk-services';
+// import { RtcService } from 'hrtc-sdk-services';
 export default class App extends React.Component {
   componentDidMount() {
     try {
+      // RtcService
       // RtcService();
     } catch (error) {
       console.error(error);
