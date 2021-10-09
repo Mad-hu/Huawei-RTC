@@ -29,7 +29,7 @@ git clone https://github.com/Mad-hu/Huawei-RTC.git
 ## dev
 ``` js
 // 启动 vue3前端项目
-cd huawei-rtc-classroom/vue3   
+cd huawei-rtc-classroom/vue
 yarn
 yarn dev
 cd ..
