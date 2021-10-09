@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-09-30 17:25:57
+ * @LastEditTime: 2021-10-09 15:54:29
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -42,6 +42,7 @@ import { loadingHide, loadingShow } from "../../services/loading.service";
 import {
   messageFloat,
   messageFloatError,
+  messageFloatSuccess,
   MessageType,
 } from "../../services/message/message-float.service";
 import {
@@ -177,7 +178,10 @@ export default class Classroom extends Vue {
     RtcService().on(RTCEventType.userSubStreamAvailable, (roomId, userId , available) => {
       console.log('user sub stream available!', roomId, userId, available);
       if(available) {
-        if(userId == RtcService().getUserLocalId()) return;
+        if(userId == RtcService().getUserLocalId()) {
+          console.log('local user, can not substream!');
+          return;
+        }
         ShareState.remoteShareList.push({
           userId: userId,
           available: available
@@ -191,6 +195,9 @@ export default class Classroom extends Vue {
           shareBoxDiv.appendChild(shareBoxBodyDiv);
           const renderRemoteScreenShareState = RtcService().startRenderRemoteScreenShare(userId, shareBoxBodyDiv);
           if(renderRemoteScreenShareState == 0) {
+            const shareUserInfo = this.userList.find(item => item.userId == userId);
+            messageFloatSuccess(`正在查看${shareUserInfo && shareUserInfo.userName}的共享`);
+          } else {
             messageFloatError(`subscribe remote stream error, code:${renderRemoteScreenShareState}`);
           }
         }, 1500);

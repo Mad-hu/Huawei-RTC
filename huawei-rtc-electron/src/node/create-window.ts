@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 15:19:47
- * @LastEditTime: 2021-08-18 15:45:49
+ * @LastEditTime: 2021-10-09 14:29:16
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -12,8 +12,8 @@ let mainWindow: BrowserWindow | null = null;
 export const buildWindow = (opts: any = {}, webPres: any = {}) => {
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 576,
+    width: 1280,
+    height: 720,
     frame: false,
     resizable: true,
     transparent: true,

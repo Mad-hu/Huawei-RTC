@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-10 13:12:01
- * @LastEditTime: 2021-09-13 17:57:33
+ * @LastEditTime: 2021-10-09 14:35:53
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -60,7 +60,6 @@ export default defineComponent({
         UserInfoState.role = this.role == "1" ? "teacher" : "student";
         console.log("UserInfoState:", UserInfoState);
         setTimeout(() => {
-          loadingHide();
           this.$router.push("/classroom");
         }, 1000);
       } catch (error) {}

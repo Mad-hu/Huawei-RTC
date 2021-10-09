@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-02 13:47:55
- * @LastEditTime: 2021-10-09 13:36:29
+ * @LastEditTime: 2021-10-09 15:58:50
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -35,7 +35,7 @@
 <script lang="ts">
 import { ref } from "vue";
 import { Options, Ref, Vue } from "vue-property-decorator";
-import { messageFloatError } from "../../services/message/message-float.service";
+import { messageFloatError, messageFloatSuccess } from "../../services/message/message-float.service";
 import { RtcService } from "hrtc-sdk-services";
 import { ShareState } from "../../services/state-manager/classroom-state.service";
 
@@ -72,6 +72,8 @@ export default class ShareSelectDialog extends Vue {
     );
     if (selectState == 0) {
       const shareState = RtcService().startScreenShare();
+      console.log('share state:', shareState);
+      messageFloatSuccess('开始共享');
       ShareState.screenShareState = shareState == 0 ? true : false;
       this.dialogVisible = false;
     } else {

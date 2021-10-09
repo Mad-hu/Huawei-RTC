@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-09-29 18:11:11
+ * @LastEditTime: 2021-10-09 14:30:16
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -79,7 +79,7 @@ export default class ToolsBar extends Vue {
         history.back();
       }
     } catch (error) {
-      console.log('leave room cannle!');
+      console.log('leave room cannle!', error);
     }
   }
 }
