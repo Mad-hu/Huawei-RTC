@@ -2,15 +2,14 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-11 11:01:44
- * @LastEditTime: 2021-09-30 11:56:12
+ * @LastEditTime: 2021-10-09 15:54:04
  * @LastEditors: Yandong Hu
  * @Description:
  */
 
-import { rtmTextMessageCategory } from "./common/abstract/rtm.abstract";
-import { RemoteControlService, RemoteType } from "./common/remote-control.service";
-import { RtcService } from "./common/rtc.service";
-import { RtmService } from "./common/rtm.service";
+import { RemoteControlService, RemoteType, RtcService } from "hrtc-sdk-services";
+import { RtmService } from "hrtc-sdk-services";
+import { rtmTextMessageCategory } from "hrtc-sdk-services/dist/abstract/rtm.abstract";
 import { UserListState, UserType } from "./state-manager/classroom-state.service";
 
 function controlSDKInit(type: RemoteType) {
@@ -198,12 +197,12 @@ function controlEvent() {
 
 function leaveRoom() {
   console.log("leave room and channel!");
+  leaveChannel(`${RtcService().getUserLocalId()}`);
   RtcService().removeAllListeners();
-  RtmService().removeAllListeners();
   RemoteControlService().removeAllListeners();
   RtcService().leaveRoom();
+  RtmService().removeAllListeners();
   RtmService().leaveChannel();
-  leaveChannel(`${RtcService().getUserLocalId()}`);
   UserListState.lists = [];
 }
 
