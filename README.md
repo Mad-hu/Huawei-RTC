@@ -5,14 +5,17 @@
  - 使用electron-updater进行更新
  - 删除非华为云项目内容
 ## 正在进行
- - 拆分项目，将结构修改为 electron + vue 
- - 拆分项目，将结构修改为 electron + react
- - 拆分项目，将结构修改为 electron + angular
+ - 拆分项目，将结构修改为 electron + angular / react / vue3 
+ - 项目暂时只完成vue3版本，angular和react 项目正在进行中
 ## 结构
- - huawei-rtc-classroom : angular、react、vue3 web 项目.
-   - 用于web发布，electron中使用webview加载。由于以前项目使用此方法，并没有使用update asar，这里仅支持这样写。
+ - huawei-rtc-classroom : angular、react、vue3 web 项目.用于web发布，electron中使用webview加载。由于以前项目使用此方法，并没有使用update asar，这里仅支持这样写。
+   - angular 前端angular项目目录
+   - react 前端react项目目录
+   - vue 前端vue3项目目录
+   - sdk-services 与electron rtc进行交互封装的sdk服务，已发布到npm
  - huawei-rtc-electron  : react electron 项目 
-   - 采用react，主要用于提供native sdk集成，标题栏控制等
+   - 前端采用react，主要用于提供native sdk集成，标题栏等非web本地UI控制
+   - native 采用nodejs做底层维护
 ## Init
 ``` js
 git clone https://github.com/Mad-hu/Huawei-RTC.git
@@ -25,8 +28,8 @@ git clone https://github.com/Mad-hu/Huawei-RTC.git
 ```
 ## dev
 ``` js
-// 启动 vue前端项目
-cd huawei-rtc-classroom
+// 启动 vue3前端项目
+cd huawei-rtc-classroom/vue3   
 yarn
 yarn dev
 cd ..
