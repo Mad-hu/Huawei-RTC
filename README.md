@@ -16,7 +16,11 @@
 ## Init
 ``` js
 git clone https://github.com/Mad-hu/Huawei-RTC.git
-./npm-init.sh
+
+// option init project.
+./npm-init-angular.sh
+./npm-init-react.sh
+./npm-init-vue3.sh
 
 ```
 ## dev
