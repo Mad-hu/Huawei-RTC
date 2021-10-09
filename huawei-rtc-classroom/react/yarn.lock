@@ -4350,7 +4350,7 @@ electron-to-chromium@^1.3.564, electron-to-chromium@^1.3.649:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.671.tgz#8feaed6eae42d279fa4611f58c42a5a1eb81b2a0"
   integrity sha512-RTD97QkdrJKaKwRv9h/wGAaoR2lGxNXEcBXS31vjitgTPwTWAbLdS7cEsBK68eEQy7p6YyT8D5BxBEYHu2SuwQ==
 
-electron@5.0.13:
+electron@5.0.13, electron@^5.0.13:
   version "5.0.13"
   resolved "https://nexus.tctm.life/repository/npm-group/electron/-/electron-5.0.13.tgz#81d44f2078fb13d306279cf3854d3734f2c390b4"
   integrity sha512-AM73AMZpb/5zm8eIXsIcp2eMdniD5WO+FqMtlIzhhtSjixflDm0pLtgudz0fHtiT/w6V+6YcpDVb4TtHtrJbHQ==
@@ -5645,6 +5645,15 @@ hpack.js@^2.1.6:
     obuf "^1.0.0"
     readable-stream "^2.0.1"
     wbuf "^1.1.0"
+
+hrtc-sdk-services@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/hrtc-sdk-services/-/hrtc-sdk-services-0.0.1.tgz#dd8da9843955717ee1a934a09c712a5ba3d11eee"
+  integrity sha512-ZvNQ2vqB0lQ+/zlcElfqqhZDTHFWAqUzGFGRYepw7ODlShnc3J6UPFbBJZIKnPQZmJ1Tclat9kkAy5LMcJ7Faw==
+  dependencies:
+    agora-rtm-sdk "^1.4.3"
+    electron "^5.0.13"
+    events "^3.3.0"
 
 hsl-regex@^1.0.0:
   version "1.0.0"

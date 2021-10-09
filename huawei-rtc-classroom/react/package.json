@@ -21,6 +21,7 @@
     "axios": "^0.21.4",
     "crypto-js": "^4.1.1",
     "events": "^3.3.0",
+    "hrtc-sdk-services": "^0.0.1",
     "js-cookie": "^3.0.1",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
