@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 15:47:27
- * @LastEditTime: 2021-09-30 11:48:34
+ * @LastEditTime: 2021-10-09 16:15:14
  * @LastEditors: Yandong Hu
  * @Description: 华为云 web rtc sdk
  */
@@ -12,6 +12,9 @@ import { HRTCVideoDisplayMode } from "./hrtcsdk.service.interface";
 
 
 export default class HRTCSDKWebService extends RTCBaseProvider {
+    startRenderRemoteScreenShareByElement(userId: string, view: number): number {
+      throw new Error("Method not implemented.");
+    }
     getScreenSources() {
       throw new Error("Method not implemented.");
     }

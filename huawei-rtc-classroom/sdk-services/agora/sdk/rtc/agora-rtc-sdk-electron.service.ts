@@ -2,13 +2,16 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 18:13:10
- * @LastEditTime: 2021-09-30 11:48:19
+ * @LastEditTime: 2021-10-09 16:14:53
  * @LastEditors: Yandong Hu
  * @Description:
  */
 import { RTCBaseProvider, RTCInitOpts, RTCLoginOpts } from "../../../abstract/rtc.abstract";
 
 export default class AgoraRTCSdkElectronService extends RTCBaseProvider {
+    startRenderRemoteScreenShareByElement(userId: string, view: number): number {
+      throw new Error("Method not implemented.");
+    }
     getScreenSources() {
       throw new Error("Method not implemented.");
     }
