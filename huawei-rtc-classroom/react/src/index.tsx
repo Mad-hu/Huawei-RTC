@@ -1,17 +1,21 @@
+/*
+ * @Author: Yandong Hu
+ * @github: https://github.com/Mad-hu
+ * @Date: 2021-09-30 13:33:13
+ * @LastEditTime: 2021-10-09 18:10:55
+ * @LastEditors: Yandong Hu
+ * @Description: 
+ */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-
+import './global.config.scss';
+import { RootRouter } from './router';
+import { RecoilRoot } from 'recoil';
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <RecoilRoot>
+    <React.StrictMode>
+      <RootRouter />
+    </React.StrictMode>
+  </RecoilRoot>,
   document.getElementById('root')
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

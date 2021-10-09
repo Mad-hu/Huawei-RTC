@@ -22,6 +22,7 @@
     "@typescript-eslint/eslint-plugin": "^4.5.0",
     "@typescript-eslint/parser": "^4.5.0",
     "agora-rtm-sdk": "^1.4.3",
+    "antd": "^4.16.13",
     "axios": "^0.21.4",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.6.0",
@@ -59,6 +60,7 @@
     "lodash": "^4.17.21",
     "mini-css-extract-plugin": "0.11.3",
     "moment": "^2.29.1",
+    "node-sass": "4.14.1",
     "normalize.css": "^8.0.1",
     "optimize-css-assets-webpack-plugin": "5.0.4",
     "pnp-webpack-plugin": "1.6.4",
@@ -74,6 +76,9 @@
     "react-dev-utils": "^11.0.3",
     "react-dom": "^17.0.2",
     "react-refresh": "^0.8.3",
+    "react-router": "^5.2.1",
+    "react-router-dom": "^5.3.0",
+    "recoil": "^0.4.1",
     "resolve": "1.18.1",
     "resolve-url-loader": "^3.1.2",
     "rxjs": "^7.3.0",
@@ -110,6 +115,8 @@
     ]
   },
   "devDependencies": {
+    "@types/react-router": "^5.1.17",
+    "@types/react-router-dom": "^5.3.1",
     "electron": "5.0.13"
   },
   "jest": {
