@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 10:46:37
- * @LastEditTime: 2021-09-30 11:48:26
+ * @LastEditTime: 2021-10-12 14:30:59
  * @LastEditors: Yandong Hu
  * @Description: 华为云RTC Electron SDK
  */
@@ -68,6 +68,12 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     userJoinId = userId + this.id_random;
     const userInfo = { 'userId': `${userId + this.id_random}`, 'userName': `${opts && opts.userName}_roletype_${opts && opts.role}`, signature: '', ctime: 0, role: 0 };
     console.log('join room:', userInfo);
+    // const option = {
+    //   autoSubscribeAudio: false, // 自动订阅远端用户音频流
+    //   autoSubscribeVideo: false, // 自动订阅远端用户视频流
+    //   mediaType: 1
+    // };
+    // const ret = engine.joinRoom(roomId, userInfo, option);
     const ret = engine.joinRoom(roomId, userInfo);
     if (ret != 0) {
       throw new Error('join failed, ' + ret)
