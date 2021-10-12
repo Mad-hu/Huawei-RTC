@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 10:46:37
- * @LastEditTime: 2021-10-12 16:51:28
+ * @LastEditTime: 2021-10-12 17:34:15
  * @LastEditors: Yandong Hu
  * @Description: 华为云RTC Electron SDK
  */
@@ -158,6 +158,10 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     // 暂时有问题，不开放
     // engine.setRemoteSubStreamViewDisplayMode(userId, 0);
     return engine.startRemoteSubStreamView(userId, view);
+  }
+  setRemoteSubStreamViewDisplayMode(userId: string, mode: number = 0) {
+    console.log('setting remote video display mode:', userId, mode);
+    engine.setRemoteSubStreamViewDisplayMode(userId, mode);
   }
   stopRenderRemoteScreenShare(userId: string): number {
     return engine.stopRemoteSubStreamView(userId);

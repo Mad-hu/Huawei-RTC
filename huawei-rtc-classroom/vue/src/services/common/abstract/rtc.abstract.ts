@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 14:14:38
- * @LastEditTime: 2021-09-30 11:48:08
+ * @LastEditTime: 2021-10-12 17:22:56
  * @LastEditors: Yandong Hu
  * @Description: RTC模块基础代理
  */
@@ -188,4 +188,14 @@ export abstract class RTCBaseProvider extends EventEmitter {
       * @memberof RTCBaseProvider
       */
      abstract stopRenderRemoteScreenShare(userId: string): number;
+
+     /**
+      * 设置共享流视图渲染模式
+      *
+      * @abstract
+      * @param {string} userId
+      * @param {number} mode
+      * @memberof RTCBaseProvider
+      */
+     abstract setRemoteSubStreamViewDisplayMode(userId: string, mode?: number): void;
 }

@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-10-12 16:26:22
+ * @LastEditTime: 2021-10-12 17:48:01
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -226,6 +226,10 @@ export default class Classroom extends Vue {
                 userId,
                 shareBoxBodyDiv
               );
+              // setTimeout(() => {
+              //   RtcService().setRemoteSubStreamViewDisplayMode(userId, 0);
+              // }, 3000);
+
             if (renderRemoteScreenShareState == 0) {
               const shareUserInfo = this.userList.find(
                 (item) => item.userId == userId
