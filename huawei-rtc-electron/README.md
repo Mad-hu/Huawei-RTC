@@ -26,6 +26,11 @@ To package apps for the local platform:
 ```bash
 yarn package
 ```
+## Update SDK Info
+```nodejs
+yarn cache clean
+yarn install
+```
 ## Files Structure
  - .erb         webpack config
  - .vscode      vscode config
