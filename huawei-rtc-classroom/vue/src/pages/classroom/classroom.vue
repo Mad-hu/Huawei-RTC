@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-10-09 15:54:29
+ * @LastEditTime: 2021-10-12 14:26:15
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -53,17 +53,25 @@ import {
 } from "../../services/state-manager/classroom-state.service";
 import _ from "lodash";
 import { UserInfoState } from "../../services/state-manager/user-state.service";
+import { RtcService } from "../../services/common/rtc.service";
+import { RtmService } from "../../services/common/rtm.service";
+import { RTCEventType } from "../../services/common/abstract/rtc.abstract";
+import { getBjySdk } from "../../services/common/electron.service";
+import { RemoteControlService, RemoteType } from "../../services/common/remote-control.service";
+import { msgType } from "../../services/common/bjysdk/bjysdk.service";
+import { rtmTextMessageCategory } from "../../services/common/abstract/rtm.abstract";
 
-import {
-  RtcService,
-  RtmService,
-  RemoteControlService,
-  RemoteType,
-} from "hrtc-sdk-services";
-import { msgType } from "hrtc-sdk-services/bjysdk/bjysdk.service";
-import { RTCEventType } from "hrtc-sdk-services/abstract/rtc.abstract";
-import { getBjySdk } from "hrtc-sdk-services/electron.service";
-import { rtmTextMessageCategory } from "hrtc-sdk-services/abstract/rtm.abstract";
+// import {
+//   RtcService,
+//   RemoteControlService,
+//   RemoteType,
+//   RtmService,
+// } from "hrtc-sdk-services";
+// import { msgType } from "hrtc-sdk-services/bjysdk/bjysdk.service";
+// import { RTCEventType } from "hrtc-sdk-services/abstract/rtc.abstract";
+// import { getBjySdk } from "hrtc-sdk-services/electron.service";
+// import { rtmTextMessageCategory } from "hrtc-sdk-services/abstract/rtm.abstract";
+import { sdk_build_config } from "../../services/common/build";
 
 const VITE_AGORA_RTC_APPID = import.meta.env.VITE_AGORA_RTC_APPID;
 const VITE_CONTROL_ACCOUNT = import.meta.env.VITE_CONTROL_ACCOUNT;
@@ -71,6 +79,8 @@ const VITE_CONTROL_PASS = import.meta.env.VITE_CONTROL_PASS;
 
 const VITE_HUAWEI_RTC_APPID = import.meta.env.VITE_HUAWEI_RTC_APPID;
 const VITE_HUAWEI_DOMAIN = import.meta.env.VITE_HUAWEI_DOMAIN;
+
+const VITE_NETEASE_SDK_KEY = import.meta.env.VITE_NETEASE_SDK_KEY;
 @Options({
   components: {
     StudentList,
@@ -88,7 +98,7 @@ export default class Classroom extends Vue {
   control_session = "";
   mounted() {
     this.userInfoStore = UserInfoState;
-    console.log('this.userInfoStore:', this.userInfoStore);
+    console.log("this.userInfoStore:", this.userInfoStore);
     try {
       loadingShow("初始化RTC/RTM/Control SDK");
       this.initRtc();
@@ -109,7 +119,7 @@ export default class Classroom extends Vue {
    * initial　rtc sdk
    */
   initRtc() {
-    RtcService().init(VITE_HUAWEI_RTC_APPID, {domain: VITE_HUAWEI_DOMAIN});
+    RtcService().init(VITE_HUAWEI_RTC_APPID, { domain: VITE_HUAWEI_DOMAIN });
     this.rtcEvent();
     RtcService().joinRoom(this.channel, this.userInfoStore.userId, {
       userName: this.userInfoStore.userName,
@@ -119,13 +129,29 @@ export default class Classroom extends Vue {
   /**
    * initial　rtm sdk
    */
-  initRtm() {
-    RtmService().init(VITE_AGORA_RTC_APPID);
-    this.rtmEvent();
-    RtmService().login({
-      userId: this.userInfoStore.userId,
-      channel: this.channel,
-    });
+  async initRtm() {
+    try {
+      if (sdk_build_config.rtm.company == "wangyi") {
+        // 在进入之前，需要从后台获取用户的网易云信账户和密码
+        const opt = {
+          account: "a11111",
+          token: "a11111",
+          domain: "",
+        };
+        await RtmService().init(VITE_NETEASE_SDK_KEY, opt)!.toPromise();
+      } else if (sdk_build_config.rtm.company == "agora") {
+        RtmService().init(VITE_AGORA_RTC_APPID);
+      }
+
+      this.rtmEvent();
+      RtmService().login({
+        userId: this.userInfoStore.userId,
+        channel: this.channel,
+      });
+    } catch (error) {
+      console.log(error);
+      messageFloatError("登录失败，请打开控制台，查看详情。");
+    }
   }
   /**
    * rtc 音视频监听
@@ -173,39 +199,52 @@ export default class Classroom extends Vue {
       console.log(roomId, userId, reason);
     });
     RtcService().on(RTCEventType.screenCaptureStarted, () => {
-      console.log('screen capture started!');
+      console.log("screen capture started!");
     });
-    RtcService().on(RTCEventType.userSubStreamAvailable, (roomId, userId , available) => {
-      console.log('user sub stream available!', roomId, userId, available);
-      if(available) {
-        if(userId == RtcService().getUserLocalId()) {
-          console.log('local user, can not substream!');
-          return;
-        }
-        ShareState.remoteShareList.push({
-          userId: userId,
-          available: available
-        });
-        setTimeout(() => {
-          const shareBoxDiv = <HTMLDivElement>document.getElementById('share-box');
-          const shareBoxBodyDiv = document.createElement("div");
-          shareBoxBodyDiv.id = `share-${userId}`;
-          shareBoxBodyDiv.style.width = '100%';
-          shareBoxBodyDiv.style.height = '100%';
-          shareBoxDiv.appendChild(shareBoxBodyDiv);
-          const renderRemoteScreenShareState = RtcService().startRenderRemoteScreenShare(userId, shareBoxBodyDiv);
-          if(renderRemoteScreenShareState == 0) {
-            const shareUserInfo = this.userList.find(item => item.userId == userId);
-            messageFloatSuccess(`正在查看${shareUserInfo && shareUserInfo.userName}的共享`);
-          } else {
-            messageFloatError(`subscribe remote stream error, code:${renderRemoteScreenShareState}`);
+    RtcService().on(RTCEventType.userSubStreamAvailable,(roomId, userId, available) => {
+      console.log("user sub stream available!", roomId, userId, available);
+      if (available) {
+        if (userId == RtcService().getUserLocalId()) {
+            console.log("local user, can not substream!");
+            return;
           }
-        }, 1500);
-      } else {
-        RtcService().stopRenderRemoteScreenShare(userId);
-        _.remove(ShareState.remoteShareList, (item) => item.userId == userId);
+          ShareState.remoteShareList.push({
+            userId: userId,
+            available: available,
+          });
+          setTimeout(() => {
+            const shareBoxDiv = <HTMLDivElement>(
+              document.getElementById("share-box")
+            );
+            // const shareBoxBodyDiv = document.createElement("div");
+            // shareBoxBodyDiv.id = `share-${userId}`;
+            // shareBoxBodyDiv.style.width = "100%";
+            // shareBoxBodyDiv.style.height = "100%";
+            // shareBoxDiv.appendChild(shareBoxBodyDiv);
+            const renderRemoteScreenShareState =
+              RtcService().startRenderRemoteScreenShare(
+                userId,
+                shareBoxDiv
+              );
+            if (renderRemoteScreenShareState == 0) {
+              const shareUserInfo = this.userList.find(
+                (item) => item.userId == userId
+              );
+              messageFloatSuccess(
+                `正在查看${shareUserInfo && shareUserInfo.userName}的共享`
+              );
+            } else {
+              messageFloatError(
+                `subscribe remote stream error, code:${renderRemoteScreenShareState}`
+              );
+            }
+          }, 1500);
+        } else {
+          RtcService().stopRenderRemoteScreenShare(userId);
+          _.remove(ShareState.remoteShareList, (item) => item.userId == userId);
+        }
       }
-    });
+    );
   }
   userJoin(userInfo: any) {
     console.log("joinroom userinfo:", userInfo);
@@ -217,14 +256,16 @@ export default class Classroom extends Vue {
         renderRemoteVideo(`user_${userInfo.userId}`, userInfo.userId);
       }
     }, 500);
-
   }
   /**
    * 远程控制监听
    **/
   remoteControlEvent() {
-    if(!getBjySdk()) {
-      messageFloat(`not found bjysdk, please check native preload !`, MessageType.error);
+    if (!getBjySdk()) {
+      messageFloat(
+        `not found bjysdk, please check native preload !`,
+        MessageType.error
+      );
       return;
     }
     RemoteControlService().on(msgType.notic, (msg) => {
@@ -334,8 +375,8 @@ export default class Classroom extends Vue {
       if (userId == RtcService().getUserLocalId()) {
         RemoteControlService().destroyDesktopsession("delete");
       }
-      this.control_address = '';
-      this.control_session = '';
+      this.control_address = "";
+      this.control_session = "";
       this.userList.map((item) => (item.control = true));
     });
   }

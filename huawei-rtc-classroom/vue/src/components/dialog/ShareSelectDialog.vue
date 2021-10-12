@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-02 13:47:55
- * @LastEditTime: 2021-10-09 15:58:50
+ * @LastEditTime: 2021-10-12 13:09:06
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -35,8 +35,9 @@
 <script lang="ts">
 import { ref } from "vue";
 import { Options, Ref, Vue } from "vue-property-decorator";
+import { RtcService } from "../../services/common/rtc.service";
 import { messageFloatError, messageFloatSuccess } from "../../services/message/message-float.service";
-import { RtcService } from "hrtc-sdk-services";
+// import { RtcService } from "hrtc-sdk-services";
 import { ShareState } from "../../services/state-manager/classroom-state.service";
 
 @Options({
