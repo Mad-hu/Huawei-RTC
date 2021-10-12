@@ -310,6 +310,11 @@
   resolved "https://nexus.tctm.life/repository/npm-group/@element-plus/icons/-/icons-0.0.11.tgz#9b187c002774548b911850d17fa5fc2f9a515f57"
   integrity sha512-iKQXSxXu131Ai+I9Ymtcof9WId7kaXvB1+WRfAfpQCW7UiAMYgdNDqb/u0hgTo2Yq3MwC4MWJnNuTBEpG8r7+A==
 
+"@huyandong/netease-nim-web-sdk@^8.7.2":
+  version "8.7.2"
+  resolved "https://nexus.tctm.life/repository/npm-group/@huyandong/netease-nim-web-sdk/-/netease-nim-web-sdk-8.7.2.tgz#d68f796fa3d84aa0e6c5110da307fd123d3ff40b"
+  integrity sha512-tBJLqmpgNTTh9K6DvJYfDemVLIcX5CdlDlaJAAxYyHTsr+BrSBiXdmInOWrkeASf9bGiAoC54/0FSrtkuAqXTQ==
+
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://nexus.tctm.life/repository/npm-group/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"

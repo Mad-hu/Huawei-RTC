@@ -13,6 +13,7 @@
     "dev-agora-web": "cross-env company=agora sdk_platform=web node -r @babel/register ./script/SetBuildEnvInject.js && npm run dev"
   },
   "dependencies": {
+    "@huyandong/netease-nim-web-sdk": "^8.7.2",
     "@types/js-cookie": "^2.2.7",
     "agora-rtc-sdk-ng": "^4.6.2",
     "agora-rtm-sdk": "^1.4.3",
