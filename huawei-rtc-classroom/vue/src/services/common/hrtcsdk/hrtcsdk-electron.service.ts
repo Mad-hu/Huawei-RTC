@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 10:46:37
- * @LastEditTime: 2021-10-12 14:30:59
+ * @LastEditTime: 2021-10-12 16:51:28
  * @LastEditors: Yandong Hu
  * @Description: 华为云RTC Electron SDK
  */
@@ -38,16 +38,23 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     }
     const id = appId;
     const domain = opt!.domain;
-    engine.initialize(id, domain);
-    engine.setExternalVideoFrameOutput(true, true,{format: 0,bufferType:0});
-    engine.enableSmallVideoStream(true, {width: 320, height: 180, frameRate: 30, bitrate: 600, disableAdjustRes: true, streamType: 1});
-    engine.setPriorRemoteVideoStreamType(1);
     // engine.setLogParam(true, {
     //   level: 3,
     //   path: process.platform === "darwin" ? "/tmp/rtcLog" : "rtclog"
     // });
+    console.log('hrtc verison: ', engine.getVersion());
+    engine.initialize(id, domain);
+    engine.setExternalVideoFrameOutput(true, true,{format: 0,bufferType:0});
+    engine.enableSmallVideoStream(true, {width: 320, height: 180, frameRate: 30, bitrate: 600, disableAdjustRes: true, streamType: 1});
+    engine.setPriorRemoteVideoStreamType(1);
+
     // 设置大流显示模式
-    // engine.setVideoEncParam({streamType:0,width:240,height:180,frameRate:10,bitrate:600})
+    // engine.setVideoEncParam({streamType:3,width:1280,height:720,frameRate:15,bitrate:500,disableAjustRes: false});
+    engine.setExternalDataFrameOutput(false ,true);
+    // engine.setExternalVideoFrameOutput(true, true, {
+    //   formate: 3,
+    //   bufferType: 0
+    // });
     sdkinit = true;
     return engine;
   }
@@ -68,13 +75,13 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     userJoinId = userId + this.id_random;
     const userInfo = { 'userId': `${userId + this.id_random}`, 'userName': `${opts && opts.userName}_roletype_${opts && opts.role}`, signature: '', ctime: 0, role: 0 };
     console.log('join room:', userInfo);
-    // const option = {
-    //   autoSubscribeAudio: false, // 自动订阅远端用户音频流
-    //   autoSubscribeVideo: false, // 自动订阅远端用户视频流
-    //   mediaType: 1
-    // };
-    // const ret = engine.joinRoom(roomId, userInfo, option);
-    const ret = engine.joinRoom(roomId, userInfo);
+    const option = {
+      autoSubscribeAudio: false, // 自动订阅远端用户音频流
+      autoSubscribeVideo: false, // 自动订阅远端用户视频流
+      mediaType: 1
+    };
+    const ret = engine.joinRoom(roomId, userInfo, option);
+    // const ret = engine.joinRoom(roomId, userInfo);
     if (ret != 0) {
       throw new Error('join failed, ' + ret)
     }
@@ -148,6 +155,8 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     return engine.stopScreenCapture();
   }
   startRenderRemoteScreenShare(userId: string, view: HTMLDivElement): number {
+    // 暂时有问题，不开放
+    // engine.setRemoteSubStreamViewDisplayMode(userId, 0);
     return engine.startRemoteSubStreamView(userId, view);
   }
   stopRenderRemoteScreenShare(userId: string): number {

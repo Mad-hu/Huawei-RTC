@@ -2,13 +2,13 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-10-12 13:08:53
+ * @LastEditTime: 2021-10-12 16:21:21
  * @LastEditors: Yandong Hu
  * @Description:
 -->
 <template>
   <div class="main-boards" id="board">
-    <div v-if="shareState.remoteShareList.length != 0" id="share-box"></div>
+    <div v-if="shareState.remoteShareList.length != 0" id="share-box" class="share-box"></div>
     <div class="share-msg" v-if="shareState.screenShareState">
       <span>正在共享屏幕...</span>
       <el-button type="primary" size="small" @click="stopScreenShare()">结束共享</el-button>
@@ -43,6 +43,10 @@ export default class MainBoards extends Vue {
     display: flex;
     justify-content: center;
     align-items: center;
+  }
+  .share-box {
+    width: 100%;
+    height: 100%;
   }
   .share-msg {
     color: #fff;
