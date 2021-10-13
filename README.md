@@ -16,6 +16,7 @@
  - huawei-rtc-electron  : react electron 项目 
    - 前端采用react，主要用于提供native sdk集成，标题栏等非web本地UI控制
    - native 采用nodejs做底层维护
+ - nodejs-server 网易云信账号管理接口服务，外网请切换使用声网RTM SDK，切换方法huawei-rtc-classroom\vue\src\services\common\build.ts 修改对应company
 ## Init
 ``` js
 git clone https://github.com/Mad-hu/Huawei-RTC.git
