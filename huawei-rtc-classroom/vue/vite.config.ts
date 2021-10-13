@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 11:21:31
- * @LastEditTime: 2021-09-18 09:48:12
+ * @LastEditTime: 2021-10-13 16:50:01
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -11,8 +11,11 @@ import vue from "@vitejs/plugin-vue";
 import path from "path";
 import styleImport from "vite-plugin-style-import";
 import vueJsx from '@vitejs/plugin-vue-jsx';
-import ViteComponents, { AntDesignVueResolver } from 'vite-plugin-components';
-// import legacy from '@vitejs/plugin-legacy';
+import Components from 'unplugin-vue-components/vite'
+import {
+  AntDesignVueResolver,
+  ElementPlusResolver,
+} from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -32,11 +35,12 @@ export default defineConfig({
   plugins: [
     vue(),
     vueJsx(),
-    // antd 按需加载
-    ViteComponents({
-      customComponentResolvers: [AntDesignVueResolver()],
+    Components({
+      resolvers: [
+        AntDesignVueResolver(),
+        ElementPlusResolver()
+      ]
     }),
-    // element-plus 按需加载
     styleImport({
       libs: [
         {
@@ -53,10 +57,6 @@ export default defineConfig({
         },
       ],
     }),
-    // legacy({
-    //   targets: ['ie >= 11'],
-    //   additionalLegacyPolyfills: ['regenerator-runtime/runtime']
-    // })
   ],
   server: {
     host: "0.0.0.0",

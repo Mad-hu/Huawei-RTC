@@ -2,12 +2,13 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 11:21:31
- * @LastEditTime: 2021-09-18 09:47:46
+ * @LastEditTime: 2021-10-13 17:03:29
  * @LastEditors: Yandong Hu
  * @Description:
  */
 import store from "../store";
 import { createRouter, createWebHashHistory } from "vue-router";
+import Classroom from '../pages/classroom/Classroom.vue';
 const router = createRouter({
   history: createWebHashHistory(), // 路由模式
   routes: [
@@ -20,7 +21,7 @@ const router = createRouter({
     {
       path: "/classroom",
       name: "classroom",
-      component: () => import("@/pages/classroom/Classroom.vue"),
+      component: Classroom,
     }
   ],
 });

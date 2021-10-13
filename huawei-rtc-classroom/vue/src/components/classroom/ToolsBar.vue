@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-10-09 14:30:16
+ * @LastEditTime: 2021-10-13 18:06:29
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -29,6 +29,12 @@
       摄像头
     </div>
     <div class="btn leavebtn" @click="leave()">离开教室</div>
+    <div class="setting"
+      @click="settingAction()"
+      title="设置"
+    >
+      <span>&#xe892;</span>
+    </div>
   </div>
   <share-select-dialog ref="shareSelectDialogRef"></share-select-dialog>
 </template>
@@ -44,6 +50,7 @@ import {
   UserType,
 } from "../../services/state-manager/classroom-state.service";
 import ShareSelectDialog from "../dialog/ShareSelectDialog.vue";
+import { messageFloatWarning } from "../../services/message/message-float.service";
 @Options({
   components: {ShareSelectDialog},
 })
@@ -81,6 +88,11 @@ export default class ToolsBar extends Vue {
     } catch (error) {
       console.log('leave room cannle!', error);
     }
+  }
+
+  settingAction() {
+    console.log('open setting action!');
+    messageFloatWarning('developing!');
   }
 }
 </script>
@@ -126,5 +138,25 @@ export default class ToolsBar extends Vue {
   align-items: center;
   border-top: 1px solid #999;
   background-image: linear-gradient(#3a3a41, #252529, #414149);
+}
+.setting {
+  background-color: #fff;
+  position: absolute;
+  right: 10px;
+  height: 35px;
+  width: 35px;
+  border-radius: 3px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  &:hover {
+    opacity: 0.7;
+  }
+  span {
+    color: #000;
+    font-family: "iconfont" !important;
+    font-size: 25px;
+  }
 }
 </style>
