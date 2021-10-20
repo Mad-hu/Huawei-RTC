@@ -1,13 +1,15 @@
-export declare const sdk_build_config: {
-    company: string;
+interface SDKBuildConfigType {
+    company: 'huawei';
     rtc: {
-        company: string;
-        platform: string;
+        company: 'huawei' | 'agora';
+        platform: 'electron' | 'web' | 'react native';
     };
     rtm: {
-        company: string;
+        company: 'wangyi' | 'agora';
     };
     remotecontrol: {
-        company: string;
+        company: 'bjy';
     };
-};
+}
+export declare const sdk_build_config: SDKBuildConfigType;
+export {};

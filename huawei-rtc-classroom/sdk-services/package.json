@@ -1,6 +1,6 @@
 {
   "name": "hrtc-sdk-services",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "rtc rtm ... sdk base services",
   "scripts": {
     "build": "tsc",
@@ -12,9 +12,11 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "dependencies": {
+    "@huyandong/netease-nim-web-sdk": "^8.7.3",
     "agora-rtm-sdk": "^1.4.3",
     "electron": "^5.0.13",
-    "events": "^3.3.0"
+    "events": "^3.3.0",
+    "rxjs": "^7.4.0"
   },
   "devDependencies": {
     "typescript": "^4.4.3"

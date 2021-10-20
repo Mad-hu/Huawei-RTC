@@ -1,8 +1,7 @@
 import BjyRemoteControlSDKService from "./bjysdk/bjysdk.service";
-declare enum RemoteType {
+export declare enum RemoteType {
     'client' = 0,
     'remote' = 1
 }
-declare const getBuildRemoteControlCompany: () => string;
-declare const RemoteControlService: () => BjyRemoteControlSDKService;
-export { RemoteControlService, RemoteType, getBuildRemoteControlCompany };
+export declare const getBuildRemoteControlCompany: () => "bjy";
+export declare const RemoteControlService: () => BjyRemoteControlSDKService;

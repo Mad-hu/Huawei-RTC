@@ -4,6 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RtmService = exports.getBuildRtmCompany = void 0;
+/*
+ * @Author: Yandong Hu
+ * @github: https://github.com/Mad-hu
+ * @Date: 2021-08-05 11:03:33
+ * @LastEditTime: 2021-10-09 16:39:25
+ * @LastEditors: Yandong Hu
+ * @Description: RTM 基础调用服务
+ */
 var agora_rtm_sdk_web_service_1 = __importDefault(require("./agora/sdk/rtm/agora-rtm-sdk-web.service"));
 var build_1 = require("./build");
 var wangyi_rtm_sdk_web_service_1 = __importDefault(require("./wangyi/sdk/rtm/wangyi-rtm-sdk-web.service"));

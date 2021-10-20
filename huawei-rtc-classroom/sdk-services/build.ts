@@ -2,12 +2,24 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-06 14:37:34
- * @LastEditTime: 2021-08-12 10:20:33
+ * @LastEditTime: 2021-10-13 14:00:51
  * @LastEditors: Yandong Hu
  * @Description:
  */
-
-export const sdk_build_config = {
+interface SDKBuildConfigType {
+  company: 'huawei';
+  rtc: {
+      company: 'huawei' | 'agora';
+      platform: 'electron' | 'web' | 'react native';
+  };
+  rtm: {
+      company: 'wangyi' | 'agora';
+  };
+  remotecontrol: {
+      company: 'bjy';
+  };
+}
+export const sdk_build_config: SDKBuildConfigType = {
   company: 'huawei',
   rtc: {
     company: 'huawei',

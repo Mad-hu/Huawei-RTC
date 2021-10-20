@@ -1,5 +1,6 @@
 import { RTCBaseProvider, RTCInitOpts, RTCLoginOpts } from "../../../abstract/rtc.abstract";
 export default class AgoraRCMSdkWebService extends RTCBaseProvider {
+    setRemoteSubStreamViewDisplayMode(userId: string, mode?: number): void;
     getScreenSources(): void;
     selectScreenShare(item: any): number;
     startScreenShare(): number;

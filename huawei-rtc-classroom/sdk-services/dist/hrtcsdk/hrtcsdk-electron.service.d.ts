@@ -35,5 +35,6 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     startScreenShare(): number;
     stopScreenShare(): number;
     startRenderRemoteScreenShare(userId: string, view: HTMLDivElement): number;
+    setRemoteSubStreamViewDisplayMode(userId: string, mode?: number): void;
     stopRenderRemoteScreenShare(userId: string): number;
 }

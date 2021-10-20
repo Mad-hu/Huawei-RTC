@@ -1,10 +1,10 @@
 /*
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
- * @Date: 2021-08-05 11:03:17
- * @LastEditTime: 2021-09-30 15:07:19
+ * @Date: 2021-09-30 11:30:00
+ * @LastEditTime: 2021-10-20 13:28:14
  * @LastEditors: Yandong Hu
- * @Description: RTC 基础调用服务。
+ * @Description:
  */
 import HRTCSDKWebService from "./hrtcsdk/hrtcsdk-web.service";
 import HRTCSDKElectronService from "./hrtcsdk/hrtcsdk-electron.service";
@@ -12,14 +12,14 @@ import AgoraRTCSdkWebService from "./agora/sdk/rtc/agora-rtc-sdk-electron.servic
 import AgoraRTCSdkElectronService from "./agora/sdk/rtc/agora-rtc-sdk-electron.service";
 import { sdk_build_config } from "./build";
 let rtcInstance: AgoraRTCSdkWebService | HRTCSDKWebService | HRTCSDKElectronService;
-export const getBuildRtcPlatform = () => {
+const getBuildRtcPlatform = () => {
   return sdk_build_config.rtc.platform;
 }
-export const getBuildRtcCompany = () => {
+const getBuildRtcCompany = () => {
   return sdk_build_config.rtc.company;
 }
 
-export const RtcService = () => {
+const RtcService = () => {
   if (rtcInstance) return rtcInstance;
   if (sdk_build_config.rtc.company == 'huawei') {
     if (sdk_build_config.rtc.platform == 'electron') {
@@ -39,3 +39,9 @@ export const RtcService = () => {
   }
   return rtcInstance;
 };
+
+export {
+  getBuildRtcPlatform,
+  getBuildRtcCompany,
+  RtcService
+}

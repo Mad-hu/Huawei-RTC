@@ -7,10 +7,10 @@ exports.RtcService = exports.getBuildRtcCompany = exports.getBuildRtcPlatform = 
 /*
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
- * @Date: 2021-08-05 11:03:17
- * @LastEditTime: 2021-09-30 15:38:00
+ * @Date: 2021-09-30 11:30:00
+ * @LastEditTime: 2021-10-20 13:28:14
  * @LastEditors: Yandong Hu
- * @Description: RTC 基础调用服务。
+ * @Description:
  */
 var hrtcsdk_web_service_1 = __importDefault(require("./hrtcsdk/hrtcsdk-web.service"));
 var hrtcsdk_electron_service_1 = __importDefault(require("./hrtcsdk/hrtcsdk-electron.service"));

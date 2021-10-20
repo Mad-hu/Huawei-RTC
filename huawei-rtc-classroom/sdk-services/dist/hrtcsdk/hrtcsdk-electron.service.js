@@ -3,7 +3,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 10:46:37
- * @LastEditTime: 2021-09-30 11:48:26
+ * @LastEditTime: 2021-10-20 11:36:17
  * @LastEditors: Yandong Hu
  * @Description: 华为云RTC Electron SDK
  */
@@ -59,16 +59,22 @@ var HRTCSDKElectronService = /** @class */ (function (_super) {
         }
         var id = appId;
         var domain = opt.domain;
-        engine.initialize(id, domain);
-        engine.setExternalVideoFrameOutput(true, true, { format: 0, bufferType: 0 });
-        engine.enableSmallVideoStream(true, { width: 320, height: 180, frameRate: 30, bitrate: 600, disableAdjustRes: true, streamType: 1 });
-        engine.setPriorRemoteVideoStreamType(1);
         // engine.setLogParam(true, {
         //   level: 3,
         //   path: process.platform === "darwin" ? "/tmp/rtcLog" : "rtclog"
         // });
+        console.log('hrtc verison: ', engine.getVersion());
+        engine.initialize(id, domain);
+        engine.setExternalVideoFrameOutput(true, true, { format: 0, bufferType: 0 });
+        engine.enableSmallVideoStream(true, { width: 320, height: 180, frameRate: 30, bitrate: 600, disableAdjustRes: true, streamType: 1 });
+        engine.setPriorRemoteVideoStreamType(1);
         // 设置大流显示模式
-        // engine.setVideoEncParam({streamType:0,width:240,height:180,frameRate:10,bitrate:600})
+        // engine.setVideoEncParam({streamType:3,width:1280,height:720,frameRate:15,bitrate:500,disableAjustRes: false});
+        engine.setExternalDataFrameOutput(false, false);
+        engine.setExternalVideoFrameOutput(false, false, {
+            formate: 3,
+            bufferType: 0
+        });
         sdkinit = true;
         return engine;
     };
@@ -86,8 +92,14 @@ var HRTCSDKElectronService = /** @class */ (function (_super) {
     HRTCSDKElectronService.prototype.joinRoom = function (roomId, userId, opts) {
         userJoinId = userId + this.id_random;
         var userInfo = { 'userId': "" + (userId + this.id_random), 'userName': (opts && opts.userName) + "_roletype_" + (opts && opts.role), signature: '', ctime: 0, role: 0 };
-        console.log('join room:', userInfo);
-        var ret = engine.joinRoom(roomId, userInfo);
+        var option = {
+            autoSubscribeAudio: false,
+            autoSubscribeVideo: false,
+            mediaType: 1
+        };
+        var ret = engine.joinRoom(roomId, userInfo, option);
+        // const ret = engine.joinRoom(roomId, userInfo);
+        console.log('join room:', userInfo, ret);
         if (ret != 0) {
             throw new Error('join failed, ' + ret);
         }
@@ -170,7 +182,14 @@ var HRTCSDKElectronService = /** @class */ (function (_super) {
         return engine.stopScreenCapture();
     };
     HRTCSDKElectronService.prototype.startRenderRemoteScreenShare = function (userId, view) {
+        // 暂时有问题，不开放
+        // engine.setRemoteSubStreamViewDisplayMode(userId, 0);
         return engine.startRemoteSubStreamView(userId, view);
+    };
+    HRTCSDKElectronService.prototype.setRemoteSubStreamViewDisplayMode = function (userId, mode) {
+        if (mode === void 0) { mode = 0; }
+        console.log('setting remote video display mode:', userId, mode);
+        engine.setRemoteSubStreamViewDisplayMode(userId, mode);
     };
     HRTCSDKElectronService.prototype.stopRenderRemoteScreenShare = function (userId) {
         return engine.stopRemoteSubStreamView(userId);

@@ -19,7 +19,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 18:13:10
- * @LastEditTime: 2021-09-30 11:48:19
+ * @LastEditTime: 2021-10-20 13:30:12
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -29,6 +29,9 @@ var AgoraRTCSdkElectronService = /** @class */ (function (_super) {
     function AgoraRTCSdkElectronService() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    AgoraRTCSdkElectronService.prototype.setRemoteSubStreamViewDisplayMode = function (userId, mode) {
+        throw new Error("Method not implemented.");
+    };
     AgoraRTCSdkElectronService.prototype.getScreenSources = function () {
         throw new Error("Method not implemented.");
     };

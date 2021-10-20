@@ -3,7 +3,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 15:47:27
- * @LastEditTime: 2021-09-30 11:48:34
+ * @LastEditTime: 2021-10-20 13:30:40
  * @LastEditors: Yandong Hu
  * @Description: 华为云 web rtc sdk
  */
@@ -29,6 +29,9 @@ var HRTCSDKWebService = /** @class */ (function (_super) {
     function HRTCSDKWebService() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    HRTCSDKWebService.prototype.setRemoteSubStreamViewDisplayMode = function (userId, mode) {
+        throw new Error("Method not implemented.");
+    };
     HRTCSDKWebService.prototype.getScreenSources = function () {
         throw new Error("Method not implemented.");
     };

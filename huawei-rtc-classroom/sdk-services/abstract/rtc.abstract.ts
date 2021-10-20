@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 14:14:38
- * @LastEditTime: 2021-10-09 16:17:06
+ * @LastEditTime: 2021-10-12 17:22:56
  * @LastEditors: Yandong Hu
  * @Description: RTC模块基础代理
  */
@@ -173,25 +173,13 @@ export abstract class RTCBaseProvider extends EventEmitter {
      abstract stopScreenShare(): number;
 
      /**
-      * 使用Html Element渲染远端屏幕共享
+      * 开始渲染远端屏幕共享
       *
       * @abstract
       * @return {*}  {number}
       * @memberof RTCBaseProvider
       */
      abstract startRenderRemoteScreenShare(userId: string, view: HTMLDivElement): number;
-
-     /**
-      * 使用窗口句柄渲染远端屏幕共享
-      *
-      * @abstract
-      * @param {string} userId 用户id
-      * @param {number} view 窗口句柄
-      * @return {*}  {number}
-      * @memberof RTCBaseProvider
-      */
-     abstract startRenderRemoteScreenShareByElement(userId: string, view: number): number;
-
      /**
       * 停止渲染远端屏幕共享
       *
@@ -200,4 +188,14 @@ export abstract class RTCBaseProvider extends EventEmitter {
       * @memberof RTCBaseProvider
       */
      abstract stopRenderRemoteScreenShare(userId: string): number;
+
+     /**
+      * 设置共享流视图渲染模式
+      *
+      * @abstract
+      * @param {string} userId
+      * @param {number} mode
+      * @memberof RTCBaseProvider
+      */
+     abstract setRemoteSubStreamViewDisplayMode(userId: string, mode?: number): void;
 }

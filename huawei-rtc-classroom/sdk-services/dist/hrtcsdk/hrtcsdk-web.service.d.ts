@@ -1,6 +1,7 @@
 import { RTCBaseProvider, RTCInitOpts, RTCLoginOpts } from "../abstract/rtc.abstract";
 import { HRTCVideoDisplayMode } from "./hrtcsdk.service.interface";
 export default class HRTCSDKWebService extends RTCBaseProvider {
+    setRemoteSubStreamViewDisplayMode(userId: string, mode?: number): void;
     getScreenSources(): void;
     selectScreenShare(item: any): number;
     startScreenShare(): number;

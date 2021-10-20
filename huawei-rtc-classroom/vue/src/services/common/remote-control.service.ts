@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 11:03:00
- * @LastEditTime: 2021-08-13 17:01:34
+ * @LastEditTime: 2021-10-20 13:35:32
  * @LastEditors: Yandong Hu
  * @Description: 远程控制基础调用服务
  */
@@ -16,7 +16,7 @@ export enum RemoteType {
   'client',
   'remote'
 }
-export const getBuildRtcCompany = () => {
+export const getBuildRemoteControlCompany = () => {
   return sdk_build_config.remotecontrol.company;
 }
 export const RemoteControlService = () => {

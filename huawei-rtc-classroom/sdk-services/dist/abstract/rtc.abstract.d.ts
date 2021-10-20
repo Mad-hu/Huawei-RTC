@@ -165,4 +165,13 @@ export declare abstract class RTCBaseProvider extends EventEmitter {
      * @memberof RTCBaseProvider
      */
     abstract stopRenderRemoteScreenShare(userId: string): number;
+    /**
+     * 设置共享流视图渲染模式
+     *
+     * @abstract
+     * @param {string} userId
+     * @param {number} mode
+     * @memberof RTCBaseProvider
+     */
+    abstract setRemoteSubStreamViewDisplayMode(userId: string, mode?: number): void;
 }
