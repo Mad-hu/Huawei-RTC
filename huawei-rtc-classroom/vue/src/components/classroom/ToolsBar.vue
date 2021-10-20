@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-10-20 10:03:37
+ * @LastEditTime: 2021-10-20 11:41:01
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -46,9 +46,8 @@ import {
   UserListState,
   UserType,
 } from "../../services/state-manager/classroom-state.service";
-import ShareSelectDialog from "../dialog/ShareSelectDialog.vue";
 @Options({
-  components: {ShareSelectDialog},
+  components: {},
 })
 export default class ToolsBar extends Vue {
   localUser: UserType | undefined | any = { audio: true, video: true };
