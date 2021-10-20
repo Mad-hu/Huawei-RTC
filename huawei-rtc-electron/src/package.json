@@ -12,6 +12,6 @@
   "license": "MIT",
   "dependencies": {
     "bjysdk": "../sdk/bjysdk.tar.gz",
-    "huawei-electron-sdk": "../sdk/hrtc-electron-sdk.tar.gz"
+    "hrtc-electron-sdk": "../sdk/hrtc-electron-sdk.tar.gz"
   }
 }
