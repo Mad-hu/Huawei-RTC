@@ -2,13 +2,13 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 17:48:06
- * @LastEditTime: 2021-09-10 17:05:20
+ * @LastEditTime: 2021-10-19 17:07:20
  * @LastEditors: Yandong Hu
  * @Description:
  */
 let bjysdk = null;
 const openRemoteControl = true;
-const HRTCEngine = require('huawei-electron-sdk') ;
+const HRTCEngine = require('hrtc-electron-sdk') ;
 if(openRemoteControl) {
   bjysdk = require('bjysdk');
 }
