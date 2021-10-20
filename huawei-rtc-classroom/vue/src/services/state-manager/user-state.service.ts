@@ -2,21 +2,32 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-11 09:49:22
- * @LastEditTime: 2021-09-13 17:37:09
+ * @LastEditTime: 2021-10-18 14:22:46
  * @LastEditors: Yandong Hu
  * @Description:
  */
 
 import { reactive } from "vue";
 
-interface UserInfo {
+enum UserRole {
+  teacher = 'teacher',
+  student = 'student',
+  audience = 'audience',
+}
+interface UserInfoType {
   userName: string,
   userId: number,
-  role: string
+  role: UserRole
 }
-const userInfo: UserInfo = {
+
+const userInfo: UserInfoType = {
   userName: '',
   userId: 0,
-  role: ''
+  role: UserRole.teacher
 };
-export const UserInfoState = reactive(userInfo);
+const UserInfoState = reactive(userInfo);
+export {
+  UserRole,
+  UserInfoType,
+  UserInfoState
+}

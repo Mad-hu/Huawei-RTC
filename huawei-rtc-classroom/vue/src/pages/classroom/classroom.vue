@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-10-12 17:48:01
+ * @LastEditTime: 2021-10-20 10:32:40
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -11,7 +11,7 @@
     <StudentList></StudentList>
     <div class="middle">
       <MainBoards></MainBoards>
-      <div class="right">
+      <div class="right" v-if="settingBase.userListVisible">
         <UserListView></UserListView>
       </div>
     </div>
@@ -50,14 +50,22 @@ import {
   RoomNameState,
   ShareState,
   UserListState,
+  UserType,
 } from "../../services/state-manager/classroom-state.service";
 import _ from "lodash";
-import { UserInfoState } from "../../services/state-manager/user-state.service";
+import {
+  UserInfoState,
+  UserInfoType,
+  UserRole,
+} from "../../services/state-manager/user-state.service";
 import { RtcService } from "../../services/common/rtc.service";
 import { RtmService } from "../../services/common/rtm.service";
 import { RTCEventType } from "../../services/common/abstract/rtc.abstract";
 import { getBjySdk } from "../../services/common/electron.service";
-import { RemoteControlService, RemoteType } from "../../services/common/remote-control.service";
+import {
+  RemoteControlService,
+  RemoteType,
+} from "../../services/common/remote-control.service";
 import { msgType } from "../../services/common/bjysdk/bjysdk.service";
 import { rtmTextMessageCategory } from "../../services/common/abstract/rtm.abstract";
 
@@ -72,6 +80,8 @@ import { rtmTextMessageCategory } from "../../services/common/abstract/rtm.abstr
 // import { getBjySdk } from "hrtc-sdk-services/electron.service";
 // import { rtmTextMessageCategory } from "hrtc-sdk-services/abstract/rtm.abstract";
 import { sdk_build_config } from "../../services/common/build";
+import { getSetting } from "../../services/setting/setting-service";
+import { playInroomAudio } from "../../services/music/inroom.service";
 
 const VITE_AGORA_RTC_APPID = import.meta.env.VITE_AGORA_RTC_APPID;
 const VITE_CONTROL_ACCOUNT = import.meta.env.VITE_CONTROL_ACCOUNT;
@@ -91,14 +101,14 @@ const VITE_NETEASE_SDK_KEY = import.meta.env.VITE_NETEASE_SDK_KEY;
   },
 })
 export default class Classroom extends Vue {
-  userList = UserListState.lists;
-  userInfoStore: any;
-  channel = RoomNameState.roomName;
-  control_address = "";
-  control_session = "";
+  userList: UserType[] = UserListState.lists;
+  userInfoStore: UserInfoType = UserInfoState;
+  channel: string = RoomNameState.roomName;
+  control_address: string = "";
+  control_session: string = "";
+
+  settingBase = getSetting().base;
   mounted() {
-    this.userInfoStore = UserInfoState;
-    console.log("this.userInfoStore:", this.userInfoStore);
     try {
       loadingShow("初始化RTC/RTM/Control SDK");
       this.initRtc();
@@ -121,10 +131,12 @@ export default class Classroom extends Vue {
   initRtc() {
     RtcService().init(VITE_HUAWEI_RTC_APPID, { domain: VITE_HUAWEI_DOMAIN });
     this.rtcEvent();
-    RtcService().joinRoom(this.channel, this.userInfoStore.userId, {
-      userName: this.userInfoStore.userName,
-      role: this.userInfoStore.role,
-    });
+    setTimeout(() => {
+      RtcService().joinRoom(this.channel, this.userInfoStore.userId, {
+        userName: this.userInfoStore.userName,
+        role: this.userInfoStore.role,
+      });
+    }, 1000);
   }
   /**
    * initial　rtm sdk
@@ -201,10 +213,12 @@ export default class Classroom extends Vue {
     RtcService().on(RTCEventType.screenCaptureStarted, () => {
       console.log("screen capture started!");
     });
-    RtcService().on(RTCEventType.userSubStreamAvailable,(roomId, userId, available) => {
-      console.log("user sub stream available!", roomId, userId, available);
-      if (available) {
-        if (userId == RtcService().getUserLocalId()) {
+    RtcService().on(
+      RTCEventType.userSubStreamAvailable,
+      (roomId, userId, available) => {
+        console.log("user sub stream available!", roomId, userId, available);
+        if (available) {
+          if (userId == RtcService().getUserLocalId()) {
             console.log("local user, can not substream!");
             return;
           }
@@ -226,9 +240,9 @@ export default class Classroom extends Vue {
                 userId,
                 shareBoxBodyDiv
               );
-              // setTimeout(() => {
-              //   RtcService().setRemoteSubStreamViewDisplayMode(userId, 0);
-              // }, 3000);
+            // setTimeout(() => {
+            //   RtcService().setRemoteSubStreamViewDisplayMode(userId, 0);
+            // }, 3000);
 
             if (renderRemoteScreenShareState == 0) {
               const shareUserInfo = this.userList.find(
@@ -258,6 +272,9 @@ export default class Classroom extends Vue {
         renderLocalVideo(`user_${userInfo.userId}`);
       } else {
         renderRemoteVideo(`user_${userInfo.userId}`, userInfo.userId);
+      }
+      if (getSetting().base.intoClassAudio) {
+        playInroomAudio();
       }
     }, 500);
   }

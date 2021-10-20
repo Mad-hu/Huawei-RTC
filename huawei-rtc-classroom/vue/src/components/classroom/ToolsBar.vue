@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-10-13 18:06:29
+ * @LastEditTime: 2021-10-20 10:03:37
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -29,18 +29,15 @@
       摄像头
     </div>
     <div class="btn leavebtn" @click="leave()">离开教室</div>
-    <div class="setting"
-      @click="settingAction()"
-      title="设置"
-    >
+    <div class="setting" @click="settingAction()" title="设置">
       <span>&#xe892;</span>
     </div>
   </div>
   <share-select-dialog ref="shareSelectDialogRef"></share-select-dialog>
+  <setting-drawer ref="settingDrawerRef"></setting-drawer>
 </template>
 
 <script lang="ts">
-import { ref } from "vue";
 import { ElMessageBox } from "element-plus";
 import _ from "lodash";
 import { Options, Vue } from "vue-property-decorator";
@@ -50,12 +47,10 @@ import {
   UserType,
 } from "../../services/state-manager/classroom-state.service";
 import ShareSelectDialog from "../dialog/ShareSelectDialog.vue";
-import { messageFloatWarning } from "../../services/message/message-float.service";
 @Options({
   components: {ShareSelectDialog},
 })
 export default class ToolsBar extends Vue {
-  shareSelectDialogRef = ref(null);
   localUser: UserType | undefined | any = { audio: true, video: true };
   shareScreen() {
     const shareSelectDialog: any = this.$refs['shareSelectDialogRef'];
@@ -92,7 +87,8 @@ export default class ToolsBar extends Vue {
 
   settingAction() {
     console.log('open setting action!');
-    messageFloatWarning('developing!');
+    const settingDrawer: any = this.$refs['settingDrawerRef'];
+    settingDrawer.visible = true;
   }
 }
 </script>
@@ -140,21 +136,18 @@ export default class ToolsBar extends Vue {
   background-image: linear-gradient(#3a3a41, #252529, #414149);
 }
 .setting {
-  background-color: #fff;
   position: absolute;
   right: 10px;
-  height: 35px;
-  width: 35px;
+  height: 40px;
+  width: 40px;
   border-radius: 3px;
+  background-color: #e6a23c;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  &:hover {
-    opacity: 0.7;
-  }
   span {
-    color: #000;
+    color: #fff;
     font-family: "iconfont" !important;
     font-size: 25px;
   }

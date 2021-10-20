@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 10:46:37
- * @LastEditTime: 2021-10-12 17:34:15
+ * @LastEditTime: 2021-10-20 11:36:17
  * @LastEditors: Yandong Hu
  * @Description: 华为云RTC Electron SDK
  */
@@ -50,11 +50,11 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
 
     // 设置大流显示模式
     // engine.setVideoEncParam({streamType:3,width:1280,height:720,frameRate:15,bitrate:500,disableAjustRes: false});
-    engine.setExternalDataFrameOutput(false ,true);
-    // engine.setExternalVideoFrameOutput(true, true, {
-    //   formate: 3,
-    //   bufferType: 0
-    // });
+    engine.setExternalDataFrameOutput(false ,false);
+    engine.setExternalVideoFrameOutput(false, false, {
+      formate: 3,
+      bufferType: 0
+    });
     sdkinit = true;
     return engine;
   }
@@ -74,7 +74,7 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
   joinRoom(roomId: string, userId: number, opts?: RTCLoginOpts): void {
     userJoinId = userId + this.id_random;
     const userInfo = { 'userId': `${userId + this.id_random}`, 'userName': `${opts && opts.userName}_roletype_${opts && opts.role}`, signature: '', ctime: 0, role: 0 };
-    console.log('join room:', userInfo);
+
     const option = {
       autoSubscribeAudio: false, // 自动订阅远端用户音频流
       autoSubscribeVideo: false, // 自动订阅远端用户视频流
@@ -82,6 +82,7 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     };
     const ret = engine.joinRoom(roomId, userInfo, option);
     // const ret = engine.joinRoom(roomId, userInfo);
+    console.log('join room:', userInfo, ret);
     if (ret != 0) {
       throw new Error('join failed, ' + ret)
     }

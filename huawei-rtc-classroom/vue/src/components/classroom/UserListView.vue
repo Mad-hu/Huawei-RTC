@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-08-18 10:36:56
+ * @LastEditTime: 2021-10-19 12:10:21
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -50,7 +50,6 @@ import {
   UserListState,
   UserType,
 } from "../../services/state-manager/classroom-state.service";
-
 @Options({
   components: {},
 })
