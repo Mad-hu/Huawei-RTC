@@ -1,0 +1,19 @@
+.classroom {
+    background-color: #999;
+    width: 100vw;
+    height: 100vh;
+
+    .middle {
+        display: flex;
+        height: calc(100vh - 188px);
+        width: 100%;
+    }
+
+    .right {
+        min-width: 192px;
+        height: calc(100vh - 188px);
+        border-left: 1px solid #fff;
+        display: flex;
+        flex-direction: column;
+    }
+}

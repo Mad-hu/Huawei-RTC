@@ -2,13 +2,12 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-10 13:57:56
- * @LastEditTime: 2021-08-13 17:13:28
+ * @LastEditTime: 2021-10-21 09:11:27
  * @LastEditors: Yandong Hu
  * @Description:
  */
 
-import { ElLoading } from "element-plus";
-import { ILoadingInstance } from "element-plus/lib/el-loading/src/loading.type";
+import { ElLoading, ILoadingInstance } from "element-plus";
 
 let loading: ILoadingInstance;
 const loadingShow = (msg?: string) => {

@@ -1,0 +1,49 @@
+.stu-lists {
+    width: 100%;
+    height: 108px;
+    border-bottom: 1px solid #fff;
+    display: flex;
+    justify-content: center;
+    .stu-item {
+      width: 192px;
+      height: 108px;
+      position: relative;
+    }
+    .stu-render {
+      width: 192px;
+      height: 108px;
+      background-color: #666;
+      border: 1px solid #fff;
+      overflow: hidden;
+    }
+    .close {
+      position: absolute;
+      bottom: 1px;
+      left: 0;
+      right: 0;
+      top: 0;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .stu-info-con {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 22px;
+      width: 190px;
+      font-size: 14px;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 3px;
+      margin: 0 1px;
+      background-color: #eeeeee5e;
+      line-height: 22px;
+    }
+  }

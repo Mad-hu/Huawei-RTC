@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-09 17:25:55
- * @LastEditTime: 2021-10-09 18:16:11
+ * @LastEditTime: 2021-10-21 11:35:41
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -57,17 +57,21 @@ interface RemoteShareType {
    */
   available: boolean
 }
-interface ShareStateValueType {
-  screenShareState: boolean,
+interface remoteScreenShareListType {
   remoteShareList: RemoteShareType[]
 }
-const shareStateValue: ShareStateValueType = {
-  screenShareState: false, // 本地是否有屏幕共享
+const remoteScreenShareList: remoteScreenShareListType = {
   remoteShareList: [] // 远端共享列表, 暂时只支持单人共享
 }
-const ShareState = atom({
-  key: 'ShareState',
-  default: shareStateValue
+const ScreenShareState = atom({
+  key: 'screenShareState',
+  default: {
+    screenShareState: false
+  }
+});
+const RemoteScreenShareListState = atom({
+  key: 'remoteScreenShareListState',
+  default: remoteScreenShareList
 });
 
 const ControlUserIdState = atom({
@@ -85,11 +89,10 @@ const RoomNameState = atom({
 })
 export {
   UserListState,
-  ShareState,
+  ScreenShareState,
+  RemoteScreenShareListState,
   ControlUserIdState,
-  RoomNameState
-};
-export type {
+  RoomNameState,
   UserListType,
   UserType
 };
