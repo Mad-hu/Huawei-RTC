@@ -2,44 +2,23 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2021-09-10 17:05:10
+ * @LastEditTime: 2021-10-22 15:48:11
  * @LastEditors: Yandong Hu
  * @Description:
  */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { app, BrowserWindow, ipcMain, Menu, screen, shell } from 'electron';
-import { buildWindow } from './node/create-window';
 import './node/ipc-main';
-const openRemoteControl = true;
-let slsdk: any;
-if(openRemoteControl) {
-  slsdk = require('bjysdk');
-}
+import path from 'path';
+import { createBrowserWindow } from './services/main-process/browser-window.services';
+import { createDesktop, initRemoteSDK } from './services/main-process/hrtc-remote-control.service';
+import { testServices } from './service-provider/service-provider';
+
+testServices();
 
 let mainWindow: BrowserWindow | null = null;
-//向日葵sdk的一些变量
-const slRemoteInvalid = "0";
-const slSessionInvalid = -1;
-let slremote = slRemoteInvalid;
-let desktopsession = slSessionInvalid;
-var initslsdk = false;
 
-
-let remoteSoundsession          = slSessionInvalid;
-let dataStreamsession          = slSessionInvalid;
-let fileTranssession          = slSessionInvalid;
-let portTransfersession          = slSessionInvalid;
-
-let sfileId;//建议以map管理(Object)
-let rfileId;//建议放map管理
-let tempMessage;
-
-let fileWin;
-let portWin;//ip端口配置对话框窗口
-let dataStreamWin;//远程数据
-
-let remoteWin: BrowserWindow | null;
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -52,8 +31,50 @@ if (
 ) {
   require('electron-debug')();
 }
+const PROTOCOL = 'tczx'; // 用户自定义
+
+// 浏览器访问 tczx://tczx.aicoders.cn/join?action=join&shareId==123&name=test&type=chrome
+// if (process.env.NODE_ENV === 'development' && process.platform === 'win32') {
+//   console.log('process.argv[1]:', process.argv[1]);
+//   // 设置electron.exe 和 app的路径
+//   app.setAsDefaultProtocolClient(PROTOCOL, process.execPath, [
+//     path.resolve(process.argv[1]),
+//   ])
+// } else {
+  app.setAsDefaultProtocolClient(PROTOCOL)
+// }
+
+
+// window 系统中执行网页调起应用时，处理协议传入的参数
+const handleArgvFromWeb = (argv: any[]) => {
+  const prefix = `${PROTOCOL}:`;
+  const url = argv.find((arg: string) => arg.startsWith(prefix));
+  if (url) handleUrlFromWeb(url);
+};
+// win网页进行应用的调起后，会触发该事件
+app.on('second-instance', async (event, argv) => {
+  if (process.platform === 'win32') {
+    console.log("window 准备执行网页端调起客户端逻辑", argv);
+    handleArgvFromWeb(argv);
+  }
+});
+// mac网页进行应用的调起后，会触发该事件
+app.on('open-url', (event, urlStr) => {
+  console.log("mac 准备执行网页端调起客户端逻辑");
+  handleUrlFromWeb(urlStr); // 对 url 执行的处理逻辑
+});
+const handleUrlFromWeb = (urlStr: string) => {
+  const urlObj = new URL(urlStr);
+  const { searchParams } = urlObj;
+  const shareId = searchParams.get('shareId');
+  const name = searchParams.get('name');
+  const type = searchParams.get('type');
+  // tczx://tczx.aicoders.cn/join?action=join&shareId=123&name=test&type=chrome
+  console.log('handleUrlFromWeb:', shareId, name, type);
+};
+
 const createWindow = async () => {
-  mainWindow = buildWindow();
+  mainWindow = createBrowserWindow();
   // mainWindow.setSize(1121, 882);
   // mainWindow.center();
   mainWindow.loadURL(`file://${__dirname}/index.html`);
@@ -97,17 +118,13 @@ const createWindow = async () => {
     mainWindow?.webContents.openDevTools();
   });
   ipcMain.on('controlRemote', (event:any, type: string, message: string) => {
-    if(!openRemoteControl) {
-      return;
-    }
     console.log('controlRemote:', type, message);
     if(type == 'desktop') {
       createDesktop(message);
     }else if(type == 'init') {
-      initRemoteSDK();
+      initRemoteSDK(mainWindow!);
     }
   })
-  // remoteControleIpcMainInit();
 };
 
 /**
@@ -130,110 +147,16 @@ app.on('activate', () => {
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) createWindow();
 });
-
-
-function initRemoteSDK() {
-  //初始化向日葵SDK环境
-  if(slsdk.initialize()){
-    slremote = slsdk.createRemote();
-    if(slremote != slRemoteInvalid){
-        slsdk.setRemoteCallback(slremote,slremoteCallback);
-        slsdk.openRemoteLog(slremote,"./log");
-        initslsdk = true;
-    }
-  }
-}
-//发起远程连接
-function createDesktop(message: any){
-  if(slremote != slRemoteInvalid){
-      if(desktopsession != slSessionInvalid){
-          slsdk.destroyRemoteSession(slremote,desktopsession);
-          desktopsession = slSessionInvalid;
-      }
-      desktopsession = slsdk.createRemoteEmptySession(slremote, 0);
-      if(desktopsession != slSessionInvalid){
-          var jsonObj = JSON.parse(message);
-          var address = jsonObj.address;
-          var session = jsonObj.session;
-          createRemoteWindows();
-          var hwnd = remoteWin!.getNativeWindowHandle();
-          if(slsdk.setRemoteSessionOpt(slremote, desktopsession,1,hwnd,hwnd.length)){
-              moveDesktopPos();
-              if(slsdk.setRemoteSessionOpt(slremote, desktopsession,2,slremoteDesktopSessionCallback,0)){
-                  if (slsdk.connectRemoteSession(slremote, desktopsession, address, session)){
-                      mainWindow!.webContents.send('controlEvent', "notify", "连接远程会话成功!!!");
-                  }else{
-                      mainWindow!.webContents.send('controlEvent', "notify", "连接远程会话失败!!!");
-                  }
-              }else{
-                  mainWindow!.webContents.send('controlEvent', "notify", "设置远程会话回调失败!!!");
-              }
-          }else{
-              mainWindow!.webContents.send('controlEvent', "notify", "设置窗口句柄失败!!!");
-          }
-      }else{
-          mainWindow!.webContents.send('controlEvent', "notify", "创建远程会话失败!!!");
-      }
-  }else{
-      mainWindow!.webContents.send('controlEvent', "notify", "无效的被控端实例!!!");
-  }
+//只允许运行一个实例(单例)
+const gotTheLock = app.requestSingleInstanceLock()
+if (!gotTheLock) {
+  app.quit()
+} else {
+  // logger.debug("single")
+  // if (mainWindow) {
+  //   if (mainWindow.isMinimized())
+  //     mainWindow.restore()
+  //   mainWindow.focus()
+  // }
 }
 
-//创建远程桌面窗口
-function createRemoteWindows(){
-  remoteWin = null;
-  remoteWin = new BrowserWindow({width:800,height:600});
-  remoteWin.setMenu(null);
-  remoteWin.setTitle("远程桌面");
-  remoteWin.maximize();
-  remoteWin.on('close',() => {
-      remoteWin = null;
-      if(slremote != slRemoteInvalid && desktopsession != slSessionInvalid){
-          slsdk.destroyRemoteSession(slremote,desktopsession);
-          desktopsession = slSessionInvalid;
-          mainWindow!.webContents.send('controlEvent', "destroy", "销毁远程桌面成功!!!");
-      }
-  });
-  remoteWin.on('resize',() => {
-      remoteWin!.reload();
-      moveDesktopPos();
-  });
-}
-
-//远程事件回调
-function slremoteCallback(remote: any, session: any, event: any){
-  if(session == desktopsession){
-    if(event == 0) {
-      mainWindow!.webContents.send('controlEvent', "notify", "桌面会话已连接!!!" );
-    }else {
-      mainWindow!.webContents.send('controlEvent', "destroy", "桌面会话已断开!!!");
-    }
-      if(event == 0){
-          var hwnd = remoteWin!.getNativeWindowHandle();
-          slsdk.setDesktopSessionVisible(slremote,desktopsession,hwnd);
-      }else if(remoteWin){
-          remoteWin.close();
-      }
-  }
-}
-
-//远程连接会话回调
-function slremoteDesktopSessionCallback(session: any, event: any, data: any){
-  if(session == desktopsession){
-      if(event == 1){
-          mainWindow!.webContents.send('controlEvent', "notify", "桌面会话已连接!!!");
-      }else if(event == 2)
-          mainWindow!.webContents.send('controlEvent', "notify", "桌面会话已断开!!!");
-  }
-}
-
-//设置远程桌面相对位置
-function moveDesktopPos(){
-  var rc = remoteWin!.getContentBounds();
-  if (process.platform == "win32"){
-      var scaleFactor = screen.getPrimaryDisplay().scaleFactor;
-      slsdk.setDesktopSessionPos(slremote,desktopsession,0,0,parseInt(`${rc.width*scaleFactor}`),parseInt(`${rc.height*scaleFactor}`));
-  } else {
-      slsdk.setDesktopSessionPos(slremote,desktopsession,rc.x,rc.y,rc.width,rc.height);
-  }
-}
