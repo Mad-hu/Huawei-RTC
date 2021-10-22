@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-10-20 11:41:01
+ * @LastEditTime: 2021-10-21 14:19:26
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -11,7 +11,7 @@
     <div class="btn normal" @click="shareScreen()" title="共享屏幕">
       <span>&#xe616;</span>
       共享屏幕
-      </div>
+    </div>
     <div
       :class="['btn', localUser.audio ? 'enable' : 'disable']"
       @click="audioAction()"
@@ -28,6 +28,15 @@
       <span>&#xe696;</span>
       摄像头
     </div>
+
+    <div
+      class="btn enable invite"
+      @click="inviteAction()"
+      title="邀请"
+    >
+      <span>&#xe682;</span>
+      邀请
+    </div>
     <div class="btn leavebtn" @click="leave()">离开教室</div>
     <div class="setting" @click="settingAction()" title="设置">
       <span>&#xe892;</span>
@@ -41,7 +50,13 @@
 import { ElMessageBox } from "element-plus";
 import _ from "lodash";
 import { Options, Vue } from "vue-property-decorator";
-import { leaveRoom, muteAudio, muteVideo, sendMuteAudio, sendMuteVideo } from "../../services/classroom.service";
+import {
+  leaveRoom,
+  muteAudio,
+  muteVideo,
+  sendMuteAudio,
+  sendMuteVideo,
+} from "../../services/classroom.service";
 import {
   UserListState,
   UserType,
@@ -52,7 +67,7 @@ import {
 export default class ToolsBar extends Vue {
   localUser: UserType | undefined | any = { audio: true, video: true };
   shareScreen() {
-    const shareSelectDialog: any = this.$refs['shareSelectDialogRef'];
+    const shareSelectDialog: any = this.$refs["shareSelectDialogRef"];
     shareSelectDialog.dialogVisible = true;
     shareSelectDialog.getScreenList();
   }
@@ -70,23 +85,25 @@ export default class ToolsBar extends Vue {
   }
   async leave() {
     try {
-      const res = await ElMessageBox.confirm('是否退出教室?', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+      const res = await ElMessageBox.confirm("是否退出教室?", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
       });
-      if(res == 'confirm') {
+      if (res == "confirm") {
         leaveRoom();
         history.back();
       }
     } catch (error) {
-      console.log('leave room cannle!', error);
+      console.log("leave room cannle!", error);
     }
   }
+  inviteAction() {
 
+  }
   settingAction() {
-    console.log('open setting action!');
-    const settingDrawer: any = this.$refs['settingDrawerRef'];
+    console.log("open setting action!");
+    const settingDrawer: any = this.$refs["settingDrawerRef"];
     settingDrawer.visible = true;
   }
 }
@@ -149,6 +166,11 @@ export default class ToolsBar extends Vue {
     color: #fff;
     font-family: "iconfont" !important;
     font-size: 25px;
+  }
+}
+.invite {
+  span {
+    font-size: 20px;
   }
 }
 </style>
