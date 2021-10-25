@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 10:46:37
- * @LastEditTime: 2021-10-20 11:36:17
+ * @LastEditTime: 2021-10-25 15:49:52
  * @LastEditors: Yandong Hu
  * @Description: 华为云RTC Electron SDK
  */
@@ -49,7 +49,7 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     engine.setPriorRemoteVideoStreamType(1);
 
     // 设置大流显示模式
-    // engine.setVideoEncParam({streamType:3,width:1280,height:720,frameRate:15,bitrate:500,disableAjustRes: false});
+    engine.setVideoEncParam({streamType:3,width:800,height:500,frameRate:15,bitrate:500,disableAjustRes: false});
     engine.setExternalDataFrameOutput(false ,false);
     engine.setExternalVideoFrameOutput(false, false, {
       formate: 3,

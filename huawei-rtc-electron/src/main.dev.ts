@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2021-10-22 15:48:11
+ * @LastEditTime: 2021-10-25 15:38:48
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -10,12 +10,8 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { app, BrowserWindow, ipcMain, Menu, screen, shell } from 'electron';
 import './node/ipc-main';
-import path from 'path';
 import { createBrowserWindow } from './services/main-process/browser-window.services';
 import { createDesktop, initRemoteSDK } from './services/main-process/hrtc-remote-control.service';
-import { testServices } from './service-provider/service-provider';
-
-testServices();
 
 let mainWindow: BrowserWindow | null = null;
 
