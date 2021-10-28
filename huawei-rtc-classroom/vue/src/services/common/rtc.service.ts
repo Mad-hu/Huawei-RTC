@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-30 11:30:00
- * @LastEditTime: 2021-10-20 13:28:14
+ * @LastEditTime: 2021-10-28 14:25:40
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -10,38 +10,50 @@ import HRTCSDKWebService from "./hrtcsdk/hrtcsdk-web.service";
 import HRTCSDKElectronService from "./hrtcsdk/hrtcsdk-electron.service";
 import AgoraRTCSdkWebService from "./agora/sdk/rtc/agora-rtc-sdk-electron.service";
 import AgoraRTCSdkElectronService from "./agora/sdk/rtc/agora-rtc-sdk-electron.service";
-import { sdk_build_config } from "./build";
-let rtcInstance: AgoraRTCSdkWebService | HRTCSDKWebService | HRTCSDKElectronService;
-const getBuildRtcPlatform = () => {
-  return sdk_build_config.rtc.platform;
-}
-const getBuildRtcCompany = () => {
-  return sdk_build_config.rtc.company;
-}
+import { isElectron } from "hrtc-sdk-services";
+import { Lazy } from "../../service-provider/lazy.service.provider";
 
-const RtcService = () => {
-  if (rtcInstance) return rtcInstance;
-  if (sdk_build_config.rtc.company == 'huawei') {
-    if (sdk_build_config.rtc.platform == 'electron') {
-      rtcInstance = new HRTCSDKElectronService();
+const lazyAgoraRTCSdkWebService = new Lazy(() => {
+  return new AgoraRTCSdkWebService();
+});
+const lazyAgoraRTCSdkElectronService = new Lazy(() => {
+  return new AgoraRTCSdkElectronService();
+});
+const lazyHRTCSDKElectronService = new Lazy(() => {
+  return new HRTCSDKElectronService();
+});
+const lazyHRTCSDKWebService = new Lazy(() => {
+  return new HRTCSDKWebService();
+});
+
+const RtcService = (company: 'huawei' | 'agora' = 'huawei', platform: 'electron' | 'web' = 'electron') => {
+  if (company == 'huawei') {
+    if (platform == 'electron') {
+      if (!isElectron()) {
+        throw new Error('is not electron env, please change platform by web!');
+      }
+      return lazyHRTCSDKElectronService.instance;
+    } else {
+      return lazyHRTCSDKWebService.instance;
     }
-    if (sdk_build_config.rtc.platform == 'web') {
-      rtcInstance = new HRTCSDKWebService();
+  } else {
+    if (platform == 'electron') {
+      if (!isElectron()) {
+        throw new Error('is not electron env, please change platform by web!');
+      }
+      return lazyAgoraRTCSdkElectronService.instance;
+    } else {
+      return lazyAgoraRTCSdkWebService.instance;
     }
   }
-  if (sdk_build_config.rtc.company == 'agora') {
-    if (sdk_build_config.rtc.platform == 'electron') {
-      rtcInstance = new AgoraRTCSdkElectronService();
-    }
-    if (sdk_build_config.rtc.platform == 'web') {
-      rtcInstance = new AgoraRTCSdkWebService();
-    }
-  }
-  return rtcInstance;
 };
-
+const releaseRtcSDK = () => {
+  lazyAgoraRTCSdkWebService.release();
+  lazyAgoraRTCSdkElectronService.release();
+  lazyHRTCSDKElectronService.release();
+  lazyHRTCSDKWebService.release();
+}
 export {
-  getBuildRtcPlatform,
-  getBuildRtcCompany,
-  RtcService
+  RtcService,
+  releaseRtcSDK
 }
