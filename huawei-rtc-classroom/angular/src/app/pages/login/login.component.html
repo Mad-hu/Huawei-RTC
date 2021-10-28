@@ -1,0 +1,21 @@
+<!--
+ * @Author: Yandong Hu
+ * @github: https://github.com/Mad-hu
+ * @Date: 2021-10-25 17:09:00
+ * @LastEditTime: 2021-10-26 09:57:34
+ * @LastEditors: Yandong Hu
+ * @Description:
+-->
+<div class="login-box">
+  <p>登录</p>
+  <input nz-input placeholder="请输入教室名" [(ngModel)]="roomName" />
+  <input nz-input placeholder="请输入姓名" [(ngModel)]="userName" />
+  <div class="role">
+    <nz-radio-group [(ngModel)]="role">
+      <label nz-radio nzValue="teacher">老师</label>
+      <label nz-radio nzValue="student">学生</label>
+      <label nz-radio nzValue="audience">访客</label>
+    </nz-radio-group>
+  </div>
+  <button nz-button nzType="primary" (click)="login()">进入教室</button>
+</div>

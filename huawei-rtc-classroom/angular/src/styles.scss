@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+/* 引入基本样式 */
+@import "~ng-zorro-antd/style/index.min.css";
+
+/* 引入组件样式 */
+@import "~ng-zorro-antd/button/style/index.min.css";
+@import "~ng-zorro-antd/input/style/index.min.css";
+@import "~ng-zorro-antd/radio/style/index.min.css";
+
+@font-face {
+  font-family: 'iconfont';
+  src: url('./assets/font/iconfont.woff2') format('woff2'),
+       url('./assets/font/iconfont.woff') format('woff'),
+       url('./assets/font/iconfont.ttf') format('truetype');
+}
