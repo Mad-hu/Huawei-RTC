@@ -28,12 +28,14 @@ interface UserType {
    * 2 普通观众
    * @type {number}
    */
-  power?: number;
-  video?: boolean;
-  audio?: boolean;
-  share?: boolean;
-  control?: boolean;
+  power: number;
+  video: number;
+  audio: number;
+  share: number;
+  control: number;
   isLocal?: boolean;
+  focus:number; // 是否是焦点（展示在中间）
+  [key: string]: any
 }
 interface UserListType {
   lists: UserType[];
@@ -71,11 +73,59 @@ const ControlUserIdState = reactive({
 const RoomNameState = reactive({
   roomName: ''
 })
+/**
+ * 教室内的按钮状态的记录
+ *
+ */
+ enum BUTTON_STATUS {
+  AUDIO_STATUS_CHECKED_AGREE=1, // 允许学生解除
+  AUDIO_STATUS_CHECKED_UNAGREE = 0, // 不允许学生操作
+  AUDIO_STATUS_UNCHECKED = 2, // 全体静音未选中
+  SHARE_CONTROL_ONLY_ONE = 1, // 只允许单人共享
+  SHARE_CONTROL_MUL = 0, // 允许多人共享
+}
+
+enum LOCK_STATUS {
+  LOCK = 1, // 锁定
+  UNLOCK = 0, // 未锁定
+}
+
+enum MODE_TYPE {
+  FLAT = 0,
+  FOCUS = 1
+}
+
+enum SCREEN_TYPE {
+  FULL = 0,
+  SHRINK  =1,
+  ENLARGE = 2,
+  NORMAL = 3
+}
+
+const roomButtonsStatus = reactive({
+  audioStatus: BUTTON_STATUS.AUDIO_STATUS_UNCHECKED, // 全体静音
+  shareControlStaus: BUTTON_STATUS.SHARE_CONTROL_ONLY_ONE, // 屏幕分享
+  superPower: "", // 超级主持人的userid
+  lockStatus:LOCK_STATUS.UNLOCK,
+  mode: MODE_TYPE.FLAT , // 当前模式是画廊模式还是焦点模式
+  screen: SCREEN_TYPE.NORMAL ,// 当前的显示模式，正常窗口
+
+})
+// 教室信息存储，可以继续追加
+const roomInfo = reactive({
+  startTime: 0,
+  endTime: 0
+})
 export {
   UserListType,
   UserType,
   UserListState,
   ShareState,
   ControlUserIdState,
-  RoomNameState
+  RoomNameState,
+  roomButtonsStatus,
+  BUTTON_STATUS,
+  roomInfo,
+  MODE_TYPE,
+  SCREEN_TYPE
 }

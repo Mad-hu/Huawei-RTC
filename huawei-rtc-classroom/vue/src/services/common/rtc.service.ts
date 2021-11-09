@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-30 11:30:00
- * @LastEditTime: 2021-10-28 14:25:40
+ * @LastEditTime: 2021-10-28 14:48:06
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -26,6 +26,13 @@ const lazyHRTCSDKWebService = new Lazy(() => {
   return new HRTCSDKWebService();
 });
 
+/**
+ * rtc主服务，获取RTC实例
+ * 切换rtc，直接更换厂商和平台名称即可获取对应sdk，请确保切换前的sdk已被正确销毁。
+ * @param {('huawei' | 'agora')} [company='huawei'] rtc厂商  'huawei' | 'agora'
+ * @param {('electron' | 'web')} [platform='electron'] rtc平台 'electron' | 'web'
+ * @return {*}
+ */
 const RtcService = (company: 'huawei' | 'agora' = 'huawei', platform: 'electron' | 'web' = 'electron') => {
   if (company == 'huawei') {
     if (platform == 'electron') {
@@ -34,6 +41,8 @@ const RtcService = (company: 'huawei' | 'agora' = 'huawei', platform: 'electron'
       }
       return lazyHRTCSDKElectronService.instance;
     } else {
+      console.log('华为华为')
+
       return lazyHRTCSDKWebService.instance;
     }
   } else {
@@ -47,6 +56,7 @@ const RtcService = (company: 'huawei' | 'agora' = 'huawei', platform: 'electron'
     }
   }
 };
+
 const releaseRtcSDK = () => {
   lazyAgoraRTCSdkWebService.release();
   lazyAgoraRTCSdkElectronService.release();

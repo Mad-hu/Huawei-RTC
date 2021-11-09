@@ -10,7 +10,7 @@
   <div class="stu-lists">
     <div class="stu-item" :key="item.userId" v-for="item in userListState">
       <div class="stu-render" :id="`user_${item.userId}`"></div>
-      <div class="close" v-if="!item.video">已关闭</div>
+      <div class="close" v-if="item.video == 0 ">已关闭</div>
       <div class="stu-info-con">
         <div class="name">{{ item.userName }}</div>
         <div class="userId">{{ item.userId }}</div>
@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue, Prop } from "vue-property-decorator";
+import { Options, Vue } from "vue-property-decorator";
 import { UserListState } from "../../services/state-manager/classroom-state.service";
 
 @Options({

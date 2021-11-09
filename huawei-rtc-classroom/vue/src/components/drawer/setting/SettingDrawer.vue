@@ -12,17 +12,15 @@
       <el-collapse v-model="activeNames" @change="handleChange">
         <!-- 常规设置 -->
         <BaseSettingItem></BaseSettingItem>
-
         <!-- 视频设置 -->
         <el-collapse-item title="视频" name="2">
-          <div>
-            开发中... ...
-          </div>
+          <VideoSettingItem></VideoSettingItem>
+          <div id="ddd"></div>
         </el-collapse-item>
         <!-- 音频设置 -->
         <el-collapse-item title="音频" name="3">
           <div>
-            开发中... ...
+            <AudioSettingItem></AudioSettingItem>
           </div>
         </el-collapse-item>
         <!-- 聊天 -->
@@ -70,6 +68,8 @@ import { ref } from "vue";
 import { Options, Vue } from "vue-property-decorator";
 import { getSetting, setSetting } from "../../../services/setting/setting-service";
 import { UserInfoState } from "../../../services/state-manager/user-state.service";
+import { RtcService } from '../../../services/common/rtc.service';
+
 @Options({
   components: {},
 })
@@ -78,6 +78,16 @@ export default class SettingDrawer extends Vue {
   visible = false;
   activeNames = ref(["1", "2", "3", "4", "5", "6", "7", "8", "9"]);
   mounted() {
+    setTimeout(() => {
+      // var div = document.getElementById('ddd')
+      // console.log(9999,div)
+      // if(div){
+      //   RtcService().renderLocalVideo(div,1)
+      // }
+      // console.log(RtcService().getVideoDevices() )
+      // RtcService().setVideoDevice("1520656981")
+    }, 10000);
+
   }
   handleChange(val: any) {
     console.log("collapse change:", val);

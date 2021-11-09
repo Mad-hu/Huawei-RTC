@@ -69,7 +69,7 @@ export default class AgoraRTMSdkWebService extends RTMBaseProvider {
     this.chan.on(channelMessage, (message, memberId, messagePros) => {
       console.log('channelMessage:', message, memberId, messagePros);
       const jsonData = JSON.parse((<RtmTextMessage>message).text);
-      const command: keyof RtmTextMessageCategory = jsonData.command;
+      const command: keyof RtmTextMessageCategory = jsonData.command || jsonData.code;
       this.emit(command, jsonData);
     });
     this.chan.on(attributesUpdated, (attributes) => {

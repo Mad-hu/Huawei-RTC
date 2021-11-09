@@ -9,6 +9,9 @@
 import { SettingState, SettingType } from "../state-manager/setting-state.service";
 import { UserInfoState, UserRole } from "../state-manager/user-state.service";
 import { getStorage, setStorage } from "../storage.service";
+import { RtcService } from "../common/rtc.service";
+import { RTCEventType, RTCDeviceInfo } from "../common/abstract/rtc.abstract";
+
 let settingMemory: SettingType;
 /**
  * 本地存储设置
@@ -115,7 +118,136 @@ const getSetting = (role: UserRole = UserInfoState.role) => {
 const setSetting = (role: UserRole, config: SettingType) => {
   storageRoleSetting(role, config);
 }
+/**
+ * 获取音频采集设备列表
+ */
+const getAudioRecordingDevices = ()=>{
+  return RtcService().getAudioRecordingDevices()
+}
+
+/**
+ * 获取当前音频采集设备
+ */
+const getCurrentAudioRecordingDevice = ():string => {
+  return RtcService().getCurrentAudioRecordingDevice()
+}
+
+/**
+ * 获取音频播放设备列表
+ */
+ const getAudioPlaybackDevices = () => {
+  return RtcService().getAudioPlaybackDevices()
+}
+
+/**
+ * 获取当前音频播放设备
+ */
+ const getCurrentAudioPlaybackDevice = ():string => {
+  return RtcService().getCurrentAudioPlaybackDevice()
+}
+/**
+ * 音频监听
+ */
+const localVolumeChanged = (fn: (...args: any[]) => void):void=> {
+  RtcService().on(RTCEventType.localVolumeChanged,fn)
+}
+/**
+ * 调节音频采集音量
+ * @param volume 
+ */
+const adjustRecordingVolume = (volume:number):number=>{
+  return RtcService().adjustRecordingVolume(volume)
+}
+/**
+ * 获取当前音频采集设备音量
+ * @returns {Number}
+ */
+const getAudioRecordingVolume = ():number=>{
+  return RtcService().getAudioRecordingVolume()
+}
+/**
+ * 设置音频播放的音量，取值范围为[0,100]
+ * @param {Number} number
+ * @returns 
+ */
+const setAudioPlaybackVolume = (number:number):number=>{
+  return RtcService().setAudioPlaybackVolume(number)
+}
+/**
+ * 获取视频采集设备列表
+ * @returns {Array<RTCDeviceInfo>}
+ */
+const getVideoDevices = ():RTCDeviceInfo[]=>{
+  return RtcService().getVideoDevices() 
+}
+/**
+ * 获取当前视频采集设备
+ * @returns 
+ */
+const getCurrentVideoDevice = ():string=>{
+  return RtcService().getCurrentVideoDevice()
+}
+/**
+ * 设置视频设备
+ * @param deviceId 
+ * @returns 
+ */
+const setVideoDevice = (deviceId: string):number=>{
+  return RtcService().setVideoDevice(deviceId)
+}
+/**
+ * 设置音频采集设备。
+ * @param deviceId 
+ * @returns 
+ */
+const setAudioRecordingDevice = (deviceId: string):number=>{
+  return RtcService().setAudioRecordingDevice(deviceId)
+}
+/**
+ * 设置音频播放设备
+ */
+const setAudioPlaybackDevice = (deviceId: string):number=>{
+  return RtcService().setAudioPlaybackDevice(deviceId)
+}
+/**
+ * 开启/关闭本地音频采集
+ * @param enable 
+ * @returns 
+ */
+const enableLocalAudio = (enable: boolean):number=>{
+  return RtcService().enableLocalAudio(enable)
+}
+/**
+ * 开启/关闭本地视频采集
+ * @param enable 
+ * @returns 
+ */
+const enableLocalVideo = (enable: boolean):number=>{
+  return RtcService().enableLocalVideo(enable)
+}
+/**
+ * 获取用户RTC加入房间的id，id不采用用户原有id，是通过原有id再进行加工得到。保证重复用户，也能够正常进入房间
+ */
+const getUserLocalId = ()=>{
+  return RtcService().getUserLocalId()
+}
 export {
   setSetting,
-  getSetting
+  getSetting,
+  getAudioRecordingDevices,
+  getCurrentAudioRecordingDevice,
+  localVolumeChanged,
+  getAudioPlaybackDevices,
+  getCurrentAudioPlaybackDevice,
+  adjustRecordingVolume,
+  getAudioRecordingVolume,
+  setAudioPlaybackVolume,
+  getVideoDevices,
+  getCurrentVideoDevice,
+  setVideoDevice,
+  setAudioRecordingDevice,
+  setAudioPlaybackDevice,
+  enableLocalAudio,
+  getUserLocalId,
+  enableLocalVideo,
 }

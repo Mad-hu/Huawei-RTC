@@ -2,20 +2,18 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 10:46:37
- * @LastEditTime: 2021-10-25 15:49:52
+ * @LastEditTime: 2021-11-02 14:02:24
  * @LastEditors: Yandong Hu
  * @Description: 华为云RTC Electron SDK
  */
 
-import { RTCBaseProvider, RTCEventType, RTCInitOpts, RTCLoginOpts } from "../abstract/rtc.abstract";
+import { RTCDisplayMode, RTCBaseProvider, RTCDeviceInfo, RTCEventType, RTCInitOpts, RTCLoginOpts, RTCRemoteAudioMode, RTCVideoEncParam, RTCVideoStreamType, RTCVideoMirrorType } from "../abstract/rtc.abstract";
 import { getHRTCEngine, isElectron } from "../electron.service"
-import { HRTCVideoDisplayMode } from "./hrtcsdk.service.interface";
 
 let engine: any;
 let sdkinit = false;
 let userJoinId = 0;
 export default class HRTCSDKElectronService extends RTCBaseProvider {
-
 
   id_random = parseInt((Math.random() * 10000).toFixed(0));
 
@@ -34,7 +32,7 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
   init(appId?: any, opt?: RTCInitOpts): any {
     if (sdkinit) {
       console.warn('rtc is already init.');
-      return ;
+      return;
     }
     const id = appId;
     const domain = opt!.domain;
@@ -44,17 +42,18 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     // });
     console.log('hrtc verison: ', engine.getVersion());
     engine.initialize(id, domain);
-    engine.setExternalVideoFrameOutput(true, true,{format: 0,bufferType:0});
-    engine.enableSmallVideoStream(true, {width: 320, height: 180, frameRate: 30, bitrate: 600, disableAdjustRes: true, streamType: 1});
-    engine.setPriorRemoteVideoStreamType(1);
-
+    this.enableSmallVideoStream(true, { width: 320, height: 180, frameRate: 30, bitrate: 600, disableAdjustRes: true, streamType: 1 });
+    this.setPriorRemoteVideoStreamType(1);
     // 设置大流显示模式
-    engine.setVideoEncParam({streamType:3,width:800,height:500,frameRate:15,bitrate:500,disableAjustRes: false});
-    engine.setExternalDataFrameOutput(false ,false);
+    this.setVideoEncParam({ streamType: 3, width: 800, height: 500, frameRate: 15, bitrate: 500, disableAdjustRes: false });
+
+
+    engine.setExternalDataFrameOutput(false, false);
     engine.setExternalVideoFrameOutput(false, false, {
       formate: 3,
       bufferType: 0
     });
+    engine.enableUserVolumeNotify(3000);
     sdkinit = true;
     return engine;
   }
@@ -100,39 +99,36 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
       });
     }
   }
-  createLocalPreview(view: HTMLDivElement, mode: HRTCVideoDisplayMode): any {
-    engine.enableLocalVideo(true);
+  renderLocalVideo(view: HTMLDivElement, mode: RTCDisplayMode ): any {
+    this.enableLocalVideo(true);
     engine.setViewDisplayMode('', 1, false);
-    const result = engine.setupLocalView(view, mode);
-    if(result != 0) {
+    const result = this.setupLocalView(view, mode);
+    if (result != 0) {
       throw new Error('rtc engine setupLocalView error.' + result);
     }
     return result;
   }
-  setLocalVideo(type: boolean): void {
-    engine.enableLocalVideo(type);
+  enableLocalVideo(type: boolean): number {
+    return engine.enableLocalVideo(type);
   }
-  setLocalAudio(type: boolean): void {
-    engine.enableLocalAudio(type);
-  }
-  setLocalPreview(type: boolean = true) {
-    // engine.enableLocalVideo(type);
+  enableLocalAudio(type: boolean): number {
+    return engine.enableLocalAudio(type);
   }
   stopLocalPreviewAndClear(view: HTMLDivElement): number {
-    const res = engine.enableLocalVideo(false);
+    const res = this.enableLocalVideo(false);
     view.innerHTML = '';
     return res;
   }
-  renderRemoteView(userId: string, view: HTMLDivElement) {
+  startRemoteStreamView(userId: string, view: HTMLDivElement) {
     engine.startRemoteStreamView(userId, view, 1, true);
     this.muteRemoteVideoStream(userId, false);
-    this.renderRemoteVideoStreamType(userId, 1);
+    this.setRemoteVideoStreamType(userId, 1);
   }
-  muteRemoteVideoStream(userId: string, mute: boolean) {
-    engine.muteRemoteVideoStream(userId, mute);
+  muteRemoteVideoStream(userId: string, mute: boolean): number {
+    return engine.muteRemoteVideoStream(userId, mute);
   }
-  renderRemoteVideoStreamType(userId: string, type: number) {
-    engine.setRemoteVideoStreamType(userId, type);
+  setRemoteVideoStreamType(userId: string, type: number): number {
+    return engine.setRemoteVideoStreamType(userId, type);
   }
   leaveRoom(): number {
     return engine.leaveRoom();
@@ -146,10 +142,17 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     return engine.getScreenCaptureSources(type);
   }
   selectScreenShare(item: any): number {
-    return engine.selectScreenCaptureTarget(item, {disableCaptureMouse: true});
+    return engine.selectScreenCaptureTarget(item, { disableCaptureMouse: true });
     // engine.selectScreenCaptureTarget(info: HRTCScreenCaptureSourceInfo, optionalInfo: HRTCSrceenCaptureOptionalInfo)
   }
   startScreenShare(): number {
+    // 1040 * 585
+    engine.setSubStreamEncParam( {
+      frameRate: 30, //视频帧率，单位为帧/秒
+      width: 1040, // 宽
+      height: 585, // 高
+      bitrate: 300, //视频码率
+    });
     return engine.startScreenCapture();
   }
   stopScreenShare(): number {
@@ -160,11 +163,140 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     // engine.setRemoteSubStreamViewDisplayMode(userId, 0);
     return engine.startRemoteSubStreamView(userId, view);
   }
-  setRemoteSubStreamViewDisplayMode(userId: string, mode: number = 0) {
+  setRemoteSubStreamViewDisplayMode(userId: string, mode: number = 1) {
     console.log('setting remote video display mode:', userId, mode);
     engine.setRemoteSubStreamViewDisplayMode(userId, mode);
   }
   stopRenderRemoteScreenShare(userId: string): number {
     return engine.stopRemoteSubStreamView(userId);
   }
+
+  setAudioRecordingDevice(deviceId: string): number {
+    return engine.setAudioRecordingDevice(deviceId);
+  }
+  getAudioRecordingDevices(): RTCDeviceInfo[] {
+    return engine.getAudioRecordingDevices();
+  }
+  getCurrentAudioRecordingDevice(): string {
+    return engine.getCurrentAudioRecordingDevice();
+  }
+  setAudioRecordingDeviceMute(mute: boolean): number {
+    return engine.setAudioRecordingDeviceMute(mute);
+  }
+  getAudioRecordingDeviceMute(): boolean {
+    return engine.getAudioRecordingDeviceMute();
+  }
+  setAudioRecordingVolume(volume: number): number {
+    return engine.setAudioRecordingVolume(volume);
+  }
+  getAudioRecordingVolume(): number {
+    return engine.getAudioRecordingVolume();
+  }
+  setAudioPlaybackDevice(deviceId: string): number {
+    return engine.setAudioPlaybackDevice(deviceId);
+  }
+  getAudioPlaybackDevices(): RTCDeviceInfo[] {
+    return engine.getAudioPlaybackDevices();
+  }
+  getCurrentAudioPlaybackDevice(): string {
+    return engine.getCurrentAudioPlaybackDevice();
+  }
+  setAudioPlaybackDeviceMute(mute: boolean): number {
+    return engine.setAudioPlaybackDeviceMute(mute);
+  }
+  getAudioPlaybackDeviceMute(): boolean {
+    return engine.getAudioPlaybackDeviceMute();
+  }
+  setAudioPlaybackVolume(volume: number): number {
+    return engine.setAudioPlaybackVolume(volume);
+  }
+  getAudioPlaybackVolume(): number {
+    return engine.getAudioPlaybackVolume();
+  }
+
+  setVideoDevice(deviceId: string): number {
+    return engine.setVideoDevice(deviceId);
+  }
+  getVideoDevices(): RTCDeviceInfo[] {
+    return engine.getVideoDevices();
+  }
+  getCurrentVideoDevice(): string {
+    return engine.getCurrentVideoDevice();
+  }
+  setRemoteAudioMode(mode: RTCRemoteAudioMode): number {
+    return engine.setRemoteAudioMode(mode);
+  }
+  muteLocalAudioStream(mute: boolean): number {
+    return engine.muteLocalAudioStream(mute);
+  }
+  muteRemoteAudioStream(userId: string, mute: boolean): number {
+    return engine.muteRemoteAudioStream(userId, mute);
+  }
+  muteAllRemoteAudioStreams(mute: boolean): number {
+    return engine.muteAllRemoteAudioStreams(mute);
+  }
+  enableUserVolumeNotify(interval: number): number {
+    return engine.enableUserVolumeNotify(interval);
+  }
+  adjustRecordingVolume(volume: number): number {
+    return engine.adjustRecordingVolume(volume);
+  }
+  adjustPlaybackVolume(volume: number, userId?: string): number {
+    return engine.adjustPlaybackVolume(volume, userId);
+  }
+  setExternalAudioFrameOutput(localEnable: boolean, remoteEnable: boolean): number {
+    return engine.setExternalAudioFrameOutput(localEnable, remoteEnable);
+  }
+  setShareComputerSound(enable: boolean): number {
+    return engine.setShareComputerSound(enable);;
+  }
+  setDefaultMuteAllRemoteAudioStreams(mute: boolean): number {
+    return engine.setDefaultMuteAllRemoteAudioStreams(mute);
+  }
+  muteLocalVideoStream(mute: boolean): number {
+    return engine.muteLocalVideoStream(mute);
+  }
+  muteAllRemoteVideoStreams(mute: boolean): number {
+    return engine.muteAllRemoteVideoStreams(mute);
+  }
+  setVideoEncParam(encoderparam: RTCVideoEncParam): number {
+    return engine.setVideoEncParam(encoderparam);
+  }
+  enableSmallVideoStream(enable: boolean, smallVideoParam: RTCVideoEncParam): number {
+    return engine.enableSmallVideoStream(enable, smallVideoParam);
+  }
+  setPriorRemoteVideoStreamType(type: RTCVideoStreamType): number {
+    return engine.setPriorRemoteVideoStreamType(type);
+  }
+  setLocalViewMirror(mirrorType: RTCVideoMirrorType): number {
+    return engine.setLocalViewMirror(mirrorType);
+  }
+  stopRemoteStreamView(userId: string): number {
+    return engine.stopRemoteStreamView(userId);
+  }
+  setDefaultMuteAllRemoteVideoStreams(enable: boolean): number {
+    return engine.setDefaultMuteAllRemoteVideoStreams(enable);
+  }
+  setViewDisplayMode(userId: string, mode: RTCDisplayMode, isAux: boolean): number {
+    return engine.setViewDisplayMode(userId, mode, isAux);
+  }
+  startPreview(): number {
+    return engine.startPreview();
+  }
+  stopPreview(): number {
+    return engine.stopPreview();
+  }
+  setRemoteViewMirrorMode(userId: string, enable: boolean): number {
+    return engine.setRemoteViewMirrorMode(userId, enable);
+  }
+  setupLocalView(view: Element, displayMode?: RTCDisplayMode): number {
+    return engine.setupLocalView(view, displayMode);
+  }
+  playAudioClip(soundId: number,filePath:string):number{
+    return engine.playAudioClip(soundId, filePath);
+  }
+  startAudioFile(filePath:string, playMode: number, cycle: number, replace: number, startPos?:number):number{
+    return engine.startAudioFile(filePath, playMode, cycle, replace, startPos); 
+  }
+
 }

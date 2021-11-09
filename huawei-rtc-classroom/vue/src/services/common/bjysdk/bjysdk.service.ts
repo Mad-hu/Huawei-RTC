@@ -2,14 +2,14 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 16:08:31
- * @LastEditTime: 2021-09-30 11:43:02
+ * @LastEditTime: 2021-11-04 15:11:38
  * @LastEditors: Yandong Hu
  * @Description: 百家云sdk
  */
 
 
 import { EventEmitter } from 'events';
-import { getBjySdk, getBrowserWindow, getCurrentWindow, getScreen } from "../electron.service";
+import { getBjySdk, getCurrentWindow } from "../electron.service";
 import { ControlEventType } from './bjysdk.service.interface';
 
 let win: any;
@@ -26,13 +26,131 @@ var initbjysdk = false;
 let remoteWin: any;
 
 
-export const msgType: ControlEventType = {
+export const RemoteMsgType: ControlEventType = {
   notic: 'notic',
   session: 'session',
   address: 'address',
-  error: 'error'
+  error: 'error',
+  destroy: 'destroy'
 }
 
+/**
+ * 远程控制SDK消息回调类型
+ *
+ * @enum {number}
+ */
+enum RemoteControlMsgCodeType {
+  /**
+   * 初始化成功
+   */
+  InitSuccess = 1000,
+  /**
+   * 初始化失败
+   */
+  InitFailed = 1999,
+  /**
+   * 登录成功
+   */
+  LoginSuccess = 2000,
+  /**
+   * 登录失败
+   */
+  LoginFailed = 2999,
+  /**
+   * 销毁成功
+   */
+  DestorySuccess = 9000,
+  /**
+   * 销毁失败
+   */
+  DestoryFailed = 9999,
+  /**
+   * 销毁远程桌面成功
+   */
+  DestoryRemoteDesktopSuccess = 9100,
+  /**
+   * 创建远程会话成功
+   */
+  CreateRemoteSessionSuccess = 3000,
+  /**
+   * 创建远程会话失败
+   */
+  CreateRemoteSessionFailed = 3999,
+  /**
+   * 设置远程会话回调失败
+   */
+  SetRemoteSessionCallbackFailed = 3199,
+  /**
+   * 无效的被控端实例
+   */
+  InvalidSessionInstance = 3299,
+  /**
+   * 销毁远程会话成功
+   */
+  DestoryRemoteSessionSuccess = 4000,
+  /**
+   * 获取客户端地址
+   */
+  GetClientAddress = 300,
+  /**
+   * 获取session成功
+   */
+  GetSessionSuccess = 200,
+  /**
+   * 重置session code
+   */
+  ResetSession = 201,
+  /**
+   * 连接服务器成功
+   */
+  ServerConnectSuccess = 5000,
+  /**
+   * 与服务器断开连接
+   */
+  ServerDisConnect = 5555,
+  /**
+   * 登录服务器成功
+   */
+  ServerLoginSuccess = 5100,
+  /**
+   * 登录服务器失败
+   */
+  ServerLoginFailed = 5199,
+  /**
+   * 通道数已用完
+   */
+  ServerPiplineRunOut = 5299,
+  /**
+   * 服务器检查通道数失败
+   */
+  ServerCheckPiplineFaile = 5219,
+  /**
+   * 桌面会话已连接
+   */
+  DesktopSessionConnectSuccess = 6000,
+  /**
+   * 桌面会话已断开
+   */
+  DesktopSessionDisconnect = 6999,
+  /**
+   * 连接远程会话成功
+   */
+  ConnectRemoteSessionSuccess = 7000,
+  /**
+   * 连接远程会话失败
+   */
+  DisconnectRemoteSession = 7999,
+  /**
+   * 设置窗口句柄失败
+   */
+  SetWindowHandleFailed = 8999,
+}
+export interface RemoteControlEventMsgType {
+  code: RemoteControlMsgCodeType,
+  msg: string,
+  session?: string,
+  address?: string
+}
 /**
  * 百家云 远程控制sdk
  *
@@ -47,7 +165,7 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
    * @param {string} eventName
    * @param {string} msg
    */
-  sendMsgEvent = (eventName: string, msg: string) => {
+  sendMsgEvent = (eventName: string, msg: RemoteControlEventMsgType) => {
     console.log('BjyRemoteControlSDKService event:', msg);
     this.emit(eventName, msg);
   }
@@ -72,10 +190,10 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
       }
     }
     if (initbjysdk) {
-      this.sendMsgEvent(msgType.notic, '初始化成功');
+      this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.InitSuccess, msg:'初始化成功'});
       return true;
     } else {
-      this.sendMsgEvent(msgType.error, '初始化失败');
+      this.sendMsgEvent(RemoteMsgType.error, {code: RemoteControlMsgCodeType.InitFailed, msg: '初始化失败'});
       return false;
     }
   }
@@ -96,10 +214,10 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
       }
       bjysdk.uninitialize();
       initbjysdk = false;
-      this.sendMsgEvent(msgType.notic, '销毁成功');
+      this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.DestorySuccess, msg: '销毁成功'});
       return true;
     } catch (error) {
-      this.sendMsgEvent(msgType.error, '销毁失败');
+      this.sendMsgEvent(RemoteMsgType.error, {code: RemoteControlMsgCodeType.DestoryFailed, msg: '销毁失败'});
       return false;
     }
   }
@@ -116,10 +234,10 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
     if (slclient != slClientInvalid) {
       bjysdk.clientLoginWithOpenID(slclient,openid,openkey,"",false);
       // bjysdk.clientLoginWithLicense(slclient, openid, openkey);
-      this.sendMsgEvent(msgType.notic, '登录成功');
+      this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.LoginSuccess, msg: '登录成功'});
       return;
     }
-    this.sendMsgEvent(msgType.error, '登录失败');
+    this.sendMsgEvent(RemoteMsgType.error, {code: RemoteControlMsgCodeType.LoginFailed, msg: '登录失败'});
   }
 
   /**
@@ -137,20 +255,17 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
       if (desktopsession != slSessionInvalid) {
         if (bjysdk.setClientSessionOpt(slclient, desktopsession, 2, this.slclientDesktopSessionCallback.bind(this), 0)) {
           var session = bjysdk.getClientSessionName(slclient, desktopsession);
-          this.sendMsgEvent(msgType.notic, '创建远程会话成功');
-          this.sendMsgEvent(msgType.session, session);
+          this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.CreateRemoteSessionSuccess, msg: '创建远程会话成功'});
+          this.sendMsgEvent(RemoteMsgType.session, {code: RemoteControlMsgCodeType.GetSessionSuccess, msg: '获取session成功', session: session});
           return session;
         } else {
-          this.sendMsgEvent(msgType.error, '设置远程会话回调失败');
-          throw new Error('设置远程会话回调失败')
+          this.sendMsgEvent(RemoteMsgType.error, {code: RemoteControlMsgCodeType.SetRemoteSessionCallbackFailed, msg: '设置远程会话回调失败'});
         }
       } else {
-        this.sendMsgEvent(msgType.error, '创建远程会话失败');
-        throw new Error('创建远程会话失败');
+        this.sendMsgEvent(RemoteMsgType.error, {code: RemoteControlMsgCodeType.CreateRemoteSessionFailed, msg: '创建远程会话失败'});
       }
     } else {
-      this.sendMsgEvent(msgType.error, '无效的被控端实例');
-      throw new Error('无效的被控端实例');
+      this.sendMsgEvent(RemoteMsgType.error, {code: RemoteControlMsgCodeType.InvalidSessionInstance, msg: '无效的被控端实例'});
     }
   }
 
@@ -164,11 +279,11 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
       if (desktopsession != slSessionInvalid) {
         bjysdk.destroyClientSession(slclient, desktopsession);
         desktopsession = slSessionInvalid;
-        this.sendMsgEvent(msgType.notic, '销毁远程会话成功');
-        this.sendMsgEvent(msgType.session, '');
+        this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.DestoryRemoteSessionSuccess, msg: '销毁远程会话成功'});
+        this.sendMsgEvent(RemoteMsgType.session, {code: RemoteControlMsgCodeType.ResetSession, msg: '重置session code', session: ''});
       }
     } else {
-      this.sendMsgEvent(msgType.error, '无效的被控端实例');
+      this.sendMsgEvent(RemoteMsgType.error, {code: RemoteControlMsgCodeType.InvalidSessionInstance, msg: '无效的被控端实例'});
     }
   }
 
@@ -181,19 +296,19 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
   slclientCallback(client: any, event: any) {
     if (client == slclient) {
       if (event == 0) {
-        this.sendMsgEvent(msgType.notic, '连接服务器成功');
+        this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.ServerConnectSuccess, msg: '连接服务器成功'});
       } else if (event == 1) {
-        this.sendMsgEvent(msgType.notic, '与服务器断开连接');
+        this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.ServerDisConnect, msg: '与服务器断开连接'});
       } else if (event == 2) {
-        this.sendMsgEvent(msgType.notic, '登录服务器成功');
+        this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.ServerLoginSuccess, msg: '登录服务器成功'});
         var address = bjysdk.getClientAddress(slclient);
-        this.sendMsgEvent(msgType.address, address);
+        this.sendMsgEvent(RemoteMsgType.address, {code: RemoteControlMsgCodeType.GetClientAddress,msg: '获取客户端地址', address: address});
       } else if (event == 3) {
-        this.sendMsgEvent(msgType.notic, '登录服务器失败');
+        this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.ServerLoginFailed, msg: '登录服务器失败'});
       } else if (event == 4) {
-        this.sendMsgEvent(msgType.notic, '通道数已用完');
+        this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.ServerPiplineRunOut, msg: '通道数已用完'});
       } else if (event == 5) {
-        this.sendMsgEvent(msgType.notic, '服务器检查通道数失败');
+        this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.ServerCheckPiplineFaile, msg: '服务器检查通道数失败'});
       }
     }
   }
@@ -208,10 +323,10 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
   slclientDesktopSessionCallback(session: any, event: any, data: any) {
     if (session == desktopsession) {
       if (event == 1) {
-        this.sendMsgEvent(msgType.notic, '桌面会话已连接');
+        this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.DesktopSessionConnectSuccess, msg: '桌面会话已连接'});
         bjysdk.clientStartChat(slclient, desktopsession, false);
       } else if (event == 2) {
-        this.sendMsgEvent(msgType.notic, '桌面会话已断开');
+        this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.DesktopSessionDisconnect, msg: '桌面会话已断开'});
       }
 
     }
@@ -235,9 +350,9 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
       }
     }
     if (initbjysdk) {
-      this.sendMsgEvent(msgType.notic, '初始化成功');
+      this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.InitSuccess, msg: '初始化成功'});
     } else {
-      this.sendMsgEvent(msgType.error, '初始化失败');
+      this.sendMsgEvent(RemoteMsgType.error, {code: RemoteControlMsgCodeType.InitFailed, msg: '初始化失败'});
     }
   }
   /**
@@ -256,76 +371,11 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
       }
       bjysdk.uninitialize();
       initbjysdk = false;
-      this.sendMsgEvent(msgType.notic, '销毁成功');
+      this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.DestorySuccess, msg: '销毁成功'});
     } catch (error) {
-      this.sendMsgEvent(msgType.error, '销毁失败');
+      this.sendMsgEvent(RemoteMsgType.error, {code: RemoteControlMsgCodeType.DestoryFailed, msg: '销毁失败'});
     }
   }
-
-  /**
-   * 发起远程连接
-   *
-   * @param {*} message
-   */
-  public createDesktop = (message: any) => {
-    if (slremote != slRemoteInvalid) {
-      if (desktopsession != slSessionInvalid) {
-        bjysdk.destroyRemoteSession(slremote, desktopsession);
-        desktopsession = slSessionInvalid;
-      }
-      desktopsession = bjysdk.createRemoteEmptySession(slremote, 0);
-      if (desktopsession != slSessionInvalid) {
-        var jsonObj = JSON.parse(message);
-        var address = jsonObj.address;
-        var session = jsonObj.session;
-        this.createRemoteWindows();
-        var hwnd = remoteWin!.getNativeWindowHandle();
-        if (bjysdk.setRemoteSessionOpt(slremote, desktopsession, 1, hwnd, hwnd.length)) {
-          this.moveDesktopPos();
-          if (bjysdk.setRemoteSessionOpt(slremote, desktopsession, 2, this.slremoteDesktopSessionCallback.bind(this), 0)) {
-            if (bjysdk.connectRemoteSession(slremote, desktopsession, address, session)) {
-              this.sendMsgEvent(msgType.notic, '连接远程会话成功');
-            } else {
-              this.sendMsgEvent(msgType.error, '连接远程会话失败');
-            }
-          } else {
-            this.sendMsgEvent(msgType.error, '设置远程会话回调失败');
-          }
-        } else {
-          this.sendMsgEvent(msgType.error, '设置窗口句柄失败');
-        }
-      } else {
-        this.sendMsgEvent(msgType.error, '创建远程会话失败');
-      }
-    } else {
-      this.sendMsgEvent(msgType.error, '无效的被控端实例');
-    }
-  }
-
-  /**
-   * 创建远程桌面窗口
-   *
-   */
-  private createRemoteWindows() {
-    remoteWin = null;
-    const BrowserWindow = getBrowserWindow();
-    remoteWin = new BrowserWindow({ width: 866, height: 600 });
-    remoteWin.setMenu(null);
-    remoteWin.setTitle("远程桌面");
-    remoteWin.on('close', () => {
-      remoteWin = null;
-      if (slremote != slRemoteInvalid && desktopsession != slSessionInvalid) {
-        bjysdk.destroyRemoteSession(slremote, desktopsession);
-        desktopsession = slSessionInvalid;
-        this.sendMsgEvent(msgType.notic, '销毁远程桌面成功');
-      }
-    });
-    remoteWin.on('resize', () => {
-      remoteWin!.reload();
-      this.moveDesktopPos();
-    });
-  }
-
 
   /**
    * 远程事件回调
@@ -336,44 +386,18 @@ export default class BjyRemoteControlSDKService extends EventEmitter {
    */
   private slremoteCallback(remote: any, session: any, event: any) {
     if (session == desktopsession) {
-      this.sendMsgEvent(msgType.notic, event == 0 ? "桌面会话已连接" : "桌面会话已断开");
+      if(event == 0) {
+        this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.DesktopSessionConnectSuccess, msg: '桌面会话已连接'});
+      } else {
+        this.sendMsgEvent(RemoteMsgType.notic, {code: RemoteControlMsgCodeType.DesktopSessionDisconnect, msg: '桌面会话已断开'});
+      }
+
       if (event == 0) {
         var hwnd = remoteWin!.getNativeWindowHandle();
         bjysdk.setDesktopSessionVisible(slremote, desktopsession, hwnd);
       } else if (remoteWin) {
         remoteWin.close();
       }
-    }
-  }
-
-  /**
-   * 远程连接会话回调
-   *
-   * @param {*} session
-   * @param {*} event
-   * @param {*} data
-   */
-  private slremoteDesktopSessionCallback(session: any, event: any, data: any) {
-    if (session == desktopsession) {
-      if (event == 1) {
-        this.sendMsgEvent(msgType.notic, '桌面会话已连接');
-      } else if (event == 2) {
-        this.sendMsgEvent(msgType.notic, '桌面会话已断开');
-      }
-    }
-  }
-
-  /**
-   * 设置远程桌面相对位置
-   *
-   */
-  private moveDesktopPos() {
-    var rc = remoteWin!.getContentBounds();
-    if (process.platform == "win32") {
-      var scaleFactor = getScreen().getPrimaryDisplay().scaleFactor;
-      bjysdk.setDesktopSessionPos(slremote, desktopsession, 0, 0, parseInt(rc.width * scaleFactor + ''), parseInt(rc.height * scaleFactor + ''));
-    } else {
-      bjysdk.setDesktopSessionPos(slremote, desktopsession, rc.x, rc.y, rc.width, rc.height);
     }
   }
 }

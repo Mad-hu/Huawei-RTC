@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-02 13:47:55
- * @LastEditTime: 2021-10-12 13:09:06
+ * @LastEditTime: 2021-11-09 18:53:39
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -33,12 +33,19 @@
 </template>
 
 <script lang="ts">
+import { BrowserWindow } from "electron";
+import { RtmService } from "hrtc-sdk-services";
 import { ref } from "vue";
 import { Options, Ref, Vue } from "vue-property-decorator";
+import { getCurrentWindowWebContentsId } from "../../services/common/electron.service";
 import { RtcService } from "../../services/common/rtc.service";
 import { messageFloatError, messageFloatSuccess } from "../../services/message/message-float.service";
+import { setShareWindowStateControl } from "../../services/share-window.service";
 // import { RtcService } from "hrtc-sdk-services";
 import { ShareState } from "../../services/state-manager/classroom-state.service";
+import { UserInfoState, UserRole } from "../../services/state-manager/user-state.service";
+import { setStorage } from "../../services/storage.service";
+import { windowService } from "../../services/window.service";
 
 @Options({
   components: {},
@@ -48,9 +55,11 @@ export default class ShareSelectDialog extends Vue {
   dialogVisible = false;
   selectIndex = 0;
   screens: any;
+  shareWindow!: BrowserWindow;
   getScreenList() {
     this.windowLists = [];
     this.screens = RtcService().getScreenSources().sourceInfos;
+    console.log(this.screens);
     this.screens.map((item: any, index: number) => {
       const base64Data = btoa(String.fromCharCode.apply(null, item.icon));
       this.windowLists.push({
@@ -74,9 +83,13 @@ export default class ShareSelectDialog extends Vue {
     if (selectState == 0) {
       const shareState = RtcService().startScreenShare();
       console.log('share state:', shareState);
-      messageFloatSuccess('开始共享');
-      ShareState.screenShareState = shareState == 0 ? true : false;
-      this.dialogVisible = false;
+
+      if(shareState == 0) {
+        setShareWindowStateControl(true);
+        this.dialogVisible = false;
+      } else {
+        messageFloatSuccess('共享失败' + shareState);
+      }
     } else {
       messageFloatError("share error code" + selectState);
     }

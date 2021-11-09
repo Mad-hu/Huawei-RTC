@@ -2,35 +2,46 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-10-12 16:21:21
+ * @LastEditTime: 2021-11-09 17:52:47
  * @LastEditors: Yandong Hu
  * @Description:
 -->
 <template>
-  <div class="main-boards" id="board">
+  <div
+  :class="[full ? 'main-boards-max': '', 'main-boards']"
+  id="board" >
+    <!-- <ShareWindowTopBar v-if="shareState.screenShareState"></ShareWindowTopBar>
     <div v-if="shareState.remoteShareList.length != 0" id="share-box" class="share-box"></div>
     <div class="share-msg" v-if="shareState.screenShareState">
       <span>正在共享屏幕...</span>
       <el-button type="primary" size="small" @click="stopScreenShare()">结束共享</el-button>
-    </div>
+    </div> -->
   </div>
+  <focus-view></focus-view>
 </template>
 
 <script lang="ts">
 import { Options, Vue } from 'vue-property-decorator';
-import { RtcService } from '../../services/common/rtc.service';
-// import { RtcService } from 'hrtc-sdk-services';
-import { ShareState } from '../../services/state-manager/classroom-state.service';
+import { messageFloatError } from '../../services/message/message-float.service';
+import { stopScreenShare } from '../../services/share-window.service';
+import { roomButtonsStatus, SCREEN_TYPE, ShareState } from '../../services/state-manager/classroom-state.service';
+import FocusView from "./FocusView.vue"
 
 @Options({
   components: {
+    FocusView
   },
 })
 export default class MainBoards extends Vue {
+  full = false;
   shareState = ShareState;
+  roomButtonsStatus = roomButtonsStatus;
+  screenType = SCREEN_TYPE;
   stopScreenShare() {
-    const stopState = RtcService().stopScreenShare();
-    this.shareState.screenShareState = stopState == 0 ? false : true;
+    const res = stopScreenShare();
+    if(res != 0) {
+      messageFloatError('停止共享失败' + res);
+    }
   }
 }
 </script>
@@ -43,6 +54,18 @@ export default class MainBoards extends Vue {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .main-boards-max {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 999999;
+    background: #333;
+    height: 100%;
   }
   .share-box {
     width: 100%;
