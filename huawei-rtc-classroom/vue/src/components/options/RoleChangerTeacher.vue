@@ -20,12 +20,12 @@ export default class RoleChangeMteacher extends Vue {
   //  更新列表中 power 角色， 发送广播给学生更新血色  把用户设为助教
   handleRole() {
     updateUserInfo( this.user.userId,'power', POWER_TYPE.TEACHER);
-    msgForPowerChange(this.user.userId, POWER_TYPE.TEACHER, '助教' )
+    msgForPowerChange(this.user.userId, POWER_TYPE.TEACHER, '老师已将你设为助教' )
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .btn-role {
   width: 100%;
   height: 100%;

@@ -2,20 +2,15 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-11-09 17:52:47
+ * @LastEditTime: 2021-11-10 14:13:35
  * @LastEditors: Yandong Hu
  * @Description:
 -->
 <template>
-  <div
-  :class="[full ? 'main-boards-max': '', 'main-boards']"
-  id="board" >
-    <!-- <ShareWindowTopBar v-if="shareState.screenShareState"></ShareWindowTopBar>
+  <div class="main-boards" id="board">
+    <!-- <ShareWindowTopBar></ShareWindowTopBar> -->
+    <ShareRenderRemoteTopBar v-if="shareState.screenShareLocalState"></ShareRenderRemoteTopBar>
     <div v-if="shareState.remoteShareList.length != 0" id="share-box" class="share-box"></div>
-    <div class="share-msg" v-if="shareState.screenShareState">
-      <span>正在共享屏幕...</span>
-      <el-button type="primary" size="small" @click="stopScreenShare()">结束共享</el-button>
-    </div> -->
   </div>
   <focus-view></focus-view>
 </template>

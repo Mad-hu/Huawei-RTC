@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 11:21:31
- * @LastEditTime: 2021-11-09 17:12:56
+ * @LastEditTime: 2021-11-10 11:17:10
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -21,6 +21,11 @@ const router = createRouter({
       path: "/classroom",
       name: "classroom",
       component: () => import("@/pages/classroom/classroom.vue"),
+    },
+    {
+      path: "/video-list-window",
+      name: "video-list-window",
+      component: () => import("@/pages/video-list-window/video-list-window.vue"),
     }
   ],
 });

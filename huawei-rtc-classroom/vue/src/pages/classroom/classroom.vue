@@ -2,12 +2,12 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-11-09 18:49:41
+ * @LastEditTime: 2021-11-11 20:25:14
  * @LastEditors: Yandong Hu
  * @Description:
 -->
 <template>
-  <div class="container" v-show="!shareState.screenShareState">
+  <div class="container" v-show="!shareState.screenShareLocalState">
     <div class="classroom" v-show="!modeType">
       <StudentList></StudentList>
       <div class="middle">
@@ -23,9 +23,13 @@
     </div>
     <count-down></count-down>
     <button-bar></button-bar>
-    <share-select-dialog ref="shareSelectDialogRef1"></share-select-dialog>
+
   </div>
-  <ShareWindow v-show="shareState.screenShareState"></ShareWindow>
+  <ShareWindow v-show="shareState.screenShareLocalState"></ShareWindow>
+  <user-list-dialog></user-list-dialog>
+  <classroom-info-dialog></classroom-info-dialog>
+  <share-select-dialog></share-select-dialog>
+  <setting-dialog></setting-dialog>
 </template>
 
 <script lang="ts">
@@ -52,9 +56,7 @@ import {
   getUser,
   msgForShareScreen,
   msgForControlScreen,
-  getUserByKeyStatus,
-  updateUsersList,
-  msgForPowerChange,
+  getUserByKeyStatus
 } from "../../services/classroom.service";
 import { loadingHide, loadingShow } from "../../services/loading.service";
 import {
@@ -119,6 +121,8 @@ import { getSetting } from "../../services/setting/setting-service";
 import { playInroomAudio } from "../../services/music/inroom.service";
 import { ElMessageBox } from "element-plus";
 import ShareWindow from "../../components/share-window/ShareWindow.vue";
+import { startShareScreen } from "../../services/share-window.service";
+import { DialogState } from "../../services/state-manager/dialog-state.service";
 
 const VITE_AGORA_RTC_APPID = import.meta.env.VITE_AGORA_RTC_APPID;
 const VITE_CONTROL_ACCOUNT = import.meta.env.VITE_CONTROL_ACCOUNT;
@@ -155,10 +159,10 @@ export default class Classroom extends Vue {
   get modeType() {
     return roomButtonsStatus.mode == MODE_TYPE.FLAT;
   }
-  @Provide({
-    to: 'roomContext',
-    reactive: true
-  }) foo: any = null;
+  // @Provide({
+  //   to: 'roomContext',
+  //   reactive: true
+  // }) foo: any = null;
 
   @Watch("modeType")
   onModeTypeChange(newV: boolean, oldV: boolean) {
@@ -196,7 +200,7 @@ export default class Classroom extends Vue {
       this.initRtm();
       this.remoteControlEvent();
       loadingHide();
-      this.foo = this.$refs['shareSelectDialogRef1']
+      // this.foo = this.$refs['shareSelectDialogRef1']
     } catch (error) {
       setTimeout(() => {
         messageFloat(`rtc: ${error}`, MessageType.error);
@@ -209,9 +213,12 @@ export default class Classroom extends Vue {
   }
 
   shareScreen() {
-    const shareSelectDialog: any = this.$refs["shareSelectDialogRef1"];
-    shareSelectDialog.dialogVisible = true;
-    shareSelectDialog.getScreenList();
+    // 老师选择共享 学生和其他身份直接共享屏幕
+    if(UserInfoState.role == UserRole.teacher) {
+      DialogState.shareSelectVisible = true;
+    } else {
+      startShareScreen();
+    }
   }
   /**
    * initial　rtc sdk
@@ -236,17 +243,17 @@ export default class Classroom extends Vue {
    */
   async initRtm() {
     try {
-      if (sdk_build_config.rtm.company == "wangyi") {
-        // 在进入之前，需要从后台获取用户的网易云信账户和密码
-        const opt = {
-          account: "a11111",
-          token: "a11111",
-          domain: "",
-        };
-        await RtmService().init(VITE_NETEASE_SDK_KEY, opt)!.toPromise();
-      } else if (sdk_build_config.rtm.company == "agora") {
+      // if (sdk_build_config.rtm.company == "wangyi") {
+      //   // 在进入之前，需要从后台获取用户的网易云信账户和密码
+      //   const opt = {
+      //     account: "a11111",
+      //     token: "a11111",
+      //     domain: "",
+      //   };
+      //   await RtmService().init(VITE_NETEASE_SDK_KEY, opt)!.toPromise();
+      // } else if (sdk_build_config.rtm.company == "agora") {
         RtmService().init(VITE_AGORA_RTC_APPID);
-      }
+      // }
 
       this.rtmEvent();
       RtmService().login({
@@ -268,27 +275,28 @@ export default class Classroom extends Vue {
     });
 
     RtcService().on(RTCEventType.joinedRoom, (roomId, userId) => {
-      console.log("joinedRoom:", roomId, userId);
       const userInfo = {
         userId: userId,
         userName: this.userInfoStore.userName,
         power: this.setPower(userId, userId == RtcService().getUserLocalId(),this.userInfoStore.role),
-        video: ON_OFF.ON,
-        audio: ON_OFF.ON,
+        video: this.userInfoStore.role == UserRole.student ? ON_OFF.ON: ON_OFF.OFF,
+        audio:this.userInfoStore.role == UserRole.student ? ON_OFF.ON: ON_OFF.OFF,
         focus: ON_OFF.OFF,
         control: CONTROL_STATUS.NO_CONTROL_RECORD,
         share: SHARE_STATUS.NO_SHARE_RECORD,
         isLocal: userId == RtcService().getUserLocalId(),
       };
+       console.log("joinedRoom:", userInfo);
 
       this.userJoin(userInfo);
+      RtcService().enableLocalAudio(userInfo.audio == ON_OFF.OFF ? false: true);
     });
     RtcService().on(RTCEventType.userJoined, (roomId, userId, userName) => {
-      console.log("userJoined:", roomId, userId, userName);
+      console.log("userJoined:", roomId, userId, userName, userName.split("_roletype_")[1]);
       const userInfo = {
         userId: userId,
         userName: userName.split("_roletype_")[0],
-        power: this.setPower(userId,userId == RtcService().getUserLocalId(),''),
+        power: this.setPower(userId,userId == RtcService().getUserLocalId(),userName.split("_roletype_")[1]),
         video: ON_OFF.ON,
         audio: ON_OFF.ON,
         focus: ON_OFF.OFF,
@@ -357,7 +365,7 @@ export default class Classroom extends Vue {
         }
       }
     );
-    // 监听远端用户的音频设备
+    // 监听远端用户的视频设备
     RtcService().on(
       RTCEventType.remoteVideoStateChanged,
       (roomId, userId, state, reason) => {
@@ -463,10 +471,11 @@ export default class Classroom extends Vue {
       }
     this.userList.push(userInfo);
     setTimeout(() => {
+      let prefix = this.modeType ? 'joiner_one': 'user_'
       if (userInfo.isLocal) {
-        renderLocalVideo(`user_${userInfo.userId}`);
+        renderLocalVideo(`${prefix}${userInfo.userId}`);
       } else {
-        renderRemoteVideo(`user_${userInfo.userId}`, userInfo.userId);
+        renderRemoteVideo(`${prefix}${userInfo.userId}`, userInfo.userId);
       }
       if (getSetting().base.intoClassAudio) {
         playInroomAudio();
@@ -617,16 +626,13 @@ export default class Classroom extends Vue {
     // 收到静音指令 只需要提示就可以，具体的更新状态在 audio 状态回调中执行
     RtmService().on(rtmTextMessageCategory.MUTE_AUDIO, (data) => {
       const { targetUserId, status, audioStatus } = data;
-      if (targetUserId == "all" && status) {
-        // 如果收到全体静音时,要更新教室按钮的状态
-        roomButtonsStatus.audioStatus = audioStatus;
-      }
       const user = getUser(targetUserId);
       if(targetUserId =='all') {
          messageFloatWarning(
           status ? ON_OFF.AUDIO_ON_TIP : ON_OFF.AUDIO_OFF_TIP
         );
-        //  updateUsersList('audio', status)
+        // 如果收到全体静音时,要更新教室按钮的状态
+         roomButtonsStatus.audioStatus = audioStatus;
          updateUserInfo(this.localRoomUserId,'audio',status)
          RtcService().enableLocalAudio(status == ON_OFF.ON ? true: false);
       }else {
@@ -682,7 +688,7 @@ export default class Classroom extends Vue {
       const { targetUserId, status, statusName } = data;
       const user = getUser(targetUserId);
       if (user && user.isLocal) {
-        messageFloatWarning("您的角色转换为" + statusName);
+        messageFloatWarning(statusName);
         updateUserInfo(targetUserId, "power", status);
       }
     });
@@ -774,6 +780,10 @@ export default class Classroom extends Vue {
         // 如果当前用户的control = 1 远程控制中，则不处理
         updateUserInfo(targetUserId, "control", status);
       }
+    });
+    // 点对点消息-带历史记录
+    RtmService().on(rtmTextMessageCategory.MESSAGE_FROM_PEER, (data, peerId, messageProps) => {
+
     });
   }
 
@@ -937,10 +947,12 @@ export default class Classroom extends Vue {
 .container {
   position: relative;
   flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 .classroom {
   background-color: #999;
-  height: 100%;
+  flex-grow: 1;
   .middle {
     display: flex;
     height: calc(100vh - 188px);

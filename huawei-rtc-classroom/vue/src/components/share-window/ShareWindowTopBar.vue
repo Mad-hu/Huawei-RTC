@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-02 13:47:55
- * @LastEditTime: 2021-11-09 19:33:59
+ * @LastEditTime: 2021-11-11 17:15:19
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -36,10 +36,23 @@
           停止视频
         </div>
       </div>
-      <div class="bar-item">
+      <div class="bar-item" v-if="userInfoState.role == 'teacher'">
         <div class="btn" @click="studentManageAction()" title="学员管理">
-          <div class="video video-mute-false"></div>
+          <div class="stu-manager"></div>
           学员管理
+        </div>
+      </div>
+      <div class="bar-item">
+        <div class="btn" title="更多" @click="moreAction()">
+          <div class="more-icon">&#xe73a;</div>
+          更多
+        </div>
+        <div class="more-list" v-if="showMore"  @mouseleave="showMore = false">
+          <div class="item" @click="classroomInfoDialogAction()">教室信息</div>
+          <div class="item" :class="shareLocalVoice ?'select': ''" @click="shareVoiceAction()">
+            共享声音
+          </div>
+          <div class="item" @click="leaverommAction()">离开</div>
         </div>
       </div>
     </div>
@@ -51,10 +64,10 @@
         <div
           class="right share-stop"
           @click="shareControlAction()"
-          :title="share.screenShareState ? '停止共享' : '继续共享'"
+          :title="share.screenShareLocalState ? '停止共享' : '继续共享'"
         >
           <div class="stop-share-icon"></div>
-          <div>{{ share.screenShareState ? "停止共享" : "继续共享" }}</div>
+          <div>{{ share.screenShareLocalState ? "停止共享" : "继续共享" }}</div>
         </div>
       </div>
     </div>
@@ -63,22 +76,57 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-property-decorator";
+import { leaveClassroom, updateUserInfo } from "../../services/classroom.service";
+import { RtcService } from "../../services/common/rtc.service";
 import { messageFloatError } from "../../services/message/message-float.service";
 import { stopScreenShare } from "../../services/share-window.service";
 import { ShareState } from "../../services/state-manager/classroom-state.service";
+import { DialogState } from "../../services/state-manager/dialog-state.service";
+import { UserInfoState } from "../../services/state-manager/user-state.service";
 import { windowService } from "../../services/window.service";
 @Options({
   components: {},
 })
 export default class ShareWindowTopBar extends Vue {
+  userInfoState = UserInfoState;
+  showMore = false;
   muteAudio = false;
   muteVideo = false;
   share = ShareState;
   shareWindowContentId!: number;
   mouseInOut = false;
+  shareLocalVoice = false;
+  leaverommAction() {
+    leaveClassroom();
+  }
+  shareVoiceAction() {
+    this.shareLocalVoice = !this.shareLocalVoice;
+    const resCode = RtcService().setShareComputerSound(this.shareLocalVoice);
+    if(resCode != 0) {
+      this.shareLocalVoice = false;
+      messageFloatError('共享声音失败:' + resCode);
+    }
+    updateUserInfo(this.userInfoState.userId, "shareLocalVoice", this.shareLocalVoice);
+  }
+  classroomInfoDialogAction() {
+    DialogState.classroomInfoVisible = true;
+  }
+  moreAction() {
+    this.showMore = !this.showMore;
+  }
   leaveBar() {
     console.log('leaveBar');
+    // 打开用户列表或者教室信息弹窗
+    if(DialogState.userListVisible || DialogState.classroomInfoVisible) {
+      return;
+    }
     this.mouseInOut = false;
+    this.showMore = false;
+    if(!ShareState.screenShareLocalState) {
+      windowService().setIgnoreMouseEvents(false);
+    } else {
+      windowService().setIgnoreMouseEvents(true);
+    }
   }
   enterBar() {
     console.log('enterBar');
@@ -92,27 +140,25 @@ export default class ShareWindowTopBar extends Vue {
   }
   studentManageAction() {
     console.log("studentManageAction");
+    DialogState.userListVisible = true;
   }
   shareControlAction() {
-    console.log('shareControlAction', this.share.screenShareState);
-    if(this.share.screenShareState) {
+    console.log('shareControlAction', this.share.screenShareLocalState);
+    if(this.share.screenShareLocalState) {
       this.stopScreenShare();
     } else {
       messageFloatError('没有共享');
-      // this.share.screenShareState = !this.share;
     }
   }
   stopScreenShare() {
-
     const res = stopScreenShare();
     if(res != 0) {
       messageFloatError('停止共享失败' + res);
     }
   }
   mounted() {
-    // this.shareWindowContentId = getStorage("shareWindowContentId");
-    console.log('鼠标点击穿透');
     const ele = <HTMLDivElement>document.getElementById('share-window');
+    console.log('鼠标点击穿透', ele);
     windowService().clickThroughDom(ele);
   }
 }
@@ -162,7 +208,7 @@ export default class ShareWindowTopBar extends Vue {
     justify-content: center;
   }
   .audio,
-  .video {
+  .video, .stu-manager {
     width: 32px;
     height: 32px;
   }
@@ -183,6 +229,8 @@ export default class ShareWindowTopBar extends Vue {
       100% / 100%;
   }
   .stu-manager {
+    background: url("../../assets/classroom/icons/stu_list_gray.png") no-repeat
+      100% / 100%;
   }
   .bar-bottom {
     display: flex;
@@ -222,5 +270,54 @@ export default class ShareWindowTopBar extends Vue {
       }
     }
   }
+}
+.more-icon {
+  width: 32px;
+  height: 32px;
+  font-family: "iconfont" !important;
+  margin-left: 5px;
+  line-height: 32px;
+}
+.more-list {
+  background-color: rgba(55, 56, 60, 0.9);
+  position: absolute;
+  z-index: 1;
+  padding: 5px;
+  border-radius: 5px;
+  width: 100px;
+  .select {
+    &::before {
+      content: ' ';
+      display: block;
+      background: #4dc800;
+      width: 10px;
+      height: 10px;
+      position: absolute;
+      top: 5px;
+      border-radius: 5px;
+    }
+  }
+  .item {
+    font-size: 13px;
+    line-height: 23px;
+    color: #fff;
+    height: 23px;
+    cursor: pointer;
+    position: relative;
+    &:hover {
+      background: #999;
+    }
+  }
+}
+.ant-dropdown-menu {
+  background-color: rgba(55, 56, 60, 0.9);
+}
+:deep(.ant-dropdown-menu-item){
+  font-size: 13px;
+  line-height: 13px;
+  color: #fff;
+}
+:deep(.ant-dropdown-menu-item:hover){
+  background: #999;
 }
 </style>

@@ -25,7 +25,7 @@ export default class SoundLevel extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .bg {
   width: 16px;
   height: 16px;

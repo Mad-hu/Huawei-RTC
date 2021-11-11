@@ -1,10 +1,9 @@
 import { Options, Vue, Watch } from 'vue-property-decorator';
-import { renderLocalVideo, renderRemoteVideo } from '../services/classroom.service';
+import { getUserByKeyStatus, renderLocalVideo, renderRemoteVideo } from '../services/classroom.service';
 import { MODE_TYPE, roomButtonsStatus, UserListState, UserType } from '../services/state-manager/classroom-state.service';
-import JoinerButtons from "@/components/joiner/JoinerButtons.vue";
+import { POWER_TYPE } from '../services/common/abstract/rtm.abstract';
 @Options({
   components: {
-    JoinerButtons
   }
 })
 export default class joinerMixins extends Vue {
@@ -15,6 +14,12 @@ export default class joinerMixins extends Vue {
    get modeType() {
      return roomButtonsStatus.mode
    }
+
+   get checkLocalUserStudent() {
+     const user  = getUserByKeyStatus('isLocal',true) || {power: POWER_TYPE.STUDENT}
+     return user.power == POWER_TYPE.STUDENT
+   }
+
   @Watch('lists', {deep:true})
   onListsChange(newV: UserType[], oldV: UserType[]) {
     if(newV!=oldV) {

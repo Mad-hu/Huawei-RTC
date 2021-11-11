@@ -7,14 +7,16 @@
 
 <script lang="ts">
 import { Options, Vue, Prop } from "vue-property-decorator";
-import { UserType } from "../../services/state-manager/classroom-state.service";
+import { BUTTON_STATUS, roomButtonsStatus, UserType } from "../../services/state-manager/classroom-state.service";
 import { UserInfoState } from "../../services/state-manager/user-state.service";
 import {
+  checkStudentAudioOptionAuth,
   msgForMuteAudio,
   updateUserInfo
 } from "../../services/classroom.service";
 import { RtcService } from '../../services/common/rtc.service';
-import { ON_OFF } from "../../services/common/abstract/rtm.abstract";
+import { ON_OFF, POWER_TYPE } from "../../services/common/abstract/rtm.abstract";
+import { messageFloatWarning } from "../../services/message/message-float.service";
 
 @Options({
   components: {},
@@ -29,6 +31,13 @@ export default class MuteAudio extends Vue {
    * 静音/解除静音 （静音自己/静音老师）
    */
   handleAudio() {
+    // 当学生对自己解除静音时，全体静音的状态是不允许学生自我解除时， 不可解除
+    if(checkStudentAudioOptionAuth(this.user)) {
+         messageFloatWarning(
+          ON_OFF.NO_ALLOW_AUDIO_TIP
+        );
+        return;
+    }
      if(this.user.isLocal) {
         RtcService().enableLocalAudio(this.user.audio == ON_OFF.ON ? false: true);
         updateUserInfo(this.user.userId, 'audio', this.user.audio ==ON_OFF.ON ? ON_OFF.OFF: ON_OFF.ON )
@@ -39,7 +48,7 @@ export default class MuteAudio extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .mute-audio {
   width: 100%;
   height: 100%;

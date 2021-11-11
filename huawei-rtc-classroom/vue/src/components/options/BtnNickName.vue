@@ -49,7 +49,7 @@ export default class BtnNickName extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .btn {
   width: 100%;
   height: 100%;

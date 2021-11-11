@@ -25,7 +25,7 @@ export default class BtnAllShareOff extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .btn-share {
   width: 100%;
   height: 100%;

@@ -38,7 +38,7 @@ export default class MuteVideo extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .mute-audio {
   width: 100%;
   height: 100%;

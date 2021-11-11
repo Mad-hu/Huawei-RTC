@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-11-04 09:24:41
- * @LastEditTime: 2021-11-09 18:15:34
+ * @LastEditTime: 2021-11-11 17:33:39
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -143,8 +143,12 @@ class WindowService extends EventEmitter {
     getCurrentWindow().setAlwaysOnTop(flag);
   }
 
+  setResizable(flag: boolean) {
+    getCurrentWindow().setResizable(flag);
+  }
 
   setIgnoreMouseEvents(flg: boolean) {
+    console.log('setIgnoreMouseEvents:', flg);
     try {
       const win = getCurrentWindow();
       if(flg) {
@@ -154,9 +158,13 @@ class WindowService extends EventEmitter {
         win.setIgnoreMouseEvents(false);
       }
     } catch (error) {
-
+      console.log('setIgnoreMouseEvents error:', error);
     }
   }
+  private setThroughDomMouseenter = () => {
+    this.setIgnoreMouseEvents(false);
+  }
+
   /**
    * 用于透明位置鼠标穿透
    *
@@ -164,9 +172,7 @@ class WindowService extends EventEmitter {
    * @memberof FloatingWindowService
    */
   clickThroughDom(el: HTMLDivElement) {
-    el.addEventListener('mouseenter', () => {
-      this.setIgnoreMouseEvents(false);
-    });
+    el.addEventListener('mouseenter', this.setThroughDomMouseenter);
   }
 }
 

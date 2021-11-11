@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 14:14:38
- * @LastEditTime: 2021-11-02 13:32:04
+ * @LastEditTime: 2021-11-10 19:45:28
  * @LastEditors: Yandong Hu
  * @Description: RTC模块基础代理
  */
@@ -333,7 +333,7 @@ export enum HRTCDeviceType {
   /**
    * 音频播放设备
    */
-  HRTC_DEVTYPE_AUDIO_PLAYBACK = 0, 
+  HRTC_DEVTYPE_AUDIO_PLAYBACK = 0,
   /**
    * 音频采集设备
    */
@@ -342,7 +342,7 @@ export enum HRTCDeviceType {
    * 视频采集设备
    */
   HRTC_DEVTYPE_VIDEO_CAPTURE
-} 
+}
 /**
  * 设备状态
  */
@@ -350,7 +350,7 @@ export enum HRTCDeviceState {
   /**
    * 设备正常
    */
-  HRTC_DEVTYPE_STATE_ACTIVE = 0, 
+  HRTC_DEVTYPE_STATE_ACTIVE = 0,
   /**
    * 设备不可用
    */
@@ -359,7 +359,7 @@ export enum HRTCDeviceState {
    * 设备已经被拔出
    */
   HRTC_DEVTYPE_STATE_UNPLUGGED
-}  
+}
 export abstract class RTCBaseProvider extends EventEmitter {
   /**
    * 初始化RTC SDK
@@ -981,7 +981,7 @@ muteAllRemoteVideoStreams参数为true时，新加入用户不接收视频流，
    * @return {*}  {number}
    * @memberof RTCBaseProvider
    */
-  abstract setLocalViewMirror(mirrorType: RTCVideoMirrorType): number
-  abstract playAudioClip(soundId: number,filePath:string):number
-  abstract startAudioFile(filePath:string, playMode: number, cycle: number, replace: number, startPos?:number):number
+  abstract setLocalViewMirror(mirrorType: RTCVideoMirrorType): number;
+  abstract playAudioClip(soundId: number,filePath:string):number;
+  abstract startAudioFile(filePath:string, playMode: number, cycle: number, replace: number, startPos?:number):number;
 }

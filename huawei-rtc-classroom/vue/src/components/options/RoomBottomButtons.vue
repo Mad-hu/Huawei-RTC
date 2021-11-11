@@ -19,9 +19,9 @@
             <!-- 全体屏幕共享 -->
             <btn-all-share></btn-all-share>
           </el-dropdown-item>
-          <el-dropdown-item>
+          <el-dropdown-item v-if="checkSuperPower">
             <!-- 收回讲师权限 -->
-            <role-retrieve></role-retrieve>
+            <role-retrieve :power="power"></role-retrieve>
           </el-dropdown-item>
           <el-dropdown-item>
             <!-- 关闭全体共享 -->
@@ -45,7 +45,10 @@ import BtnLock from "./BtnLock.vue";
 import BtnAllShare from "./BtnAllShare.vue";
 import BtnAllShareOff from "./BtnAllShareOff.vue";
 import RoleRetrieve from "./RoleRetrieve.vue";
-import MuteAllAudioResume from "./MuteAllAudioResume.vue"
+import MuteAllAudioResume from "./MuteAllAudioResume.vue";
+import { getUserLocalId } from "../../services/setting/setting-service";
+import { roomButtonsStatus } from "../../services/state-manager/classroom-state.service";
+import { POWER_TYPE } from "../../services/common/abstract/rtm.abstract";
 
 @Options({
   components: {
@@ -54,7 +57,7 @@ import MuteAllAudioResume from "./MuteAllAudioResume.vue"
     BtnAllShareOff,
     BtnLock,
     RoleRetrieve,
-    MuteAllAudioResume
+    MuteAllAudioResume,
   },
 })
 export default class RoomBottomButtons extends Vue {
@@ -62,10 +65,16 @@ export default class RoomBottomButtons extends Vue {
     const dialog: any = this.$refs["dialogRef"];
     dialog.dialogFlag = true;
   }
+  get checkSuperPower() {
+    return getUserLocalId() + "" == roomButtonsStatus.superPower;
+  }
+  get power() {
+    return POWER_TYPE.MAIN_TEACHER;
+  }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .user-item-buttons {
   width: 100%;
   height: 100%;

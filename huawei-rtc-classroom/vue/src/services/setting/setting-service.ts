@@ -153,7 +153,7 @@ const localVolumeChanged = (fn: (...args: any[]) => void):void=> {
 }
 /**
  * 调节音频采集音量
- * @param volume 
+ * @param volume
  */
 const adjustRecordingVolume = (volume:number):number=>{
   return RtcService().adjustRecordingVolume(volume)
@@ -168,7 +168,7 @@ const getAudioRecordingVolume = ():number=>{
 /**
  * 设置音频播放的音量，取值范围为[0,100]
  * @param {Number} number
- * @returns 
+ * @returns
  */
 const setAudioPlaybackVolume = (number:number):number=>{
   return RtcService().setAudioPlaybackVolume(number)
@@ -178,27 +178,27 @@ const setAudioPlaybackVolume = (number:number):number=>{
  * @returns {Array<RTCDeviceInfo>}
  */
 const getVideoDevices = ():RTCDeviceInfo[]=>{
-  return RtcService().getVideoDevices() 
+  return RtcService().getVideoDevices()
 }
 /**
  * 获取当前视频采集设备
- * @returns 
+ * @returns
  */
 const getCurrentVideoDevice = ():string=>{
   return RtcService().getCurrentVideoDevice()
 }
 /**
  * 设置视频设备
- * @param deviceId 
- * @returns 
+ * @param deviceId
+ * @returns
  */
 const setVideoDevice = (deviceId: string):number=>{
   return RtcService().setVideoDevice(deviceId)
 }
 /**
  * 设置音频采集设备。
- * @param deviceId 
- * @returns 
+ * @param deviceId
+ * @returns
  */
 const setAudioRecordingDevice = (deviceId: string):number=>{
   return RtcService().setAudioRecordingDevice(deviceId)
@@ -211,16 +211,16 @@ const setAudioPlaybackDevice = (deviceId: string):number=>{
 }
 /**
  * 开启/关闭本地音频采集
- * @param enable 
- * @returns 
+ * @param enable
+ * @returns
  */
 const enableLocalAudio = (enable: boolean):number=>{
   return RtcService().enableLocalAudio(enable)
 }
 /**
  * 开启/关闭本地视频采集
- * @param enable 
- * @returns 
+ * @param enable
+ * @returns
  */
 const enableLocalVideo = (enable: boolean):number=>{
   return RtcService().enableLocalVideo(enable)

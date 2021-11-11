@@ -2,12 +2,13 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-10-19 12:10:21
+ * @LastEditTime: 2021-11-11 12:03:22
  * @LastEditors: Yandong Hu
  * @Description:
 -->
 <template>
   <div class="user-list" id="userlist">
+    <div>超级主持人{{superPower}}</div>
     <div class="item" :key="item.userId" v-for="item in userListState">
       <div class="name">
         <div class="name-first">
@@ -16,20 +17,16 @@
         <span>{{ item.userName }}</span>
       </div>
       <div class="btns">
-        <!--
-        <div
-          v-if="!item.isLocal"
-          :class="['btn', item.control ? 'enable' : 'disable disable_stop']"
-          @click="controlAction(item)"
-          title="控制"
-        >
-          {{ item.control ? "&#xe625;" : "&#xe641;" }}
-        </div> -->
         <btn-video :user="item"></btn-video>
         <btn-audio :user="item"></btn-audio>
       </div>
-      <div class="btns-wrapper">
-        <user-item-buttons  :user="item"></user-item-buttons>
+      <div
+        class="btns-wrapper"
+        v-if="
+          !(checkLocalUserStudent && !item.isLocal && checkStudent(item.power))
+        "
+      >
+        <user-item-buttons :user="item"></user-item-buttons>
       </div>
     </div>
     <btn-tabs></btn-tabs>
@@ -39,21 +36,23 @@
 <script lang="ts">
 import { Options, Vue } from "vue-property-decorator";
 import {
-  sendControlStart
+  getUserByKeyStatus,
+  sendControlStart,
 } from "../../services/classroom.service";
 import { loadingShow } from "../../services/loading.service";
 import {
   ControlUserIdState,
+  roomButtonsStatus,
   UserListState,
   UserType,
 } from "../../services/state-manager/classroom-state.service";
 import BtnAudio from "@/components/status/BtnAudio.vue";
 import BtnVideo from "@/components/status/BtnVideo.vue";
 import UserItemButtons from "@/components/options/UserItemButtons.vue";
-import BtnTabs from "@/components/options/BtnTabs.vue"
-import { ON_OFF } from "../../services/common/abstract/rtm.abstract";
+import BtnTabs from "@/components/options/BtnTabs.vue";
+import { POWER_TYPE } from "../../services/common/abstract/rtm.abstract";
 @Options({
-  components: { BtnAudio, BtnVideo, UserItemButtons,BtnTabs },
+  components: { BtnAudio, BtnVideo, UserItemButtons, BtnTabs },
 })
 export default class UserListView extends Vue {
   userListState = UserListState.lists;
@@ -63,11 +62,29 @@ export default class UserListView extends Vue {
     sendControlStart(`${item.userId}`);
     loadingShow("等待远端响应");
   }
+
+  get checkLocalUserStudent() {
+    const user = getUserByKeyStatus("isLocal", true) || {
+      power: POWER_TYPE.STUDENT,
+    };
+    return user.power == POWER_TYPE.STUDENT;
+  }
+
+  get superPower () {
+     return roomButtonsStatus.superPower
+  }
+  checkStudent(power: number) {
+    return power == POWER_TYPE.STUDENT;
+  }
 }
 </script>
 
 <style lang="less" scoped>
 .user-list {
+  min-width: 192px;
+  border-left: 1px solid #fff;
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   background: #fff;
   position: relative;

@@ -24,7 +24,7 @@ export default class BtnLock extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .btn-lock {
   width: 100%;
   height: 100%;

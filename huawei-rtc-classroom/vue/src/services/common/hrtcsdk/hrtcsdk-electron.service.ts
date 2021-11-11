@@ -2,12 +2,14 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 10:46:37
- * @LastEditTime: 2021-11-02 14:02:24
+ * @LastEditTime: 2021-11-11 09:14:44
  * @LastEditors: Yandong Hu
  * @Description: 华为云RTC Electron SDK
  */
 
+import { getUserByKeyStatus } from "../../classroom.service";
 import { RTCDisplayMode, RTCBaseProvider, RTCDeviceInfo, RTCEventType, RTCInitOpts, RTCLoginOpts, RTCRemoteAudioMode, RTCVideoEncParam, RTCVideoStreamType, RTCVideoMirrorType } from "../abstract/rtc.abstract";
+import { ON_OFF } from "../abstract/rtm.abstract";
 import { getHRTCEngine, isElectron } from "../electron.service"
 
 let engine: any;
@@ -36,10 +38,10 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     }
     const id = appId;
     const domain = opt!.domain;
-    // engine.setLogParam(true, {
-    //   level: 3,
-    //   path: process.platform === "darwin" ? "/tmp/rtcLog" : "rtclog"
-    // });
+    engine.setLogParam(false, {
+      level: 3,
+      path: process.platform === "darwin" ? "/tmp/rtcLog" : "rtclog"
+    });
     console.log('hrtc verison: ', engine.getVersion());
     engine.initialize(id, domain);
     this.enableSmallVideoStream(true, { width: 320, height: 180, frameRate: 30, bitrate: 600, disableAdjustRes: true, streamType: 1 });
@@ -100,7 +102,8 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     }
   }
   renderLocalVideo(view: HTMLDivElement, mode: RTCDisplayMode ): any {
-    this.enableLocalVideo(true);
+    const user = getUserByKeyStatus('isLocal', true) || {video: ON_OFF.OFF};
+    this.enableLocalVideo(user.video == ON_OFF.ON? true: false);
     engine.setViewDisplayMode('', 1, false);
     const result = this.setupLocalView(view, mode);
     if (result != 0) {
@@ -296,7 +299,7 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
     return engine.playAudioClip(soundId, filePath);
   }
   startAudioFile(filePath:string, playMode: number, cycle: number, replace: number, startPos?:number):number{
-    return engine.startAudioFile(filePath, playMode, cycle, replace, startPos); 
+    return engine.startAudioFile(filePath, playMode, cycle, replace, startPos);
   }
 
 }

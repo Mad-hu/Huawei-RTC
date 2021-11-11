@@ -2,14 +2,14 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 18:13:10
- * @LastEditTime: 2021-10-12 13:37:58
+ * @LastEditTime: 2021-11-10 16:53:12
  * @LastEditors: Yandong Hu
  * @Description:
  */
 
 import { NIM_Web_NIM } from "@huyandong/netease-nim-web-sdk";
 import { Subject } from "rxjs";
-import { RTMBaseProvider, rtmTextMessageCategory, RtmTextMessageCategory } from "../../../abstract/rtm.abstract";
+import { AttributesMap, ChannelAttributeOptions, ChannelAttributes, PeerMessageSendResult, PeersOnlineStatusResult, RTMBaseProvider, rtmTextMessageCategory, RtmTextMessageCategory, SendMessageOptions } from "../../../abstract/rtm.abstract";
 
 enum WangYiRTMListensTypes {
   onconnect = 'onconnect',
@@ -18,6 +18,51 @@ enum WangYiRTMListensTypes {
   onerror = 'onerror'
 }
 export default class WangyiRTMSdkWebService extends RTMBaseProvider {
+  getMembers(): Promise<string[]> {
+    throw new Error("Method not implemented.");
+  }
+  sendMsgToPeer(msg: any, peerId: string, options?: SendMessageOptions): Promise<PeerMessageSendResult> {
+    throw new Error("Method not implemented.");
+  }
+  queryPeersOnlineStatus(peerIds: string[]): Promise<PeersOnlineStatusResult> {
+    throw new Error("Method not implemented.");
+  }
+  setLocalUserAttributes(attributes: AttributesMap): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  addOrUpdateLocalUserAttributes(attributes: AttributesMap): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  deleteLocalUserAttributesByKeys(attributeKeys: string[]): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  clearLocalUserAttributes(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  getUserAttributes(userId: string): Promise<AttributesMap> {
+    throw new Error("Method not implemented.");
+  }
+  getUserAttributesByKeys(userId: string, attributeKeys: string[]): Promise<AttributesMap> {
+    throw new Error("Method not implemented.");
+  }
+  setChannelAttributes(channelId: string, attributes: AttributesMap, options?: ChannelAttributeOptions): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  addOrUpdateChannelAttributes(channelId: string, attributes: AttributesMap, options?: ChannelAttributeOptions): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  deleteChannelAttributesByKeys(channelId: string, attributeKeys: string[], options?: ChannelAttributeOptions): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  clearChannelAttributes(channelId: string, options?: ChannelAttributeOptions): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  getChannelAttributes(channelId: string): Promise<ChannelAttributes> {
+    throw new Error("Method not implemented.");
+  }
+  getChannelAttributesByKeys(channelId: string, keys: string[]): Promise<ChannelAttributes> {
+    throw new Error("Method not implemented.");
+  }
   /**
    * RTM 初始化后的对象
    */

@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-02 13:47:55
- * @LastEditTime: 2021-11-09 12:19:41
+ * @LastEditTime: 2021-11-10 14:22:41
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -59,6 +59,8 @@ export default class TitleBar extends Vue {
   padding: 0 10px;
   background: #fff;
   border: 1px solid #eee;
+  position: relative;
+  z-index: 9999999;
   .title-left {
     display: flex;
     align-items: center;

@@ -39,7 +39,7 @@ export default class MuteAllAudio  extends Vue {
    */
   handleAll() {
     // 更新教室内按钮的状态
-      roomButtonsStatus.audioStatus = !this.status ? BUTTON_STATUS.AUDIO_STATUS_CHECKED_AGREE: BUTTON_STATUS.AUDIO_STATUS_CHECKED_UNAGREE
+      roomButtonsStatus.audioStatus = this.status ? BUTTON_STATUS.AUDIO_STATUS_CHECKED_AGREE: BUTTON_STATUS.AUDIO_STATUS_CHECKED_UNAGREE
       msgForMuteAudio('all', ON_OFF.OFF, roomButtonsStatus.audioStatus);
       updateUsersList('audio',ON_OFF.OFF)
       this.dialogFlag=false;
@@ -51,7 +51,7 @@ export default class MuteAllAudio  extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .mute-all {
   width: 100%;
   height: 100%;

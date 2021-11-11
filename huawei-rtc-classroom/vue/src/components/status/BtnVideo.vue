@@ -20,7 +20,7 @@ export default class BtnAudio extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .btn-bg {
     width: 16px;
   height: 16px;

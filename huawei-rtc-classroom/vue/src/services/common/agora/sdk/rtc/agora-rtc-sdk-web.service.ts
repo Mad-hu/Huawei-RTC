@@ -12,7 +12,10 @@ import { RTCBaseProvider, RTCDeviceInfo, RTCDisplayMode, RTCInitOpts, RTCLoginOp
 // let shareTrack: any;
 // let rtcClient!: IAgoraRTCClient;
 // let userJoinId = 0;
-export default class AgoraRCMSdkWebService extends RTCBaseProvider {
+export default class AgoraRTCSdkWebService extends RTCBaseProvider {
+  startAudioFile(filePath: string, playMode: number, cycle: number, replace: number, startPos?: number): number {
+    throw new Error("Method not implemented.");
+  }
   playAudioClip(soundId: number, filePath: string): number {
     throw new Error("Method not implemented.");
   }

@@ -28,7 +28,7 @@ export default class BtnAudio extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .audio-disable {
   width: 16px;
   height: 16px;

@@ -13,7 +13,7 @@ import {
 } from "../../services/classroom.service";
 import { ON_OFF } from "../../services/common/abstract/rtm.abstract";
 import {
-  BUTTON_STATUS
+  BUTTON_STATUS, roomButtonsStatus
 } from "../../services/state-manager/classroom-state.service"
 
 @Options({
@@ -29,11 +29,12 @@ export default class MuteAllAudioResume  extends Vue {
     // 更新教室内按钮的状态
       msgForMuteAudio('all', ON_OFF.ON, BUTTON_STATUS.AUDIO_STATUS_UNCHECKED);
       updateUsersList('audio',ON_OFF.ON)
+      roomButtonsStatus.audioStatus = BUTTON_STATUS.AUDIO_STATUS_UNCHECKED
   }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .mute-all {
   width: 100%;
   height: 100%;

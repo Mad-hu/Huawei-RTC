@@ -2,12 +2,12 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-02 13:47:55
- * @LastEditTime: 2021-11-09 18:53:39
+ * @LastEditTime: 2021-11-11 16:55:55
  * @LastEditors: Yandong Hu
  * @Description:
 -->
 <template>
-  <el-dialog title="请选择共享" v-model="dialogVisible" width="835px">
+  <el-dialog title="请选择共享" v-model="dialogState.shareSelectVisible" width="835px">
     <div class="dialog-box">
       <div class="content">
         <div
@@ -34,28 +34,30 @@
 
 <script lang="ts">
 import { BrowserWindow } from "electron";
-import { RtmService } from "hrtc-sdk-services";
-import { ref } from "vue";
-import { Options, Ref, Vue } from "vue-property-decorator";
-import { getCurrentWindowWebContentsId } from "../../services/common/electron.service";
+import { Options, Vue, Watch } from "vue-property-decorator";
 import { RtcService } from "../../services/common/rtc.service";
-import { messageFloatError, messageFloatSuccess } from "../../services/message/message-float.service";
-import { setShareWindowStateControl } from "../../services/share-window.service";
+import { messageFloatError } from "../../services/message/message-float.service";
+import { startShareScreen } from "../../services/share-window.service";
 // import { RtcService } from "hrtc-sdk-services";
 import { ShareState } from "../../services/state-manager/classroom-state.service";
-import { UserInfoState, UserRole } from "../../services/state-manager/user-state.service";
-import { setStorage } from "../../services/storage.service";
-import { windowService } from "../../services/window.service";
+import { DialogState } from "../../services/state-manager/dialog-state.service";
 
 @Options({
   components: {},
 })
 export default class ShareSelectDialog extends Vue {
   windowLists: any = [];
-  dialogVisible = false;
+  dialogState = DialogState;
   selectIndex = 0;
   screens: any;
   shareWindow!: BrowserWindow;
+  @Watch('dialogState.shareSelectVisible')
+  onDialogVisibileChange(newV: boolean, oldV: boolean) {
+    console.log('dialogState.shareSelectVisible onDialogVisibileChange:', newV, oldV);
+    if(newV) {
+      this.getScreenList();
+    }
+  }
   getScreenList() {
     this.windowLists = [];
     this.screens = RtcService().getScreenSources().sourceInfos;
@@ -81,14 +83,12 @@ export default class ShareSelectDialog extends Vue {
       this.screens[this.selectIndex]
     );
     if (selectState == 0) {
-      const shareState = RtcService().startScreenShare();
-      console.log('share state:', shareState);
-
-      if(shareState == 0) {
-        setShareWindowStateControl(true);
-        this.dialogVisible = false;
+      const shareRes = startShareScreen();
+      console.log('share state:', shareRes);
+      if(shareRes.code == 0) {
+        this.dialogState.shareSelectVisible = false;
       } else {
-        messageFloatSuccess('共享失败' + shareState);
+        messageFloatError('共享失败了:' + shareRes.type + shareRes.code);
       }
     } else {
       messageFloatError("share error code" + selectState);

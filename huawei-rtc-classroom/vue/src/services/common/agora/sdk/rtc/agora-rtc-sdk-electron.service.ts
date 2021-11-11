@@ -2,13 +2,16 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 18:13:10
- * @LastEditTime: 2021-11-02 11:58:02
+ * @LastEditTime: 2021-11-10 19:51:07
  * @LastEditors: Yandong Hu
  * @Description:
  */
 import { RTCDisplayMode, RTCBaseProvider, RTCDeviceInfo, RTCInitOpts, RTCLoginOpts, RTCRemoteAudioMode, RTCVideoEncParam, RTCVideoStreamType, RTCVideoMirrorType } from "../../../abstract/rtc.abstract";
 
 export default class AgoraRTCSdkElectronService extends RTCBaseProvider {
+    startAudioFile(filePath: string, playMode: number, cycle: number, replace: number, startPos?: number): number {
+      throw new Error("Method not implemented.");
+    }
     playAudioClip(soundId: number, filePath: string): number {
       throw new Error("Method not implemented.");
     }

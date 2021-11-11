@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-11 11:01:44
- * @LastEditTime: 2021-11-02 11:20:33
+ * @LastEditTime: 2021-11-11 20:54:10
  * @LastEditors: Yandong Hu
  * @Description: code wiki  https://wiki.tctm.life/pages/viewpage.action?pageId=15908409
  */
@@ -15,7 +15,10 @@ import { RTCDisplayMode } from "./common/abstract/rtc.abstract";
 import { RemoteControlService, RemoteType } from "./common/remote-control.service";
 import { RtcService } from "./common/rtc.service";
 import { RtmService } from "./common/rtm.service";
-import { roomButtonsStatus, UserListState, UserType } from "./state-manager/classroom-state.service";
+import { BUTTON_STATUS, roomButtonsStatus, ShareState, UserListState, UserType } from "./state-manager/classroom-state.service";
+import { ElMessageBox } from "element-plus";
+import { windowService } from "./window.service";
+import { stopScreenShare } from "./share-window.service";
 
 function controlSDKInit(type: RemoteType) {
   if(type == RemoteType.client) {
@@ -145,7 +148,11 @@ function controlEvent() {
 }
 
 function leaveRoom() {
+
   console.log("leave room and channel!");
+  if(ShareState.screenShareLocalState) {
+    stopScreenShare();
+  }
   roomButtonsStatus.superPower = ""
   leaveChannel(`${RtcService().getUserLocalId()}`);
   RtcService().removeAllListeners();
@@ -154,7 +161,6 @@ function leaveRoom() {
   RtmService().removeAllListeners();
   RtmService().leaveChannel();
   UserListState.lists = [];
-
 }
 
 // //////////  新增活整改 /////////////////////
@@ -235,6 +241,18 @@ function msgForMuteFocus(targetUserId: number, focus: number) {
   }
   RtmService().sendMsg(msg)
 }
+// /***
+//  * 通知全部用户共享屏幕只能一人
+//  */
+//  function msgForShareScreenOnly() {
+//   const msg ={
+//     code: rtmTextMessageCategory.SHARE_SCREEN,
+//     targetUserId: targetUserId,
+//     status: share,
+//     statusName: shareName
+//   }
+//   RtmService().sendMsg(msg)
+// }
 
 /***
  * 发送广播通知请求远程控制
@@ -292,7 +310,43 @@ function updateUsersList(key: string, value: number |string | boolean) {
     // item[key] = value
   })
 }
+/**
+ * 检测学生是否可以自己解除静音
+ */
+function checkStudentAudioOptionAuth(user: UserType) {
+  return roomButtonsStatus.audioStatus == BUTTON_STATUS.AUDIO_STATUS_CHECKED_UNAGREE
+  && user.isLocal
+  && user.power == POWER_TYPE.STUDENT
+  && user.audio == ON_OFF.OFF
+}
 
+
+async function leaveClassroom() {
+  // 老师离开教室这里处理
+  if(ShareState.screenShareLocalState) {
+    setTimeout(() => {
+      windowService().setIgnoreMouseEvents(false);
+    }, 200);
+  }
+  try {
+    const res = await ElMessageBox.confirm("是否退出教室?", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    });
+    if (res == "confirm") {
+      leaveRoom();
+      history.back();
+    }
+
+  } catch (error) {
+    // window.close();
+    console.log('leaveClassroom:', ShareState.screenShareLocalState);
+    if(ShareState.screenShareLocalState) {
+      windowService().setIgnoreMouseEvents(true);
+    }
+  }
+}
 export {
   controlCreateSession,
   controlDestroySession,
@@ -319,5 +373,7 @@ export {
   msgForPowerChange,
   msgForShareScreen,
   msgForControlScreen,
-  getUserByKeyStatus
+  getUserByKeyStatus,
+  checkStudentAudioOptionAuth,
+  leaveClassroom
 }

@@ -22,9 +22,11 @@
 <script lang="ts">
 import { Options, Vue } from "vue-property-decorator";
 import { UserListState } from "../../services/state-manager/classroom-state.service";
-
+import MediaTool from './mediaTools.vue'
 @Options({
-  components: {},
+  components: {
+    
+  },
 })
 export default class StudentList extends Vue {
   userListState = UserListState.lists;

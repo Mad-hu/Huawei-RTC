@@ -53,7 +53,7 @@ export default class CountDown extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .count-down {
   background: rgba(0,0,0,0.5);
   position: absolute;
