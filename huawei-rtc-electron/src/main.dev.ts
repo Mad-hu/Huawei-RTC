@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2021-10-25 15:38:48
+ * @LastEditTime: 2021-11-12 10:58:12
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -73,9 +73,10 @@ const createWindow = async () => {
   mainWindow = createBrowserWindow();
   // mainWindow.setSize(1121, 882);
   // mainWindow.center();
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  // mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadURL(`http://localhost:8088`);
   // if(process.env.NODE_ENV != 'development') {
-    // mainWindow!.webContents.openDevTools();
+    mainWindow!.webContents.openDevTools();
   // }
 
   mainWindow.once('ready-to-show', () => {
@@ -90,8 +91,8 @@ const createWindow = async () => {
 
   // Open urls in the user's browser
   mainWindow!.webContents.on('new-window', (event, url) => {
-    event.preventDefault();
-    shell.openExternal(url);
+    // event.preventDefault();
+    // shell.openExternal(url);
   });
   Menu.setApplicationMenu(null);
 
