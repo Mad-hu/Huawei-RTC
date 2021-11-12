@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-11-11 20:25:14
+ * @LastEditTime: 2021-11-12 10:37:29
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -56,7 +56,8 @@ import {
   getUser,
   msgForShareScreen,
   msgForControlScreen,
-  getUserByKeyStatus
+  getUserByKeyStatus,
+  fixedWindow
 } from "../../services/classroom.service";
 import { loadingHide, loadingShow } from "../../services/loading.service";
 import {
@@ -121,8 +122,11 @@ import { getSetting } from "../../services/setting/setting-service";
 import { playInroomAudio } from "../../services/music/inroom.service";
 import { ElMessageBox } from "element-plus";
 import ShareWindow from "../../components/share-window/ShareWindow.vue";
-import { startShareScreen } from "../../services/share-window.service";
+import { startShareScreen, stopScreenShareDelegate } from "../../services/share-window.service";
 import { DialogState } from "../../services/state-manager/dialog-state.service";
+import { userInfo } from "os";
+import { windowService } from "../../services/window.service";
+import { TitleBarState } from "../../services/state-manager/titlebar-state.service";
 
 const VITE_AGORA_RTC_APPID = import.meta.env.VITE_AGORA_RTC_APPID;
 const VITE_CONTROL_ACCOUNT = import.meta.env.VITE_CONTROL_ACCOUNT;
@@ -272,6 +276,9 @@ export default class Classroom extends Vue {
     RtcService().on(RTCEventType.error, (err, msg) => {
       console.log("rtcEvent Error:", err, msg);
       messageFloatError(`rtcEvent Error:${err},${msg}`);
+      if(err == 90000027) {
+        stopScreenShareDelegate();
+      }
     });
 
     RtcService().on(RTCEventType.joinedRoom, (roomId, userId) => {
@@ -784,6 +791,13 @@ export default class Classroom extends Vue {
     // 点对点消息-带历史记录
     RtmService().on(rtmTextMessageCategory.MESSAGE_FROM_PEER, (data, peerId, messageProps) => {
 
+    });
+    // 固定学员屏幕
+    RtmService().on(rtmTextMessageCategory.FIXED_STUDENT_WINDOW, (data) => {
+      if(this.userInfoStore.role == UserRole.student) {
+        const { fixed } = data;
+        fixedWindow(!fixed ? true: false);
+      }
     });
   }
 

@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-11-09 14:03:23
- * @LastEditTime: 2021-11-11 16:01:46
+ * @LastEditTime: 2021-11-12 10:37:17
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -62,7 +62,7 @@ function rtcStartShareScreen() {
   return shareState;
 }
 
-function stopScreenShareDelegate() {
+export function stopScreenShareDelegate() {
   // 直接关闭视频窗口
   videoListWindow.close();
   setShareWindowStateControl(false);

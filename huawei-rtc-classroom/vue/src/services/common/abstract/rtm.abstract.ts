@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 14:14:38
- * @LastEditTime: 2021-11-11 20:52:02
+ * @LastEditTime: 2021-11-12 09:49:35
  * @LastEditors: Yandong Hu
  * @Description: RTC模块基础代理
  */
@@ -68,7 +68,14 @@ export interface RtmTextMessageCategory {
    * @type {string}
    * @memberof RtmTextMessageCategory
    */
-  MESSAGE_FROM_PEER: string
+  MESSAGE_FROM_PEER: string,
+  /**
+   * 固定学员窗口
+   *
+   * @type {string}
+   * @memberof RtmTextMessageCategory
+   */
+  FIXED_STUDENT_WINDOW: string
 }
 export const rtmTextMessageCategory: RtmTextMessageCategory = {
   READY_SHARE_SCREEN: 'READY_SHARE_SCREEN',
@@ -80,6 +87,8 @@ export const rtmTextMessageCategory: RtmTextMessageCategory = {
   ATTRIBUTES_UPDATED: 'ATTRIBUTES_UPDATED',
   CONTROL_START: 'CONTROL_START',
   CONTROL_READY: 'CONTROL_READY',
+  MESSAGE_FROM_PEER: 'MESSAGE_FROM_PEER',
+  FIXED_STUDENT_WINDOW: 'FIXED_STUDENT_WINDOW',
   MUTE_VIDEO: '10002',
   MUTE_AUDIO: '10000',
   MUTE_FOCUS: '10004',
@@ -88,7 +97,6 @@ export const rtmTextMessageCategory: RtmTextMessageCategory = {
   CONTROL_SCREEN: '10014', // 拒绝远程
   CONTROL_END: '10013', // 结束远程
   NICKNAME_CHANGE: '10015', // 改昵称
-  MESSAGE_FROM_PEER: 'MESSAGE_FROM_PEER'
 }
 /**
  * 枚举 各种开关的枚举

@@ -2,14 +2,14 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-02 13:47:55
- * @LastEditTime: 2021-11-11 17:15:19
+ * @LastEditTime: 2021-11-12 10:02:10
  * @LastEditors: Yandong Hu
  * @Description:
 -->
 <template>
   <div
     id="share-window"
-    :class="mouseInOut? 'share-topbar-mouseIn' : '' "
+    :class="mouseInOut ? 'share-topbar-mouseIn' : ''"
     class="share-topbar"
     @mouseleave="leaveBar()"
   >
@@ -47,10 +47,21 @@
           <div class="more-icon">&#xe73a;</div>
           更多
         </div>
-        <div class="more-list" v-if="showMore"  @mouseleave="showMore = false">
+        <div class="more-list" v-if="showMore" @mouseleave="showMore = false">
           <div class="item" @click="classroomInfoDialogAction()">教室信息</div>
-          <div class="item" :class="shareLocalVoice ?'select': ''" @click="shareVoiceAction()">
+          <div
+            class="item"
+            :class="shareLocalVoice ? 'select' : ''"
+            @click="shareVoiceAction()"
+          >
             共享声音
+          </div>
+          <div
+            class="item"
+            :class="fixedStudentWindow ? 'select' : ''"
+            @click="fixedStudentWindowAction()"
+          >
+            固定学生窗口
           </div>
           <div class="item" @click="leaverommAction()">离开</div>
         </div>
@@ -76,7 +87,11 @@
 
 <script lang="ts">
 import { Options, Vue } from "vue-property-decorator";
-import { leaveClassroom, updateUserInfo } from "../../services/classroom.service";
+import {
+  leaveClassroom,
+  msgForFixedStudentWindow,
+  updateUserInfo,
+} from "../../services/classroom.service";
 import { RtcService } from "../../services/common/rtc.service";
 import { messageFloatError } from "../../services/message/message-float.service";
 import { stopScreenShare } from "../../services/share-window.service";
@@ -96,17 +111,26 @@ export default class ShareWindowTopBar extends Vue {
   shareWindowContentId!: number;
   mouseInOut = false;
   shareLocalVoice = false;
+  fixedStudentWindow = false;
+  fixedStudentWindowAction() {
+    this.fixedStudentWindow = !this.fixedStudentWindow;
+    msgForFixedStudentWindow(this.fixedStudentWindow ? 0 : 1);
+  }
   leaverommAction() {
     leaveClassroom();
   }
   shareVoiceAction() {
     this.shareLocalVoice = !this.shareLocalVoice;
     const resCode = RtcService().setShareComputerSound(this.shareLocalVoice);
-    if(resCode != 0) {
+    if (resCode != 0) {
       this.shareLocalVoice = false;
-      messageFloatError('共享声音失败:' + resCode);
+      messageFloatError("共享声音失败:" + resCode);
     }
-    updateUserInfo(this.userInfoState.userId, "shareLocalVoice", this.shareLocalVoice);
+    updateUserInfo(
+      this.userInfoState.userId,
+      "shareLocalVoice",
+      this.shareLocalVoice
+    );
   }
   classroomInfoDialogAction() {
     DialogState.classroomInfoVisible = true;
@@ -115,21 +139,21 @@ export default class ShareWindowTopBar extends Vue {
     this.showMore = !this.showMore;
   }
   leaveBar() {
-    console.log('leaveBar');
+    console.log("leaveBar");
     // 打开用户列表或者教室信息弹窗
-    if(DialogState.userListVisible || DialogState.classroomInfoVisible) {
+    if (DialogState.userListVisible || DialogState.classroomInfoVisible) {
       return;
     }
     this.mouseInOut = false;
     this.showMore = false;
-    if(!ShareState.screenShareLocalState) {
+    if (!ShareState.screenShareLocalState) {
       windowService().setIgnoreMouseEvents(false);
     } else {
       windowService().setIgnoreMouseEvents(true);
     }
   }
   enterBar() {
-    console.log('enterBar');
+    console.log("enterBar");
     this.mouseInOut = true;
   }
   audioAction() {
@@ -143,22 +167,22 @@ export default class ShareWindowTopBar extends Vue {
     DialogState.userListVisible = true;
   }
   shareControlAction() {
-    console.log('shareControlAction', this.share.screenShareLocalState);
-    if(this.share.screenShareLocalState) {
+    console.log("shareControlAction", this.share.screenShareLocalState);
+    if (this.share.screenShareLocalState) {
       this.stopScreenShare();
     } else {
-      messageFloatError('没有共享');
+      messageFloatError("没有共享");
     }
   }
   stopScreenShare() {
     const res = stopScreenShare();
-    if(res != 0) {
-      messageFloatError('停止共享失败' + res);
+    if (res != 0) {
+      messageFloatError("停止共享失败" + res);
     }
   }
   mounted() {
-    const ele = <HTMLDivElement>document.getElementById('share-window');
-    console.log('鼠标点击穿透', ele);
+    const ele = <HTMLDivElement>document.getElementById("share-window");
+    console.log("鼠标点击穿透", ele);
     windowService().clickThroughDom(ele);
   }
 }
@@ -174,7 +198,7 @@ export default class ShareWindowTopBar extends Vue {
   background-color: #e02828;
 }
 .share-topbar-mouseIn {
- top: -4px !important;
+  top: -4px !important;
 }
 
 .share-topbar {
@@ -208,7 +232,8 @@ export default class ShareWindowTopBar extends Vue {
     justify-content: center;
   }
   .audio,
-  .video, .stu-manager {
+  .video,
+  .stu-manager {
     width: 32px;
     height: 32px;
   }
@@ -287,7 +312,7 @@ export default class ShareWindowTopBar extends Vue {
   width: 100px;
   .select {
     &::before {
-      content: ' ';
+      content: " ";
       display: block;
       background: #4dc800;
       width: 10px;
@@ -312,12 +337,12 @@ export default class ShareWindowTopBar extends Vue {
 .ant-dropdown-menu {
   background-color: rgba(55, 56, 60, 0.9);
 }
-:deep(.ant-dropdown-menu-item){
+:deep(.ant-dropdown-menu-item) {
   font-size: 13px;
   line-height: 13px;
   color: #fff;
 }
-:deep(.ant-dropdown-menu-item:hover){
+:deep(.ant-dropdown-menu-item:hover) {
   background: #999;
 }
 </style>

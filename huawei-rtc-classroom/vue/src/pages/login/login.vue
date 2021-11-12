@@ -2,12 +2,13 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-10 13:12:01
- * @LastEditTime: 2021-10-20 09:36:11
+ * @LastEditTime: 2021-11-12 10:59:05
  * @LastEditors: Yandong Hu
  * @Description:
 -->
 <template>
-  <div class="login-box">
+  <div class="login">
+    <div class="login-box">
     <p>登录</p>
     <el-input
       v-model="roomName"
@@ -25,6 +26,7 @@
       <el-radio v-model="role" label="audience">访客</el-radio>
     </div>
     <el-button type="primary" size="small" @click="login">进入教室</el-button>
+  </div>
   </div>
 </template>
 
@@ -69,6 +71,15 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
+.login {
+  background: linear-gradient(
+    200.96deg,
+    #fedc2a -29.09%,
+    #dd5789 51.77%,
+    #7a2c9e 129.35%
+  );
+  height: 100%;
+}
 .el-radio {
   color: #fff;
 }

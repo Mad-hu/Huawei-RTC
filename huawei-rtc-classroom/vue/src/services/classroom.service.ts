@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-11 11:01:44
- * @LastEditTime: 2021-11-11 20:54:10
+ * @LastEditTime: 2021-11-12 10:17:20
  * @LastEditors: Yandong Hu
  * @Description: code wiki  https://wiki.tctm.life/pages/viewpage.action?pageId=15908409
  */
@@ -19,6 +19,7 @@ import { BUTTON_STATUS, roomButtonsStatus, ShareState, UserListState, UserType }
 import { ElMessageBox } from "element-plus";
 import { windowService } from "./window.service";
 import { stopScreenShare } from "./share-window.service";
+import { TitleBarState } from "./state-manager/titlebar-state.service";
 
 function controlSDKInit(type: RemoteType) {
   if(type == RemoteType.client) {
@@ -241,6 +242,20 @@ function msgForMuteFocus(targetUserId: number, focus: number) {
   }
   RtmService().sendMsg(msg)
 }
+
+
+/**
+ * 发送广播通知全体学员固定屏幕
+ *
+ * @param {(0 | 1)} flag 0 固定  1不固定
+ */
+function msgForFixedStudentWindow(flag: 0 | 1) {
+  const msg ={
+    code: rtmTextMessageCategory.FIXED_STUDENT_WINDOW,
+    fixed: 0
+  }
+  RtmService().sendMsg(msg)
+}
 // /***
 //  * 通知全部用户共享屏幕只能一人
 //  */
@@ -347,6 +362,20 @@ async function leaveClassroom() {
     }
   }
 }
+/**
+ * 固定屏幕
+ * - 不可更改窗口大小
+ * - 全屏显示
+ * - 一直在最上层
+ * - 标题栏隐藏
+ * @param {boolean} flag
+ */
+function fixedWindow(flag: boolean) {
+  windowService().setResizable(flag);
+  windowService().setFullScreen(flag);
+  windowService().setAlwaysOnTop(flag);
+  TitleBarState.visible = !flag;
+}
 export {
   controlCreateSession,
   controlDestroySession,
@@ -375,5 +404,7 @@ export {
   msgForControlScreen,
   getUserByKeyStatus,
   checkStudentAudioOptionAuth,
-  leaveClassroom
+  leaveClassroom,
+  msgForFixedStudentWindow,
+  fixedWindow
 }
