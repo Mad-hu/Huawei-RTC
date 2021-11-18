@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-11-11 20:21:35
+ * @LastEditTime: 2021-11-15 17:57:37
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -12,10 +12,13 @@
       <media-tools tooltype="audio"></media-tools>
       <media-tools tooltype="video"></media-tools>
       <!-- 共享屏幕 -->
-      <share-tools-btn></share-tools-btn>
+      <share-tools-btn titleText="屏幕共享"></share-tools-btn>
     </div>
     <div class="right">
       <div class="btn leavebtn" @click="leave()" title="离开教室">离开教室</div>
+     <div class="mr10" v-if="showEndClass">
+        <btn-end-class></btn-end-class>
+     </div>
       <div class="setting" @click="settingAction()" title="设置">
         <span>&#xe892;</span>
       </div>
@@ -27,21 +30,35 @@
 import _ from "lodash";
 import { Options, Vue } from "vue-property-decorator";
 import {
+  getUserByKeyStatus,
   leaveClassroom,
 } from "../../services/classroom.service";
 import { messageFloatError } from "../../services/message/message-float.service";
-import { setShareWindowStateControl, startShareScreen } from "../../services/share-window.service";
+import { checkShareStatus, setShareWindowStateControl, startShareScreen } from "../../services/share-window.service";
 import { UserInfoState } from "../../services/state-manager/user-state.service";
 import { DialogState } from "../../services/state-manager/dialog-state.service";
+import BtnEndClass from "../options/BtnEndClass.vue"
+import { POWER_TYPE } from "../../services/common/abstract/rtm.abstract";
 @Options({
+  components: {
+    BtnEndClass
+  }
 })
 export default class ToolsBar extends Vue {
-  shareScreen() {
+  get showEndClass() {
+    const user = getUserByKeyStatus('isLocal', true) || {power: POWER_TYPE.STUDENT}
+    return user.power != POWER_TYPE.STUDENT
+  }
+  async shareScreen() {
     if(UserInfoState.role == 'teacher') {
       DialogState.shareSelectVisible = true;
       return;
     }
     if(UserInfoState.role == 'student') {
+      const status = await checkShareStatus();
+      if(!status) {
+        return;
+      }
       const shareRes = startShareScreen();
       if(shareRes.code == 0) {
         setShareWindowStateControl(true);
@@ -87,6 +104,9 @@ export default class ToolsBar extends Vue {
 .disable {
   background-color: #f56c6c;
 }
+ .mr10 {
+    margin-right: 10px;
+  }
 
 .tools-bar {
   position: absolute;

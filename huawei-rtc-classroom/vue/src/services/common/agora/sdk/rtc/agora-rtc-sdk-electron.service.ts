@@ -6,9 +6,12 @@
  * @LastEditors: Yandong Hu
  * @Description:
  */
-import { RTCDisplayMode, RTCBaseProvider, RTCDeviceInfo, RTCInitOpts, RTCLoginOpts, RTCRemoteAudioMode, RTCVideoEncParam, RTCVideoStreamType, RTCVideoMirrorType } from "../../../abstract/rtc.abstract";
+import { RTCDisplayMode, RTCBaseProvider, RTCDeviceInfo, RTCInitOpts, RTCLoginOpts, RTCRemoteAudioMode, RTCVideoEncParam, RTCVideoStreamType, RTCVideoMirrorType, HRTCNetworkTestConfig } from "../../../abstract/rtc.abstract";
 
 export default class AgoraRTCSdkElectronService extends RTCBaseProvider {
+    startNetworkTest(config: HRTCNetworkTestConfig): number {
+      throw new Error("Method not implemented.");
+    }
     startAudioFile(filePath: string, playMode: number, cycle: number, replace: number, startPos?: number): number {
       throw new Error("Method not implemented.");
     }

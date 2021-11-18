@@ -29,7 +29,6 @@ export default class VideoSettingItem extends Vue {
         
         this.deviceId = RtcService().getCurrentVideoDevice()
         this.deviceList = RtcService().getVideoDevices();
-        console.log(this.deviceList[0]['deviceId'],RtcService().getVideoDevices())
         RtcService().on(RTCEventType.deviceStateChanged, (deviceId, deviceType, deviceState) => {
            switch (deviceType) {
                case HRTCDeviceType.HRTC_DEVTYPE_VIDEO_CAPTURE:
@@ -46,9 +45,7 @@ export default class VideoSettingItem extends Vue {
 
     @Watch('deviceId')
     watchDeviceId(){
-        
         RtcService().setVideoDevice(this.deviceId)
-        console.log(this.deviceId)
     }
 
 }

@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-11-09 20:16:20
+ * @LastEditTime: 2021-11-17 13:49:28
  * @LastEditors: Yandong Hu
  * @Description: 屏幕共享窗口，显示一个外框，提示正在共享，上浮控制工具栏
     全局透明，只渲染这一个窗口
@@ -12,6 +12,7 @@
     :class="['share-window', sharePause ? 'share-pause' : 'sharing']"
     id="share"
   >
+    <note-index></note-index>
     <ShareWindowTopBar></ShareWindowTopBar>
   </div>
 </template>
@@ -42,9 +43,9 @@ export default class ShareWindow extends Vue {
   bottom: 0;
 }
 .sharing {
-  border: 4px solid #4dc800;
+  // border: 4px solid #4dc800;
 }
 .share-pause {
-  border: 4px solid #ffc80f;
+  // border: 4px solid #ffc80f;
 }
 </style>

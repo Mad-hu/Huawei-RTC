@@ -29,8 +29,9 @@
         <user-item-buttons :user="item"></user-item-buttons>
       </div>
     </div>
-    <btn-tabs></btn-tabs>
+
   </div>
+  <btn-tabs></btn-tabs>
 </template>
 
 <script lang="ts">
@@ -81,6 +82,7 @@ export default class UserListView extends Vue {
 
 <style lang="less" scoped>
 .user-list {
+  max-height: 85%;
   min-width: 192px;
   border-left: 1px solid #fff;
   display: flex;
@@ -88,6 +90,7 @@ export default class UserListView extends Vue {
   flex-grow: 1;
   background: #fff;
   position: relative;
+  overflow: auto;
   .item {
     position: relative;
     display: flex;

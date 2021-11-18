@@ -105,13 +105,13 @@ export enum RTCEventType {
   //  */
   userVolumeStats = 'userVolumeStats',
   // /**
-  //  * 本地/远端的音频流统计信息的事件通知。
+  //  * 本地/远端的音频流统计信息的事件通知。教室内有至少2个人才会触发
   //  */
-  // audioStats = 'audioStats',
+  audioStats = 'audioStats',
   // /**
   //  * 本地/远端的视频流统计信息的事件通知。
   //  */
-  // videoStats = 'videoStats',
+  videoStats = 'videoStats',
   // /**
   //  * RTCStats统计数据上报的事件通知。
   //  */
@@ -123,11 +123,11 @@ export enum RTCEventType {
   // /**
   //  * 通话前本地用户的网络质量分析数据上报通知。
   //  */
-  // networkTestResult = 'networkTestResult',
-  // /**
-  //  * 通话中本地/远端用户的网络质量水平上报通知。
-  //  */
-  // networkQuality = 'networkQuality',
+  networkTestResult = 'networkTestResult',
+  /**
+   * 通话中本地/远端用户的网络质量水平上报通知。
+   */
+  networkQuality = 'networkQuality',
   // /**
   //  * 日志上传结果的事件通知。
   //  */
@@ -234,6 +234,16 @@ export interface RTCDeviceInfo {
    * 音频采集设备的设备名称
    */
   deviceName: string
+}
+export interface HRTCNetworkTestConfig {
+  /**
+   * 本地用户ID
+   */
+  userId: string,
+  /**
+   * 需要加入的房间I
+   */
+  roomId: string,
 }
 export enum RTCRemoteAudioMode {
   /**
@@ -359,6 +369,26 @@ export enum HRTCDeviceState {
    * 设备已经被拔出
    */
   HRTC_DEVTYPE_STATE_UNPLUGGED
+}
+export enum HRTCLocalAudioStreamState {
+  /**
+   * 音频流停止发送
+   */
+  HRTC_LOCAL_AUDIO_STATE_STOPPED = 0,
+  /**
+   * 音频流发送中。
+   */
+  HRTC_LOCAL_AUDIO_STATE_STARTING
+}
+export enum HRTCLocalVideoStreamState {
+  /**
+   * 视频流停止发送
+   */
+  HRTC_LOCAL_VIDEO_STATE_STOPPED = 0,
+  /**
+   * 视频流发送中。
+   */
+  HRTC_LOCAL_VIDEO_STATE_STARTING
 }
 export abstract class RTCBaseProvider extends EventEmitter {
   /**
@@ -984,4 +1014,6 @@ muteAllRemoteVideoStreams参数为true时，新加入用户不接收视频流，
   abstract setLocalViewMirror(mirrorType: RTCVideoMirrorType): number;
   abstract playAudioClip(soundId: number,filePath:string):number;
   abstract startAudioFile(filePath:string, playMode: number, cycle: number, replace: number, startPos?:number):number;
+
+  abstract startNetworkTest(config:HRTCNetworkTestConfig):number
 }

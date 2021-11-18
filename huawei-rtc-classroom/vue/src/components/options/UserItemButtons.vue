@@ -46,7 +46,7 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-    <el-button type="primary" size="mini" class="mr10">
+    <el-button type="primary" size="mini" class="mr10" v-if="show">
       <mute-audio :user="user"></mute-audio>
     </el-button>
   </div>
@@ -123,6 +123,7 @@ export default class UserItemButtons extends Vue {
   get powerMTeacher() {
     return POWER_TYPE.MAIN_TEACHER;
   }
+
   // 检测当前登录人是否是超级主持人, 并且当前用户拥有讲师的角色
   get checkShowRetriesMainTeacher() {
     return getUserLocalId() + "" == roomButtonsStatus.superPower && this.user.power == POWER_TYPE.MAIN_TEACHER;

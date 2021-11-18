@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-02 13:47:55
- * @LastEditTime: 2021-11-11 16:55:55
+ * @LastEditTime: 2021-11-15 17:37:27
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -35,12 +35,13 @@
 <script lang="ts">
 import { BrowserWindow } from "electron";
 import { Options, Vue, Watch } from "vue-property-decorator";
+import { getOSType } from "../../services/common/electron.service";
 import { RtcService } from "../../services/common/rtc.service";
 import { messageFloatError } from "../../services/message/message-float.service";
-import { startShareScreen } from "../../services/share-window.service";
-// import { RtcService } from "hrtc-sdk-services";
+import { checkShareStatus, startShareScreen } from "../../services/share-window.service";
 import { ShareState } from "../../services/state-manager/classroom-state.service";
 import { DialogState } from "../../services/state-manager/dialog-state.service";
+import { windowService } from "../../services/window.service";
 
 @Options({
   components: {},
@@ -57,15 +58,34 @@ export default class ShareSelectDialog extends Vue {
     if(newV) {
       this.getScreenList();
     }
+    if(ShareState.screenShareLocalState == false) {
+      return;
+    }
+    if(newV) {
+      windowService().setIgnoreMouseEvents(false);
+    } else {
+      windowService().setIgnoreMouseEvents(true);
+    }
   }
+
   getScreenList() {
     this.windowLists = [];
     this.screens = RtcService().getScreenSources().sourceInfos;
     console.log(this.screens);
+    if(getOSType() == 'darwin') {
+      this.windowLists.push({
+        id: 0,
+        base64Data: "data:image/jpg;base64,",
+        sourceId: '',
+        sourceName: 'Monitor_1',
+        type: '',
+        icon: '',
+      })
+    }
     this.screens.map((item: any, index: number) => {
       const base64Data = btoa(String.fromCharCode.apply(null, item.icon));
       this.windowLists.push({
-        id: index,
+        id: getOSType() == 'darwin'? index + 1: index,
         base64Data: "data:image/jpg;base64," + base64Data,
         sourceId: item.sourceId,
         sourceName: item.sourceName,
@@ -74,24 +94,17 @@ export default class ShareSelectDialog extends Vue {
       });
     });
   }
-  shareSubmitAction() {
-    if (ShareState.remoteShareList.length != 0) {
-      messageFloatError("多人共享正在开发，后续更新。");
+  async shareSubmitAction() {
+    const status = await checkShareStatus();
+    if(!status) {
       return;
     }
-    const selectState = RtcService().selectScreenShare(
-      this.screens[this.selectIndex]
-    );
-    if (selectState == 0) {
-      const shareRes = startShareScreen();
-      console.log('share state:', shareRes);
-      if(shareRes.code == 0) {
-        this.dialogState.shareSelectVisible = false;
-      } else {
-        messageFloatError('共享失败了:' + shareRes.type + shareRes.code);
-      }
+    const shareRes = startShareScreen(this.screens[this.selectIndex]);
+    console.log('share state:', shareRes);
+    if(shareRes.code == 0) {
+      this.dialogState.shareSelectVisible = false;
     } else {
-      messageFloatError("share error code" + selectState);
+      messageFloatError('共享失败了:' + shareRes.type + shareRes.code);
     }
   }
 }

@@ -51,22 +51,6 @@
                 </div>
             </el-form-item>
         </el-form>
-        <div @click="bofang()">
-            播放
-        </div>
-        麦克风
-        <el-select v-model="audioRecordingDevicesId" placeholder="Select">
-            <el-option
-            v-for="item in audioRecordingDeviceList"
-            :key="item.deviceId"
-            :label="item.deviceName"
-            :value="item.deviceId"
-            >
-            </el-option>
-        </el-select>
-                <audio src="https://biz-fe.oss-cn-beijing.aliyuncs.com/video/parent/d.mp3"
-               ref="dmp3"
-               ></audio>
     </div>
 </template>
 
@@ -91,9 +75,6 @@ export default class AudioSettingItem extends Vue{
     mounted(){
         this.initAudio()
         this.initAudioRecording()
-
-        RtcService().on('userVolumeStats',(volumes)=>{
-        })
     }
     initAudioRecording(){
         this.audioRecordingDeviceList = getAudioRecordingDevices()   
@@ -104,40 +85,24 @@ export default class AudioSettingItem extends Vue{
     initAudio(){
         this.audiodeviceList = getAudioPlaybackDevices()
         this.audiodeviceId = getCurrentAudioPlaybackDevice()
-        // RtcService().enableLocalAudio(true)
         RtcService().enableUserVolumeNotify(100)
         localVolumeChanged((volume,muted)=>{
             this.localVolume = volume
         })
     }
-    bofang(){
-        // console.log('播放',this.$refs.dmp3)
-        // let audio = new Audio()
-        // // audio.setSinkId()
-        // audio.src = "https://biz-fe.oss-cn-beijing.aliyuncs.com/video/parent/d.mp3"
-        // audio.play();
-        // this.$refs['dmp3'].setSinkId(this.audiodeviceId)
-        console.log(this.$refs['dmp3'].setSinkId)
-        this.$refs.dmp3.play()
-    }
     audioRecordingDeviceSoundChange(val: number){
         adjustRecordingVolume(val)
     }
     audioDeviceSoundChange(val: number){
-        console.log(val)
         setAudioPlaybackVolume(val)
     }
     @Watch('audiodeviceId')
     watchDeviceId(){
         RtcService().setAudioPlaybackDevice(this.audiodeviceId)
-        console.log(this.audiodeviceId)
-        // this.bofang()
     }
     @Watch('audioRecordingDevicesId')
     watchAudioRecordingDevicesId(){
         RtcService().setAudioRecordingDevice(this.audioRecordingDevicesId)
-        console.log(this.audioRecordingDevicesId)
-        // this.bofang()
     }
 
     

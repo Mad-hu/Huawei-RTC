@@ -6,13 +6,16 @@
  * @LastEditors: Yandong Hu
  * @Description:
  */
-import { RTCBaseProvider, RTCDeviceInfo, RTCDisplayMode, RTCInitOpts, RTCLoginOpts, RTCRemoteAudioMode, RTCVideoEncParam, RTCVideoMirrorType, RTCVideoStreamType } from "../../../abstract/rtc.abstract";
+import { HRTCNetworkTestConfig, RTCBaseProvider, RTCDeviceInfo, RTCDisplayMode, RTCInitOpts, RTCLoginOpts, RTCRemoteAudioMode, RTCVideoEncParam, RTCVideoMirrorType, RTCVideoStreamType } from "../../../abstract/rtc.abstract";
 // import AgoraRTC, { ClientConfig, IAgoraRTCClient, ILocalVideoTrack } from 'agora-rtc-sdk-ng';
 // const agora_rtc_appId = import.meta.env.VITE_AGORA_RTC_APPID;
 // let shareTrack: any;
 // let rtcClient!: IAgoraRTCClient;
 // let userJoinId = 0;
 export default class AgoraRTCSdkWebService extends RTCBaseProvider {
+  startNetworkTest(config: HRTCNetworkTestConfig): number {
+    throw new Error("Method not implemented.");
+  }
   startAudioFile(filePath: string, playMode: number, cycle: number, replace: number, startPos?: number): number {
     throw new Error("Method not implemented.");
   }

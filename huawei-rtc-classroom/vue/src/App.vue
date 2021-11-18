@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 11:21:31
- * @LastEditTime: 2021-11-09 18:26:05
+ * @LastEditTime: 2021-11-17 14:06:12
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -19,10 +19,14 @@ import { windowService } from "./services/window.service";
 export default defineComponent({
   name: "App",
   created() {
+    console.log('location.origin:', location.href);
     this.$store.dispatch("user/userStorage");
     // if(isElectron() && supportVersion('2.1.21')) {
     if(isElectron()) {
-      windowService().show();
+      if(!location.href.includes('video-list-window')) {
+        windowService().show();
+      }
+      windowService().openDevTools();
     }else {
       TitleBarState.visible = false;
     }

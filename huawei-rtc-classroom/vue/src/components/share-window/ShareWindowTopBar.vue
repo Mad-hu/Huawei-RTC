@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-02 13:47:55
- * @LastEditTime: 2021-11-12 10:02:10
+ * @LastEditTime: 2021-11-16 13:50:22
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -14,34 +14,21 @@
     @mouseleave="leaveBar()"
   >
     <div class="bar-items">
-      <div class="bar-item">
-        <div class="btn" @click="audioAction()" title="静音">
-          <div
-            :class="[
-              'audio',
-              !muteAudio ? 'audio-mute-false' : 'audio-mute-true',
-            ]"
-          ></div>
-          静音
-        </div>
-      </div>
-      <div class="bar-item">
-        <div class="btn" @click="videoAction()" title="停止视频">
-          <div
-            :class="[
-              'video',
-              !muteVideo ? 'video-mute-false' : 'video-mute-true',
-            ]"
-          ></div>
-          停止视频
-        </div>
-      </div>
+      <media-tools tooltype="audio"></media-tools>
+      <media-tools tooltype="video"></media-tools>
       <div class="bar-item" v-if="userInfoState.role == 'teacher'">
         <div class="btn" @click="studentManageAction()" title="学员管理">
           <div class="stu-manager"></div>
           学员管理
         </div>
       </div>
+      <div class="bar-item" v-if="userInfoState.role == 'teacher'">
+        <div class="btn" @click="handNote()" title="注释">
+          <div class="note">&#xe61f;</div>
+          注释
+        </div>
+      </div>
+      <share-tools-btn titleText="新的共享"></share-tools-btn>
       <div class="bar-item">
         <div class="btn" title="更多" @click="moreAction()">
           <div class="more-icon">&#xe73a;</div>
@@ -75,10 +62,10 @@
         <div
           class="right share-stop"
           @click="shareControlAction()"
-          :title="share.screenShareLocalState ? '停止共享' : '继续共享'"
+          title="停止共享"
         >
           <div class="stop-share-icon"></div>
-          <div>{{ share.screenShareLocalState ? "停止共享" : "继续共享" }}</div>
+          <div>停止共享</div>
         </div>
       </div>
     </div>
@@ -97,6 +84,7 @@ import { messageFloatError } from "../../services/message/message-float.service"
 import { stopScreenShare } from "../../services/share-window.service";
 import { ShareState } from "../../services/state-manager/classroom-state.service";
 import { DialogState } from "../../services/state-manager/dialog-state.service";
+import { NoteState } from "../../services/state-manager/note-state.service";
 import { UserInfoState } from "../../services/state-manager/user-state.service";
 import { windowService } from "../../services/window.service";
 @Options({
@@ -140,12 +128,13 @@ export default class ShareWindowTopBar extends Vue {
   }
   leaveBar() {
     console.log("leaveBar");
-    // 打开用户列表或者教室信息弹窗
-    if (DialogState.userListVisible || DialogState.classroomInfoVisible) {
-      return;
-    }
     this.mouseInOut = false;
     this.showMore = false;
+    // 打开用户列表或者教室信息弹窗
+    if (DialogState.userListVisible || DialogState.classroomInfoVisible || DialogState.shareSelectVisible || NoteState.visible) {
+      return;
+    }
+
     if (!ShareState.screenShareLocalState) {
       windowService().setIgnoreMouseEvents(false);
     } else {
@@ -165,6 +154,10 @@ export default class ShareWindowTopBar extends Vue {
   studentManageAction() {
     console.log("studentManageAction");
     DialogState.userListVisible = true;
+  }
+  // 注释
+  handNote() {
+    NoteState.visible = !NoteState.visible;
   }
   shareControlAction() {
     console.log("shareControlAction", this.share.screenShareLocalState);
@@ -210,11 +203,10 @@ export default class ShareWindowTopBar extends Vue {
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   position: absolute;
-  top: -59px;
+  top: -56px;
   transition: 0.3s ease-in-out;
-  // &:hover {
-  //   top: -4px;
-  // }
+  z-index: 2;
+
   .bar-items {
     display: flex;
     align-items: center;
@@ -233,9 +225,15 @@ export default class ShareWindowTopBar extends Vue {
   }
   .audio,
   .video,
-  .stu-manager {
+  .stu-manager,
+  .note {
     width: 32px;
     height: 32px;
+  }
+  .note {
+    color: #c4c4c4;
+    font-family: "iconfont" !important;
+    font-size: 25px;
   }
   .audio-mute-false {
     background: url("../../assets/classroom/icons/sound.png") no-repeat 100% /
@@ -261,6 +259,9 @@ export default class ShareWindowTopBar extends Vue {
     display: flex;
     justify-content: center;
     width: 100%;
+    height: 20px;
+    position: absolute;
+    bottom: -20px;
     .bottom {
       display: flex;
       justify-content: space-between;
@@ -269,8 +270,7 @@ export default class ShareWindowTopBar extends Vue {
       border-bottom-left-radius: 5px;
       border-bottom-right-radius: 5px;
       font-size: 12px;
-      position: absolute;
-      bottom: -20px;
+
     }
     .left {
       display: flex;

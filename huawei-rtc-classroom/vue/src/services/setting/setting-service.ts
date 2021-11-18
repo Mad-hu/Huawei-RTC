@@ -231,6 +231,56 @@ const enableLocalVideo = (enable: boolean):number=>{
 const getUserLocalId = ()=>{
   return RtcService().getUserLocalId()
 }
+/**
+ * 设置远端用户音量上报周期
+ * @param interva 
+ */
+const enableUserVolumeNotify = (interva: number)=>{
+  RtcService().enableUserVolumeNotify(interva)
+}
+/**
+ * 本地用户音频状态已改变事件通知。
+ * @param fn 
+ */
+const localAudioStateChanged = (fn: (...args: any[]) => void)=>{
+  RtcService().on('localAudioStateChanged',fn)
+}
+/**
+ * 本地用户视频状态已改变事件通知。
+ * @param fn 
+ */
+const localVideoStateChanged = (fn: (...args: any[]) => void)=>{
+  RtcService().on('localVideoStateChanged',fn)
+}
+/**
+ * 停止/恢复接收指定远端视频流
+ * @param userId 
+ * @param mute 
+ */
+const muteRemoteVideoStream = (userId:string,mute:boolean)=>{
+  return RtcService().muteRemoteVideoStream(userId,mute)
+}
+/**
+ * 网络质量监听
+ * @param fn 
+ */
+const networkQuality = (fn: (...args: any[]) => void)=>{
+  RtcService().on('networkQuality',fn)
+}
+/**
+ * 本地/远端的音频流统计信息的事件通知。
+ * @param fn 
+ */
+const audioStats = (fn: (...args: any[]) => void)=>{
+  RtcService().on('audioStats',fn)
+}
+/**
+ * 本地/远端的视频频流统计信息的事件通知。
+ * @param fn 
+ */
+const videoStats = (fn: (...args: any[]) => void)=>{
+  RtcService().on('videoStats',fn)
+}
 export {
   setSetting,
   getSetting,
@@ -250,4 +300,11 @@ export {
   enableLocalAudio,
   getUserLocalId,
   enableLocalVideo,
+  enableUserVolumeNotify,
+  localAudioStateChanged,
+  localVideoStateChanged,
+  muteRemoteVideoStream,
+  networkQuality,
+  audioStats,
+  videoStats,
 }

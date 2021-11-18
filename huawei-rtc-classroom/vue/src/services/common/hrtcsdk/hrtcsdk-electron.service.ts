@@ -8,7 +8,7 @@
  */
 
 import { getUserByKeyStatus } from "../../classroom.service";
-import { RTCDisplayMode, RTCBaseProvider, RTCDeviceInfo, RTCEventType, RTCInitOpts, RTCLoginOpts, RTCRemoteAudioMode, RTCVideoEncParam, RTCVideoStreamType, RTCVideoMirrorType } from "../abstract/rtc.abstract";
+import { RTCDisplayMode, RTCBaseProvider, RTCDeviceInfo, RTCEventType, RTCInitOpts, RTCLoginOpts, RTCRemoteAudioMode, RTCVideoEncParam, RTCVideoStreamType, RTCVideoMirrorType, HRTCNetworkTestConfig } from "../abstract/rtc.abstract";
 import { ON_OFF } from "../abstract/rtm.abstract";
 import { getHRTCEngine, isElectron } from "../electron.service"
 
@@ -301,5 +301,7 @@ export default class HRTCSDKElectronService extends RTCBaseProvider {
   startAudioFile(filePath:string, playMode: number, cycle: number, replace: number, startPos?:number):number{
     return engine.startAudioFile(filePath, playMode, cycle, replace, startPos);
   }
-
+  startNetworkTest(config: HRTCNetworkTestConfig): number {
+    return engine.startNetworkTest(config)
+  }
 }

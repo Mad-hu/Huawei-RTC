@@ -24,6 +24,11 @@
             <AudioSettingItem></AudioSettingItem>
           </div>
         </el-collapse-item>
+        <el-collapse-item title="统计信息" name="4">
+          <div>
+            <statistics/>
+          </div>
+        </el-collapse-item>
 <!--
         <el-collapse-item title="聊天" name="4">
           <div>
@@ -45,11 +50,7 @@
             开发中... ...
           </div>
         </el-collapse-item>
-        <el-collapse-item title="统计信息" name="8">
-          <div>
-            开发中... ...
-          </div>
-        </el-collapse-item>
+
         <AboutSettingItem></AboutSettingItem> -->
       </el-collapse>
     </div>
@@ -65,9 +66,11 @@ import { Options, Vue } from "vue-property-decorator";
 import { getSetting, setSetting } from "../../../services/setting/setting-service";
 import { DialogState } from "../../../services/state-manager/dialog-state.service";
 import { UserInfoState } from "../../../services/state-manager/user-state.service";
-
+import Statistics from '../setting/setting-item/Statistics.vue'
 @Options({
-  components: {},
+  components: {
+    Statistics,
+  },
 })
 export default class SettingDrawer extends Vue {
 
@@ -76,7 +79,6 @@ export default class SettingDrawer extends Vue {
   mounted() {
   }
   handleChange(val: any) {
-    console.log("collapse change:", val);
   }
   saveAction() {
     setSetting(UserInfoState.role, getSetting());

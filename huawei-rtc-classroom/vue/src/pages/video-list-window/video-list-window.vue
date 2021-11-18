@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-11-11 20:40:20
+ * @LastEditTime: 2021-11-17 15:06:47
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -37,11 +37,10 @@ import {
   messageFloatWarning,
 } from "../../services/message/message-float.service";
 import {
-  RoomNameState,
+  roomInfo,
   UserListState,
   UserType,
   roomButtonsStatus,
-  roomInfo,
 } from "../../services/state-manager/classroom-state.service";
 import _ from "lodash";
 import {
@@ -63,7 +62,7 @@ import ShareWindow from "../../components/share-window/ShareWindow.vue";
 import { windowService } from "../../services/window.service";
 import { TitleBarState } from "../../services/state-manager/titlebar-state.service";
 import { setStorage } from "../../services/storage.service";
-import { getCurrentWindowWebContentsId, getIpcRenderer } from "../../services/common/electron.service";
+import { getCurrentWindow, getCurrentWindowWebContentsId, getIpcRenderer } from "../../services/common/electron.service";
 
 const VITE_AGORA_RTC_APPID = import.meta.env.VITE_AGORA_RTC_APPID;
 
@@ -91,13 +90,18 @@ export default class VideoListWindow extends Vue {
   control_address: string = "";
   control_session: string = "";
   titleBarState = TitleBarState;
+  sdkInit = false;
   mounted() {
+
+  }
+  sdkMounted() {
     try {
       this.userInfoStore.userName = 'tt';
       this.userInfoStore.userId = 123123;
-      RoomNameState.roomName = '123';
+      roomInfo.roomName = '123';
       this.initRtc();
       this.initRtm();
+      this.sdkInit = true;
     } catch (error) {
       setTimeout(() => {
         messageFloat(`rtc: ${error}`, MessageType.error);
@@ -120,10 +124,17 @@ export default class VideoListWindow extends Vue {
       const {type, msg} = args;
       switch(type) {
         case 'close':
+          windowService().close();
           break;
         case 'show':
+          // sdk在显示的时候初始化并加载
+          if(!this.sdkInit) {
+            this.sdkMounted();
+          }
+          windowService().show();
           break;
         case 'hide':
+          windowService().hide();
           break;
       }
     });

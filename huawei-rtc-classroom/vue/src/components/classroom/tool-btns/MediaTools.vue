@@ -124,7 +124,7 @@ import {
   updateUserInfo,
   leaveClassroom,
 } from "../../../services/classroom.service";
-import { RTCDeviceInfo } from "../../../services/common/abstract/rtc.abstract";
+import { RTCDeviceInfo, HRTCLocalAudioStreamState, HRTCLocalVideoStreamState } from "../../../services/common/abstract/rtc.abstract";
 import {
   getVideoDevices,
   getCurrentVideoDevice,
@@ -139,14 +139,18 @@ import {
   enableLocalAudio,
   enableLocalVideo,
   getUserLocalId,
+  enableUserVolumeNotify,
+  localAudioStateChanged,
+  localVideoStateChanged,
 } from "../../../services/setting/setting-service";
 
-import { ON_OFF } from "../../../services/common/abstract/rtm.abstract";
+import { ON_OFF, } from "../../../services/common/abstract/rtm.abstract";
 import {
   messageFloatError,
   messageFloatSuccess,
 } from "../../../services/message/message-float.service";
 import {
+  checkShareStatus,
   setShareWindowStateControl,
   startShareScreen,
 } from "../../../services/share-window.service";
@@ -174,7 +178,12 @@ export default class MediaTools extends Vue {
     // this.localUser = getUser(getUserLocalId())
   }
   mounted() {
-    this.listenLocalAudio();
+    if(this.tooltype == 'audio'){
+      this.listenLocalAudio();
+    }
+    if(this.tooltype == 'video'){
+      this.listenLocalVideo()
+    }
   }
   initVideoSetting() {
     this.videoDeviceList = getVideoDevices();
@@ -208,9 +217,27 @@ export default class MediaTools extends Vue {
     setVideoDevice(id);
   }
   listenLocalAudio() {
+    enableUserVolumeNotify(100)
     localVolumeChanged((volume, muted) => {
       this.volumelevel = this.formateSound(volume);
     });
+    localAudioStateChanged((state,reason)=>{
+      if(state==HRTCLocalAudioStreamState.HRTC_LOCAL_AUDIO_STATE_STOPPED){
+        this.localUser.audio =ON_OFF.OFF
+      }else{
+        this.localUser.audio =ON_OFF.ON
+      }
+    })
+  }
+  listenLocalVideo(){
+    localVideoStateChanged((state,reason)=>{
+      
+      if(state==HRTCLocalVideoStreamState.HRTC_LOCAL_VIDEO_STATE_STOPPED){
+        this.localUser.video =ON_OFF.OFF
+      }else{
+        this.localUser.video =ON_OFF.ON
+      }
+    })
   }
   formateSound(volume: number) {
     if (
@@ -255,12 +282,17 @@ export default class MediaTools extends Vue {
       return "sound";
     }
   }
-  shareScreen() {
+  async shareScreen() {
     if (UserInfoState.role == "teacher") {
       DialogState.shareSelectVisible = true;
       return;
     }
+
     if (UserInfoState.role == "student") {
+      const status = await checkShareStatus();
+      if(!status) {
+        return;
+      }
       const shareRes = startShareScreen();
       if (shareRes.code == 0) {
         setShareWindowStateControl(true);
@@ -291,7 +323,6 @@ export default class MediaTools extends Vue {
     leaveClassroom();
   }
   settingAction() {
-    console.log("open setting action!");
     const settingDrawer: any = this.$refs["settingDrawerRef"];
     settingDrawer.visible = true;
   }
@@ -381,6 +412,9 @@ export default class MediaTools extends Vue {
         color: white;
         font-size: 10px;
         transform: rotate(180deg);
+        width: 18px;
+        height: 24px;
+        line-height: 24px;
       }
     }
     .svgtop {

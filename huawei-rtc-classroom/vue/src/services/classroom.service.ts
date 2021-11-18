@@ -2,15 +2,12 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-11 11:01:44
- * @LastEditTime: 2021-11-12 10:17:20
+ * @LastEditTime: 2021-11-18 16:57:32
  * @LastEditors: Yandong Hu
  * @Description: code wiki  https://wiki.tctm.life/pages/viewpage.action?pageId=15908409
  */
 
 import { ON_OFF, POWER_TYPE, rtmTextMessageCategory } from "./common/abstract/rtm.abstract";
-// import { RemoteControlService, RemoteType, RtcService } from "hrtc-sdk-services";
-// import { RtmService } from "hrtc-sdk-services";
-// import { rtmTextMessageCategory } from "hrtc-sdk-services/dist/abstract/rtm.abstract";
 import { RTCDisplayMode } from "./common/abstract/rtc.abstract";
 import { RemoteControlService, RemoteType } from "./common/remote-control.service";
 import { RtcService } from "./common/rtc.service";
@@ -20,6 +17,7 @@ import { ElMessageBox } from "element-plus";
 import { windowService } from "./window.service";
 import { stopScreenShare } from "./share-window.service";
 import { TitleBarState } from "./state-manager/titlebar-state.service";
+import { type } from "os";
 
 function controlSDKInit(type: RemoteType) {
   if(type == RemoteType.client) {
@@ -54,10 +52,25 @@ function sendReadyShareScreen(shareId: string) {
  *
  * @param {string} shareId 屏幕流id
  */
-function sendStopShareScreen(shareId: string) {
+function sendStopShareScreen(userId: string, ui = true) {
   const msg = {
     command: rtmTextMessageCategory.STOP_SHARE_SCREEN,
-    shareId: shareId
+    userId: userId,
+    ui: ui
+  };
+  RtmService().sendMsg(msg);
+}
+
+/**
+ * 通知远端,停止拉取共享屏幕。
+ *
+ * @param {string} shareId 屏幕流id
+ */
+ function sendStartShareScreen(userId: string, ui = true) {
+  const msg = {
+    command: rtmTextMessageCategory.START_SHARE_SCREEN,
+    userId: userId,
+    ui: ui
   };
   RtmService().sendMsg(msg);
 }
@@ -136,20 +149,7 @@ function renderRemoteVideo (element: string, userId: number) {
   RtcService().startRemoteStreamView(`${userId}`, board);
 }
 
-
-
-function rtcEvent() {
-
-}
-function rtmEvent() {
-
-}
-function controlEvent() {
-
-}
-
 function leaveRoom() {
-
   console.log("leave room and channel!");
   if(ShareState.screenShareLocalState) {
     stopScreenShare();
@@ -162,9 +162,27 @@ function leaveRoom() {
   RtmService().removeAllListeners();
   RtmService().leaveChannel();
   UserListState.lists = [];
+  ShareState.remoteShareList = [];
 }
 
 // //////////  新增活整改 /////////////////////
+/***
+ * 画笔、白板广播
+ */
+ function msgForWhiteBoard(targetUserId: number| string,status:string, param:any) {
+   if(ShareState.screenShareLocalState) {
+     return;
+   }
+  const msg ={
+    code: rtmTextMessageCategory.HWWHITE_BOARD,
+    targetUserId: targetUserId,
+    status: status,
+    param: param
+  }
+  RtmService().sendMsg(msg)
+}
+
+
 /**
  * 更改昵称的广播
  */
@@ -233,12 +251,13 @@ function msgForMuteFocus(targetUserId: number, focus: number) {
 /***
  * 发送广播通知请求共享
  */
- function msgForShareScreen(targetUserId: number| string, share: number, shareName: string) {
+ function msgForShareScreen(targetUserId: number| string, share: number, shareName: string, ui: boolean = true) {
   const msg ={
     code: rtmTextMessageCategory.SHARE_SCREEN,
     targetUserId: targetUserId,
     status: share,
-    statusName: shareName
+    statusName: shareName,
+    ui: ui
   }
   RtmService().sendMsg(msg)
 }
@@ -256,18 +275,7 @@ function msgForFixedStudentWindow(flag: 0 | 1) {
   }
   RtmService().sendMsg(msg)
 }
-// /***
-//  * 通知全部用户共享屏幕只能一人
-//  */
-//  function msgForShareScreenOnly() {
-//   const msg ={
-//     code: rtmTextMessageCategory.SHARE_SCREEN,
-//     targetUserId: targetUserId,
-//     status: share,
-//     statusName: shareName
-//   }
-//   RtmService().sendMsg(msg)
-// }
+
 
 /***
  * 发送广播通知请求远程控制
@@ -363,7 +371,7 @@ async function leaveClassroom() {
   }
 }
 /**
- * 固定屏幕
+ *  固定屏幕
  * - 不可更改窗口大小
  * - 全屏显示
  * - 一直在最上层
@@ -406,5 +414,8 @@ export {
   checkStudentAudioOptionAuth,
   leaveClassroom,
   msgForFixedStudentWindow,
-  fixedWindow
+  fixedWindow,
+  sendStopShareScreen,
+  msgForWhiteBoard,
+  sendStartShareScreen
 }

@@ -2,14 +2,15 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-11-04 09:24:41
- * @LastEditTime: 2021-11-11 17:33:39
+ * @LastEditTime: 2021-11-17 14:20:45
  * @LastEditors: Yandong Hu
  * @Description:
  */
 import { BrowserWindow, BrowserWindowProxy } from "electron";
 import EventEmitter from "events";
 import { Lazy } from "../service-provider/lazy.service.provider";
-import { getBrowserWindow, getCurrentWindow, getIpcRenderer } from "./common/electron.service";
+import { getBrowserWindow, getCurrentWindow, getCurrentWindowWebContentsId, getIpcRenderer, getRemote } from "./common/electron.service";
+import { setStorage } from "./storage.service";
 
 
 class WindowService extends EventEmitter {
@@ -21,33 +22,22 @@ class WindowService extends EventEmitter {
     super();
 
   }
+
   /**
-   * 创建渲染视频单独窗口
+   * 创建单独窗口
    *
    * @param {string} url
    * @return {*}
    * @memberof WindowService
    */
-  createUserWindow(url: string) {
-    this.userWindow = new this.browserWindow({
-      show: false,
-      frame: false,
-      resizable: false,
-      hasShadow: false,
-      transparent: true,
-      backgroundColor: '#00000000',
-      alwaysOnTop: true,
-      fullscreen: true,
-      webPreferences: {
-        nodeIntegration: true,
-        nodeIntegrationInWorker: true,
-        nodeIntegrationInSubFrames: true,
-        allowRunningInsecureContent: true
-      },
+  createWindow(url: string, options = {}, webPreferences = {}) {
+    getIpcRenderer().send('createBrowserWindow', {
+      options, webPreferences, url
     });
-    return this.userWindow;
   }
-
+  openDevTools() {
+    getRemote().getCurrentWebContents().openDevTools();
+  }
   show() {
     getCurrentWindow().show();
   }
@@ -142,7 +132,9 @@ class WindowService extends EventEmitter {
   setAlwaysOnTop(flag: boolean) {
     getCurrentWindow().setAlwaysOnTop(flag);
   }
-
+  setMinimizable(flag: boolean) {
+    getCurrentWindow().setMinimizable(flag);
+  }
   setResizable(flag: boolean) {
     getCurrentWindow().setResizable(flag);
   }

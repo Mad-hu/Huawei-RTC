@@ -2,41 +2,41 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-02 13:47:55
- * @LastEditTime: 2021-11-10 21:55:02
+ * @LastEditTime: 2021-11-18 14:57:39
  * @LastEditors: Yandong Hu
  * @Description:
 -->
 <template>
-  <div
-    id="share-render-window"
-    class="share-topbar"
-  >
+  <div id="share-render-window" class="share-topbar">
     <div class="bar-bottom">
       <div class="bottom">
         <div class="left sharing">
-          <span>你正在观看{{'**'}}的屏幕</span>
+          <span>你正在观看{{ shareState.currentShare.userName }}的屏幕</span>
         </div>
         <a-dropdown :trigger="['click']">
-          <div
-            class="right more"
-            @click.prevent
-            title="查看选项"
-          >
+          <div class="right more" @click.prevent title="查看选项">
             <div>查看选项</div>
             <div class="more-icon">&#xe665;</div>
           </div>
           <template #overlay>
             <a-menu>
               <a-menu-item key="0">
-                <div>请求远程控制</div>
+                <div @click="controlAction()">请求远程控制</div>
               </a-menu-item>
               <a-menu-item key="1">
-                <div>共享屏幕</div>
+                <div @click="noteAction()">注释</div>
               </a-menu-item>
-              <a-menu-divider />
-              <a-menu-item key="3">
-                <div>学生1</div>
+              <a-menu-item key="2">
+                <div @click="shareScreenAction()">共享屏幕</div>
               </a-menu-item>
+              <a-menu-divider v-if="shareModeStatus.shareControlStaus == '0'"/>
+              <div class="share-users" v-if="shareModeStatus.shareControlStaus == '0'">
+                <a-menu-item :key="item.userId" v-for="item in shareState.remoteShareList">
+                  <div class="user" :class="item.available?'select': ''" @click="selectShareAction(item)">
+                    {{item.userName}}
+                  </div>
+                </a-menu-item>
+              </div>
             </a-menu>
           </template>
         </a-dropdown>
@@ -46,49 +46,60 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-property-decorator";
+import { Options, Vue, Watch } from "vue-property-decorator";
+import { msgForControlScreen, msgForShareScreen, sendStartShareScreen, sendStopShareScreen, updateUserInfo } from "../../services/classroom.service";
+import { CONTROL_STATUS, SHARE_STATUS } from "../../services/common/abstract/rtm.abstract";
+import { loadingShow } from "../../services/loading.service";
 import { messageFloatError } from "../../services/message/message-float.service";
-import { stopScreenShare } from "../../services/share-window.service";
-import { ShareState } from "../../services/state-manager/classroom-state.service";
-import { windowService } from "../../services/window.service";
+import { checkShareStatus, setShareWindowStateControl, startShareScreen } from "../../services/share-window.service";
+import {
+  channelAttributeState,
+  RemoteShareType,
+  ShareState,
+} from "../../services/state-manager/classroom-state.service";
+import { DialogState } from "../../services/state-manager/dialog-state.service";
+import { NoteState } from "../../services/state-manager/note-state.service";
+import { UserInfoState } from "../../services/state-manager/user-state.service";
 @Options({
   components: {},
 })
 export default class ShareRenderRemoteTopBar extends Vue {
-  muteAudio = false;
-  muteVideo = false;
-  share = ShareState;
-  shareWindowContentId!: number;
-  mouseInOut = false;
-  leaveBar() {
-    console.log('leaveBar');
-    this.mouseInOut = false;
+  shareState = ShareState;
+  shareModeStatus = channelAttributeState.shareControlStaus;
+  noteAction() {
+    NoteState.visible = !NoteState.visible;
   }
-  enterBar() {
-    console.log('enterBar');
-    this.mouseInOut = true;
+  async selectShareAction(item: RemoteShareType) {
+    this.shareState.currentShare = item;
+    // 当前共享者停止
+    sendStopShareScreen(this.shareState.currentShare.userId);
+    await checkShareStatus();
+    sendStartShareScreen(item.userId, false);
+    // 选择者开始共享
+    msgForShareScreen(item.userId, SHARE_STATUS.SHARE_ASK, "请求屏幕共享", false);
   }
-  audioAction() {
-    this.muteAudio = !this.muteAudio;
+  controlAction() {
+    const userId = parseInt(this.shareState.currentShare.userId)
+    updateUserInfo( userId,'control', CONTROL_STATUS.CONTROL_ASK)
+    msgForControlScreen( userId, CONTROL_STATUS.CONTROL_ASK,'请求远程控制')
+    loadingShow("等待远端响应");
   }
-  videoAction() {
-    this.muteVideo = !this.muteVideo;
-  }
-  studentManageAction() {
-    console.log("studentManageAction");
-  }
-  shareControlAction() {
-    console.log('shareControlAction', this.share.screenShareLocalState);
-    if(this.share.screenShareLocalState) {
-      this.stopScreenShare();
-    } else {
-      messageFloatError('没有共享');
+  async shareScreenAction() {
+    if(UserInfoState.role == 'teacher') {
+      DialogState.shareSelectVisible = true;
+      return;
     }
-  }
-  stopScreenShare() {
-    const res = stopScreenShare();
-    if(res != 0) {
-      messageFloatError('停止共享失败' + res);
+    if(UserInfoState.role == 'student') {
+      const status = await checkShareStatus();
+      if(!status) {
+        return;
+      }
+      const shareRes = startShareScreen();
+      if(shareRes.code == 0) {
+        setShareWindowStateControl(true);
+      } else {
+        messageFloatError('共享失败了:' + shareRes.type + shareRes.code);
+      }
     }
   }
 }
@@ -104,9 +115,30 @@ export default class ShareRenderRemoteTopBar extends Vue {
   background-color: #e02828;
 }
 .share-topbar-mouseIn {
- top: -4px !important;
+  top: -4px !important;
 }
-
+.share-users {
+  max-height: 200px;
+  overflow-y: auto;
+  .user {
+    // height: 20px;
+    padding-left: 16px;
+  }
+  .select {
+    position: relative;
+    &::before {
+      content: " ";
+      display: block;
+      background: #4dc800;
+      width: 10px;
+      height: 10px;
+      position: absolute;
+      top: 2px;
+      left: 0px;
+      border-radius: 5px;
+    }
+  }
+}
 .share-topbar {
   display: flex;
   flex-direction: column;
@@ -116,6 +148,7 @@ export default class ShareRenderRemoteTopBar extends Vue {
   border-bottom-right-radius: 5px;
   position: absolute;
   top: 0;
+  z-index: 999;
   .bar-items {
     display: flex;
     align-items: center;
@@ -136,6 +169,9 @@ export default class ShareRenderRemoteTopBar extends Vue {
     display: flex;
     justify-content: center;
     width: 100%;
+    height: 20px;
+    // position: absolute;
+    // bottom: -20px;
     .bottom {
       display: flex;
       justify-content: space-between;
@@ -174,13 +210,12 @@ export default class ShareRenderRemoteTopBar extends Vue {
 .ant-dropdown-menu {
   background-color: rgba(55, 56, 60, 0.9);
 }
-:deep(.ant-dropdown-menu-item){
+:deep(.ant-dropdown-menu-item) {
   font-size: 13px;
   line-height: 13px;
   color: #fff;
 }
-:deep(.ant-dropdown-menu-item:hover){
+:deep(.ant-dropdown-menu-item:hover) {
   background: #999;
 }
-
 </style>

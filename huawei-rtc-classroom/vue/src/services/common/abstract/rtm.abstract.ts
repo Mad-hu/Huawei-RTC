@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-05 14:14:38
- * @LastEditTime: 2021-11-12 09:49:35
+ * @LastEditTime: 2021-11-13 15:39:43
  * @LastEditors: Yandong Hu
  * @Description: RTC模块基础代理
  */
@@ -75,7 +75,11 @@ export interface RtmTextMessageCategory {
    * @type {string}
    * @memberof RtmTextMessageCategory
    */
-  FIXED_STUDENT_WINDOW: string
+  FIXED_STUDENT_WINDOW: string,
+  /**
+   * 华为画笔
+   */
+  HWWHITE_BOARD:string
 }
 export const rtmTextMessageCategory: RtmTextMessageCategory = {
   READY_SHARE_SCREEN: 'READY_SHARE_SCREEN',
@@ -97,6 +101,7 @@ export const rtmTextMessageCategory: RtmTextMessageCategory = {
   CONTROL_SCREEN: '10014', // 拒绝远程
   CONTROL_END: '10013', // 结束远程
   NICKNAME_CHANGE: '10015', // 改昵称
+  HWWHITE_BOARD: '20000' // 华为画笔
 }
 /**
  * 枚举 各种开关的枚举
@@ -153,6 +158,10 @@ export enum SHARE_STATUS {
    * 拒绝共享
    */
   SHARE_REFUED = 5,
+  /**
+   * 停止屏幕共享
+   */
+  SHARE_STOP = 6
 }
 
 export enum CONTROL_STATUS {

@@ -7,11 +7,17 @@
  * @Description: 华为云 web rtc sdk
  */
 
-import { RTCBaseProvider, RTCDeviceInfo, RTCDisplayMode, RTCInitOpts, RTCLoginOpts, RTCRemoteAudioMode, RTCVideoEncParam, RTCVideoMirrorType, RTCVideoStreamType } from "../abstract/rtc.abstract";
+import { HRTCNetworkTestConfig, RTCBaseProvider, RTCDeviceInfo, RTCDisplayMode, RTCInitOpts, RTCLoginOpts, RTCRemoteAudioMode, RTCVideoEncParam, RTCVideoMirrorType, RTCVideoStreamType } from "../abstract/rtc.abstract";
 import { HRTCVideoDisplayMode } from "./hrtcsdk.service.interface";
 
 
 export default class HRTCSDKWebService extends RTCBaseProvider {
+    startAudioFile(filePath: string, playMode: number, cycle: number, replace: number, startPos?: number): number {
+      throw new Error("Method not implemented.");
+    }
+    startNetworkTest(config: HRTCNetworkTestConfig): number {
+      throw new Error("Method not implemented.");
+    }
     playAudioClip(soundId: number, filePath: string): number {
       throw new Error("Method not implemented.");
     }

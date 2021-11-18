@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-09-30 11:30:00
- * @LastEditTime: 2021-10-28 14:48:06
+ * @LastEditTime: 2021-11-12 15:39:53
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -10,8 +10,8 @@ import HRTCSDKWebService from "./hrtcsdk/hrtcsdk-web.service";
 import HRTCSDKElectronService from "./hrtcsdk/hrtcsdk-electron.service";
 import AgoraRTCSdkWebService from "./agora/sdk/rtc/agora-rtc-sdk-electron.service";
 import AgoraRTCSdkElectronService from "./agora/sdk/rtc/agora-rtc-sdk-electron.service";
-import { isElectron } from "hrtc-sdk-services";
 import { Lazy } from "../../service-provider/lazy.service.provider";
+import { isElectron } from "./electron.service";
 
 const lazyAgoraRTCSdkWebService = new Lazy(() => {
   return new AgoraRTCSdkWebService();

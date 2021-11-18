@@ -1,10 +1,10 @@
 <template>
   <div class="media-tool-box" ref="mediaTool">
-    <div class="btn" title="屏幕共享" @click="shareScreen()">
+    <div class="btn" @click="shareScreen()">
       <div class="icon-img-box"></div>
-      <span class="btn-text">屏幕共享</span>
+      <span class="btn-text">{{titleText}}</span>
     </div>
-    <div class="set-start-box">
+    <div class="set-start-box" v-if="userInfoState.role == 'teacher'">
       <el-dropdown placement="top" trigger="click">
         <div class="set-start-svg">&#xe665;</div>
         <!-- <arrow-down /> -->
@@ -13,15 +13,15 @@
             <div class="share-btns">
               <div
                 class="item"
-                :class="shareOnlyState ? 'select' : ''"
-                @click="shareOnlyAction()"
+                :class="roomBtnStatus.shareControlStaus == '1' ? 'select' : ''"
+                @click="shareBtnStatusAction('1')"
               >
                 每次只有一位参会者可以共享
               </div>
               <div
                 class="item"
-                :class="shareAllState ? 'select' : ''"
-                @click="shareAllAction()"
+                :class="roomBtnStatus.shareControlStaus == '0' ? 'select' : ''"
+                @click="shareBtnStatusAction('0')"
               >
                 多位参会者可以同时共享
               </div>
@@ -38,29 +38,41 @@ import _ from "lodash";
 import { Prop, Vue } from "vue-property-decorator";
 import { messageFloatError } from "../../../services/message/message-float.service";
 import {
+  checkShareStatus,
   setShareWindowStateControl,
   startShareScreen,
 } from "../../../services/share-window.service";
 import { UserInfoState } from "../../../services/state-manager/user-state.service";
 import { DialogState } from "../../../services/state-manager/dialog-state.service";
+import { BUTTON_STATUS, channelAttributeState, roomInfo, ShareState } from "../../../services/state-manager/classroom-state.service";
+import { RtmService } from "../../../services/common/rtm.service";
+import { confirm } from "../../../services/modal.service";
+import { sendStopShareScreen } from "../../../services/classroom.service";
 export default class ShareToolsBtn extends Vue {
-  @Prop({ type: String, required: true }) readonly tooltype: string | undefined;
-  @Prop({ type: String, default: "top" }) placement!: string;
-
-  shareOnlyState = false;
-  shareAllState = false;
-  shareOnlyAction() {
-    this.shareOnlyState = !this.shareOnlyState;
+  @Prop({ type: String, default: "屏幕共享"}) titleText: string|undefined;
+  userInfoState = UserInfoState;
+  roomBtnStatus = channelAttributeState;
+  async shareBtnStatusAction(state: string) {
+    if(channelAttributeState.shareControlStaus == BUTTON_STATUS.SHARE_CONTROL_MUL && ShareState.remoteShareList.length >= 0 && state == '1') {
+      const onRes = await confirm('多人正在共享，切换将停止所有共享');
+      if(onRes == 'ok') {
+        RtmService().setChannelAttributes(roomInfo.roomName, {shareControlStaus: `${state}`}, { enableNotificationToChannelMembers: true});
+        sendStopShareScreen('all');
+        return;
+      }
+    }
+    RtmService().setChannelAttributes(roomInfo.roomName, {shareControlStaus: `${state}`}, { enableNotificationToChannelMembers: true});
   }
-  shareAllAction() {
-    this.shareAllState = !this.shareAllState;
-  }
-  shareScreen() {
-    if (UserInfoState.role == "teacher") {
+  async shareScreen() {
+    if (this.userInfoState.role == "teacher") {
       DialogState.shareSelectVisible = true;
       return;
     }
-    if (UserInfoState.role == "student") {
+    if (this.userInfoState.role == "student") {
+      const status = await checkShareStatus();
+      if(!status) {
+        return;
+      }
       const shareRes = startShareScreen();
       if (shareRes.code == 0) {
         setShareWindowStateControl(true);
