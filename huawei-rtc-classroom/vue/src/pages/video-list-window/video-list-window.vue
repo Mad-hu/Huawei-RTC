@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-11-17 15:06:47
+ * @LastEditTime: 2021-11-19 11:56:24
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -92,13 +92,15 @@ export default class VideoListWindow extends Vue {
   titleBarState = TitleBarState;
   sdkInit = false;
   mounted() {
-
+    // this.saveWebContentId();
+    // this.messageEvent();
   }
-  sdkMounted() {
+  sdkMounted(roomName: string) {
     try {
-      this.userInfoStore.userName = 'tt';
-      this.userInfoStore.userId = 123123;
-      roomInfo.roomName = '123';
+      // const randStr = (Math.random() * 10000).toFixed(0);
+      // this.userInfoStore.userName = 'videoList';
+      // this.userInfoStore.userId = 'videoList' + randStr;
+      roomInfo.roomName = roomName;
       this.initRtc();
       this.initRtm();
       this.sdkInit = true;
@@ -108,7 +110,6 @@ export default class VideoListWindow extends Vue {
       }, 1000 * 2);
     }
     this.titleBarState.text = '视频列表';
-    this.saveWebContentId();
   }
   /**
    * 保存本窗口webContentID，用于窗口间通信
@@ -129,7 +130,8 @@ export default class VideoListWindow extends Vue {
         case 'show':
           // sdk在显示的时候初始化并加载
           if(!this.sdkInit) {
-            this.sdkMounted();
+            const roomName = args.roomName;
+            this.sdkMounted(roomName || '');
           }
           windowService().show();
           break;

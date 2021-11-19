@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-11-09 14:03:23
- * @LastEditTime: 2021-11-17 18:03:25
+ * @LastEditTime: 2021-11-19 11:24:07
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -33,15 +33,16 @@ export const setShareWindowStateControl = (flag: boolean) => {
   if (flag) {
     roomButtonsStatus.screen = SCREEN_TYPE.FULL;
     TitleBarState.visible = false;
+
     if(getOSType() == 'darwin') {
       windowService().maximize();
     } else {
       windowService().setFullScreen(true);
     }
-    windowService().setMinimizable(false);
-    windowService().setIgnoreMouseEvents(true);
-    windowService().setAlwaysOnTop(true);
     windowService().setResizable(false);
+    windowService().setMinimizable(false);
+    windowService().setAlwaysOnTop(true);
+    windowService().setIgnoreMouseEvents(true);
     ShareState.screenShareLocalState = true;
   } else {
     TitleBarState.visible = true;
@@ -79,7 +80,7 @@ function rtcStartShareScreen() {
 
     const wbData = getStorage('videoListWindow');
     if(wbData) {
-      getIpcRenderer().sendTo(wbData.webContentId, 'msgToVideo', {type: 'show'});
+      getIpcRenderer().sendTo(wbData.webContentId, 'msgToVideo', {type: 'show', roomName: roomInfo.roomName});
     }
   }
   return shareState;
@@ -87,6 +88,7 @@ function rtcStartShareScreen() {
 export function openVideoListWindow() {
   // 老师打开小窗口
   if (UserInfoState.role == UserRole.teacher) {
+    console.log('create video list window');
     const videoListWindowURI = location.origin + '/#/video-list-window';
     windowService().createWindow(videoListWindowURI);
   }

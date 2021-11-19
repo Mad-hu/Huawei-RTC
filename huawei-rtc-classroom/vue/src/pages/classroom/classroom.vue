@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-04 15:35:56
- * @LastEditTime: 2021-11-18 16:33:54
+ * @LastEditTime: 2021-11-19 11:59:58
  * @LastEditors: Yandong Hu
  * @Description:
 -->
@@ -231,7 +231,7 @@ export default class Classroom extends Vue {
     }
     // 进入教室1.5秒后，静默启动videoListWindow
     setTimeout(() => {
-      openVideoListWindow();
+      // openVideoListWindow();
     }, 1500);
   }
   unmounted() {

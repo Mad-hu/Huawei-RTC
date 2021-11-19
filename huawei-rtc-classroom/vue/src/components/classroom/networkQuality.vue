@@ -1,8 +1,16 @@
+<!--
+ * @Author: Yandong Hu
+ * @github: https://github.com/Mad-hu
+ * @Date: 2021-11-18 11:06:10
+ * @LastEditTime: 2021-11-19 09:25:23
+ * @LastEditors: Yandong Hu
+ * @Description:
+-->
 <template>
     <div class="netWorkQualityIcon">
-        <img v-show="getWifiStatus == 'good'" src="../../../../../src/assets/classroom/icons/wifi/ic_wifi_1.png" alt="">
-        <img v-show="getWifiStatus == 'ok'" src="../../../../../src/assets/classroom/icons/wifi/ic_wifi_2.png" alt="">
-        <img v-show="getWifiStatus == 'bad'" src="../../../../../src/assets/classroom/icons/wifi/ic_wifi_3.png" alt="">
+        <img v-show="getWifiStatus == 'good'" src="@/assets/classroom/icons/wifi/ic_wifi_1.png" alt="">
+        <img v-show="getWifiStatus == 'ok'" src="@/assets/classroom/icons/wifi/ic_wifi_2.png" alt="">
+        <img v-show="getWifiStatus == 'bad'" src="@/assets/classroom/icons/wifi/ic_wifi_3.png" alt="">
     </div>
 </template>
 
@@ -22,7 +30,7 @@ export default defineComponent({
                 this.level = testResult[0]['level']
             }
         })
-        
+
     },
     computed: {
         getWifiStatus(){
