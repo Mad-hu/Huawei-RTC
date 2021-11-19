@@ -73,10 +73,10 @@ const createWindow = async () => {
   mainWindow = createBrowserWindow();
   // mainWindow.setSize(1121, 882);
   // mainWindow.center();
-  // mainWindow.loadURL(`file://${__dirname}/index.html`);
-  mainWindow.loadURL(`http://localhost:8088`);
+  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  // mainWindow.loadURL(`http://localhost:8088`);
   // if(process.env.NODE_ENV != 'development') {
-    mainWindow!.webContents.openDevTools();
+    // mainWindow!.webContents.openDevTools();
   // }
 
   mainWindow.once('ready-to-show', () => {
