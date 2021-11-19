@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2021-11-18 17:10:27
+ * @LastEditTime: 2021-11-19 11:30:10
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -122,6 +122,12 @@ const createWindow = async () => {
       initRemoteSDK(mainWindow!);
     }
   })
+
+  ipcMain.on('createBrowserWindow', (event: any, args: any) => {
+    const {options, webPreferences, url} = args;
+    console.log('createBrowserWindow', options, webPreferences, url);
+    createBrowserWindow(url, options, webPreferences);
+  });
 };
 
 /**
