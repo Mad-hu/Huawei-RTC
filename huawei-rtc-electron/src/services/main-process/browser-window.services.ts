@@ -2,70 +2,77 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 15:19:47
- * @LastEditTime: 2021-11-19 11:29:55
+ * @LastEditTime: 2021-12-02 16:16:26
  * @LastEditors: Yandong Hu
  * @Description:
  */
-import { BrowserWindow, WebPreferences } from "electron";
-let mainWindow: BrowserWindow | null = null;
+import { BrowserWindow, ipcMain, WebPreferences } from "electron";
 const path = require('path');
-const preloadJsPath = process.env.NODE_ENV === 'development' ? '../../preload.js' : './preload.js';
-const renderProcessApi = path.join(__dirname, preloadJsPath);
 
+let windowLists = new Map();
+const preloadPath = process.env.NODE_ENV === 'development'? '../../preload.js' : './preload.js';
+const preloadRealPath = path.join(__dirname, preloadPath);
 /**
  * 创建一个新的BrowserWindow
  *
  * @param {Electron.BrowserWindowConstructorOptions} [opts]
- * @param {WebPreferences} [webPres]
+ * @param {WebPreferences} [webPreferences]
  * @return {*}  {BrowserWindow}
  */
-const createBrowserWindow = (url?: string, opts?: Electron.BrowserWindowConstructorOptions, webPres?: WebPreferences): BrowserWindow => {
-  const win = new BrowserWindow({
+const createBrowserWindow = (opts:Electron.BrowserWindowConstructorOptions = {}, webPreferences:WebPreferences = {}, url = '') => {
+  console.log('createBrowserWindow', opts, webPreferences, url);
+  const bw = new BrowserWindow({
     show: false,
-    width: 1280,
-    height: 720,
+    center: true,
     frame: false,
-    resizable: true,
+    width: 1133,
+    height: 771,
+    hasShadow: false,
     transparent: true,
     backgroundColor: '#00000000',
     ...opts,
     webPreferences: {
+      nodeIntegrationInWorker: true,
+      nodeIntegrationInSubFrames: true,
+      allowRunningInsecureContent: true,
       plugins: true,
       webviewTag: true,
       nodeIntegration: true,
       enableRemoteModule: true,
-      preload: renderProcessApi,
-      ...webPres
+      preload: preloadRealPath,
+      ...webPreferences
     },
   });
-  if(url) {
-    win.loadURL(url);
+  if(url != '') {
+    bw.loadURL(url);
   }
-  return win;
+  windowLists.set(opts.title, bw);
+  return bw;
 }
 
 /**
- * 获取主窗口对象
+ * 销毁目标窗口，并从窗口列表清空
  *
- * @param {Electron.BrowserWindowConstructorOptions} [opts]
- * @param {WebPreferences} [webPres]
- * @return {*}  {BrowserWindow}
+ * @param {*} title
  */
-const getMainWindow = (url?: string, opts?: Electron.BrowserWindowConstructorOptions, webPres?: WebPreferences): BrowserWindow => {
-  if (mainWindow) {
-    return mainWindow;
+function destroyTargetWindow(title: string) {
+  const win = getTargetWindow(title);
+  if(win) {
+    win.close();
+    removeTargetWindow(title);
   }
-  mainWindow = createBrowserWindow(url, opts, webPres);
-  return mainWindow;
 }
 /**
- * 发送消息到主窗口渲染进程
+ * 获取title对应的窗口对象
  *
- * @param {string} channel
- * @param {...any[]} args
+ * @param {*} title
+ * @return {*}
  */
-const sendMsgToMainWindow = (channel: string, ...args: any[]) => {
-  mainWindow!.webContents.send(channel, ...args);
+function getTargetWindow(title: string) {
+  return windowLists.get(title);
+}
+function removeTargetWindow(title: string) {
+  windowLists.delete(title);
 }
 
 /**
@@ -74,14 +81,13 @@ const sendMsgToMainWindow = (channel: string, ...args: any[]) => {
  * @param {string} channel
  * @param {...any[]} args
  */
-const sendMsgToWindow = (win: BrowserWindow, channel: string, ...args: any[]) => {
+const sendMsgToTargetWindow = (win: BrowserWindow, channel: string, ...args: any[]) => {
   win.webContents.send(channel, ...args);
 }
 
-
 export {
   createBrowserWindow,
-  getMainWindow,
-  sendMsgToMainWindow,
-  sendMsgToWindow
+  sendMsgToTargetWindow,
+  getTargetWindow,
+  destroyTargetWindow
 }
