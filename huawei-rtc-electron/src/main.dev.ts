@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2021-11-19 11:30:10
+ * @LastEditTime: 2021-12-02 16:19:28
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -10,8 +10,8 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { app, BrowserWindow, ipcMain, Menu, screen, shell } from 'electron';
 import './node/ipc-main';
-import { createBrowserWindow } from './services/main-process/browser-window.services';
-import { createDesktop, initRemoteSDK } from './services/main-process/hrtc-remote-control.service';
+import { createBrowserWindow, getTargetWindow } from './services/main-process/browser-window.services';
+import { closeRemoteWindow, createDesktop, initRemoteSDK, setRemoteSDKRenderMainWindow } from './services/main-process/hrtc-remote-control.service';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -75,9 +75,9 @@ const createWindow = async () => {
   // mainWindow.center();
   // mainWindow.loadURL(`file://${__dirname}/index.html`);
   mainWindow.loadURL(`http://localhost:8088`);
-  // if(process.env.NODE_ENV != 'development') {
+  if(process.env.NODE_ENV != 'development') {
     mainWindow!.webContents.openDevTools();
-  // }
+  }
 
   mainWindow.once('ready-to-show', () => {
     mainWindow && mainWindow.show();
@@ -114,19 +114,32 @@ const createWindow = async () => {
   ipcMain.on('openDevTools', () => {
     mainWindow?.webContents.openDevTools();
   });
-  ipcMain.on('controlRemote', (event:any, type: string, message: string) => {
-    console.log('controlRemote:', type, message);
-    if(type == 'desktop') {
-      createDesktop(message);
-    }else if(type == 'init') {
-      initRemoteSDK(mainWindow!);
+  ipcMain.on('RemoteWindow', (_event: any, args: { type?: any; message: any; }) => {
+    const {type, message} = args;
+    switch(type) {
+      case 'close':
+        closeRemoteWindow();
+        break;
+      case 'init':
+        const hrtcWindow = getTargetWindow('HrtcClassroom');
+        if(hrtcWindow) {
+          setRemoteSDKRenderMainWindow(hrtcWindow);
+        } else {
+          setRemoteSDKRenderMainWindow(mainWindow!);
+        }
+        initRemoteSDK();
+        break;
+      case 'desktop':
+        const { message} = args;
+        createDesktop(message);
+        break;
     }
-  })
+  });
 
   ipcMain.on('createBrowserWindow', (event: any, args: any) => {
     const {options, webPreferences, url} = args;
     console.log('createBrowserWindow', options, webPreferences, url);
-    createBrowserWindow(url, options, webPreferences);
+    createBrowserWindow(options, webPreferences, url);
   });
 };
 
