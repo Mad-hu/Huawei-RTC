@@ -108,7 +108,8 @@ function createRemoteWindows() {
     frame: true,
     transparent: false,
     backgroundColor: '#FFF',
-    show: true
+    show: true,
+    titleBarStyle: 'default',
   });
   remoteWin.setMenu(null);
   remoteWin.setTitle("远程桌面");
@@ -140,6 +141,7 @@ function slremoteCallback(_remote: any, session: number, event: number) {
         code: 6000,
         msg: "桌面会话已连接"
       });
+      slsdk.hideRemoteDesktopToolbarItem(slremote, desktopsession, [0]);
     } else {
       mainWindow!.webContents.send('controlEvent', "destroy", {
         code: 6999,

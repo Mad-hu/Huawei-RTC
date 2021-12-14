@@ -115,7 +115,8 @@ const createWindow = async () => {
     mainWindow?.webContents.openDevTools();
   });
   ipcMain.on('RemoteWindow', (_event: any, args: { type?: any; message: any; }) => {
-    const {type, message} = args;
+    try {
+      const {type, message} = args;
     switch(type) {
       case 'close':
         closeRemoteWindow();
@@ -131,8 +132,12 @@ const createWindow = async () => {
         break;
       case 'desktop':
         const { message} = args;
+        console.log(message);
         createDesktop(message);
         break;
+    }
+    } catch (error) {
+      console.log(error)
     }
   });
 

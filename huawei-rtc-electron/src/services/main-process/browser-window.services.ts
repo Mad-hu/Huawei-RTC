@@ -30,6 +30,7 @@ const createBrowserWindow = (opts:Electron.BrowserWindowConstructorOptions = {},
     hasShadow: false,
     transparent: true,
     backgroundColor: '#00000000',
+    titleBarStyle: process.platform == 'darwin'? 'customButtonsOnHover': 'hidden',
     ...opts,
     webPreferences: {
       nodeIntegrationInWorker: true,

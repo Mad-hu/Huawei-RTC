@@ -263,10 +263,10 @@
     "webpack-cli": "^4.2.0",
     "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^5.4.0",
-    "yarn-deduplicate": "^3.1.0"
+    "yarn-deduplicate": "^3.1.0",
+    "@types/lodash": "^4.14.177"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.177",
     "antd": "^4.16.7",
     "classnames": "^2.3.1",
     "electron-debug": "^3.1.0",
