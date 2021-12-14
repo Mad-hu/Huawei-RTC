@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-10-22 11:00:29
- * @LastEditTime: 2021-12-02 17:30:38
+ * @LastEditTime: 2021-12-09 09:37:26
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -165,6 +165,7 @@ function slremoteDesktopSessionCallback(session: number, event: number, data: an
         code: 6000,
         msg: "桌面会话已连接"
       });
+      slsdk.hideRemoteDesktopToolbarItem(slremote, desktopsession, [0]);
     } else if (event == 2) {
       mainWindow!.webContents.send('controlEvent', "destroy", {
         code: 6999,
