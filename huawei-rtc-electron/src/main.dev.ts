@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2021-12-02 16:19:28
+ * @LastEditTime: 2021-12-27 14:59:11
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -12,6 +12,7 @@ import { app, BrowserWindow, ipcMain, Menu, screen, shell } from 'electron';
 import './node/ipc-main';
 import { createBrowserWindow, getTargetWindow } from './services/main-process/browser-window.services';
 import { closeRemoteWindow, createDesktop, initRemoteSDK, setRemoteSDKRenderMainWindow } from './services/main-process/hrtc-remote-control.service';
+import { createMenu, createSystemShortcut } from './services/main-process/menu.service';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -75,6 +76,7 @@ const createWindow = async () => {
   // mainWindow.center();
   // mainWindow.loadURL(`file://${__dirname}/index.html`);
   mainWindow.loadURL(`http://localhost:8088`);
+  // mainWindow.loadURL(`https://test-tczx-client-star.tctm.life`);
   if(process.env.NODE_ENV != 'development') {
     mainWindow!.webContents.openDevTools();
   }
@@ -94,7 +96,8 @@ const createWindow = async () => {
     // event.preventDefault();
     // shell.openExternal(url);
   });
-  Menu.setApplicationMenu(null);
+  createMenu();
+  createSystemShortcut();
 
   ipcMain.on('close', () => {
     mainWindow?.close();

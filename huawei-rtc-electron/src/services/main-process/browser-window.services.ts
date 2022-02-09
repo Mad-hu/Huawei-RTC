@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 15:19:47
- * @LastEditTime: 2021-12-14 09:49:49
+ * @LastEditTime: 2021-12-27 14:53:08
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -29,7 +29,7 @@ const createBrowserWindow = (opts:Electron.BrowserWindowConstructorOptions = {},
     height: 771,
     hasShadow: false,
     transparent: true,
-    maximizable: false,
+    // maximizable: false,
     backgroundColor: '#00000000',
     ...opts,
     webPreferences: {
