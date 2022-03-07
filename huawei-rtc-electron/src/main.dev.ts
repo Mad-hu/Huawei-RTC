@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2021-12-27 14:59:11
+ * @LastEditTime: 2022-03-07 11:27:51
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -10,12 +10,26 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import { app, BrowserWindow, ipcMain, Menu, screen, shell } from 'electron';
 import './node/ipc-main';
-import { createBrowserWindow, getTargetWindow } from './services/main-process/browser-window.services';
-import { closeRemoteWindow, createDesktop, initRemoteSDK, setRemoteSDKRenderMainWindow } from './services/main-process/hrtc-remote-control.service';
-import { createMenu, createSystemShortcut } from './services/main-process/menu.service';
+import {
+  createBrowserWindow,
+  getTargetWindow,
+} from './services/main-process/browser-window.services';
+import {
+  closeRemoteWindow,
+  createDesktop,
+  initRemoteSDK,
+  setRemoteSDKRenderMainWindow,
+} from './services/main-process/hrtc-remote-control.service';
+import {
+  createMenu,
+  createSystemShortcut,
+} from './services/main-process/menu.service';
+import {
+  getStorageAsync,
+  setStorage,
+} from './services/main-process/storage.service';
 
 let mainWindow: BrowserWindow | null = null;
-
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -28,9 +42,9 @@ if (
 ) {
   require('electron-debug')();
 }
-const PROTOCOL = 'tczx'; // 用户自定义
+const PROTOCOL = 'hrtc'; // 用户自定义
 
-// 浏览器访问 tczx://tczx.aicoders.cn/join?action=join&shareId==123&name=test&type=chrome
+// 浏览器访问 hrtc://hrtc.aicoders.cn/join?action=join&shareId==123&name=test&type=chrome
 // if (process.env.NODE_ENV === 'development' && process.platform === 'win32') {
 //   console.log('process.argv[1]:', process.argv[1]);
 //   // 设置electron.exe 和 app的路径
@@ -38,9 +52,8 @@ const PROTOCOL = 'tczx'; // 用户自定义
 //     path.resolve(process.argv[1]),
 //   ])
 // } else {
-  app.setAsDefaultProtocolClient(PROTOCOL)
+app.setAsDefaultProtocolClient(PROTOCOL);
 // }
-
 
 // window 系统中执行网页调起应用时，处理协议传入的参数
 const handleArgvFromWeb = (argv: any[]) => {
@@ -51,13 +64,13 @@ const handleArgvFromWeb = (argv: any[]) => {
 // win网页进行应用的调起后，会触发该事件
 app.on('second-instance', async (event, argv) => {
   if (process.platform === 'win32') {
-    console.log("window 准备执行网页端调起客户端逻辑", argv);
+    console.log('window 准备执行网页端调起客户端逻辑', argv);
     handleArgvFromWeb(argv);
   }
 });
 // mac网页进行应用的调起后，会触发该事件
 app.on('open-url', (event, urlStr) => {
-  console.log("mac 准备执行网页端调起客户端逻辑");
+  console.log('mac 准备执行网页端调起客户端逻辑');
   handleUrlFromWeb(urlStr); // 对 url 执行的处理逻辑
 });
 const handleUrlFromWeb = (urlStr: string) => {
@@ -66,7 +79,7 @@ const handleUrlFromWeb = (urlStr: string) => {
   const shareId = searchParams.get('shareId');
   const name = searchParams.get('name');
   const type = searchParams.get('type');
-  // tczx://tczx.aicoders.cn/join?action=join&shareId=123&name=test&type=chrome
+  // hrtc://hrtc.aicoders.cn/join?action=join&shareId=123&name=test&type=chrome
   console.log('handleUrlFromWeb:', shareId, name, type);
 };
 
@@ -77,14 +90,14 @@ const createWindow = async () => {
   // mainWindow.loadURL(`file://${__dirname}/index.html`);
   mainWindow.loadURL(`http://localhost:8088`);
   // mainWindow.loadURL(`https://test-tczx-client-star.tctm.life`);
-  if(process.env.NODE_ENV != 'development') {
+  if (process.env.NODE_ENV != 'development') {
     mainWindow!.webContents.openDevTools();
   }
 
   mainWindow.once('ready-to-show', () => {
     mainWindow && mainWindow.show();
     mainWindow && mainWindow.focus();
-  })
+  });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -109,43 +122,54 @@ const createWindow = async () => {
   });
   ipcMain.on('max', () => {
     if (mainWindow?.isMaximized()) {
-        mainWindow?.unmaximize()
+      mainWindow?.unmaximize();
     } else {
-        mainWindow?.maximize()
+      mainWindow?.maximize();
     }
   });
   ipcMain.on('openDevTools', () => {
     mainWindow?.webContents.openDevTools();
   });
-  ipcMain.on('RemoteWindow', (_event: any, args: { type?: any; message: any; }) => {
-    const {type, message} = args;
-    switch(type) {
-      case 'close':
-        closeRemoteWindow();
-        break;
-      case 'init':
-        const hrtcWindow = getTargetWindow('HrtcClassroom');
-        if(hrtcWindow) {
-          setRemoteSDKRenderMainWindow(hrtcWindow);
-        } else {
-          setRemoteSDKRenderMainWindow(mainWindow!);
-        }
-        initRemoteSDK();
-        break;
-      case 'desktop':
-        const { message} = args;
-        createDesktop(message);
-        break;
+  ipcMain.on(
+    'RemoteWindow',
+    (_event: any, args: { type?: any; message: any }) => {
+      const { type, message } = args;
+      switch (type) {
+        case 'close':
+          closeRemoteWindow();
+          break;
+        case 'init':
+          const hrtcWindow = getTargetWindow('HrtcClassroom');
+          if (hrtcWindow) {
+            setRemoteSDKRenderMainWindow(hrtcWindow);
+          } else {
+            setRemoteSDKRenderMainWindow(mainWindow!);
+          }
+          initRemoteSDK();
+          break;
+        case 'desktop':
+          const { message } = args;
+          createDesktop(message);
+          break;
+      }
     }
-  });
+  );
 
-  ipcMain.on('createBrowserWindow', (event: any, args: any) => {
-    const {options, webPreferences, url} = args;
+  ipcMain.on('createBrowserWindow', (_event: any, args: any) => {
+    const { options, webPreferences, url } = args;
     console.log('createBrowserWindow', options, webPreferences, url);
     createBrowserWindow(options, webPreferences, url);
   });
 };
 
+ipcMain.on('storageSet', (_event: any, args: { key: any; value: any }) => {
+  const { key, value } = args;
+  setStorage(key, value);
+});
+ipcMain.on('storageGet', async (event: any, key: any) => {
+  const data = await getStorageAsync(key);
+  event.returnValue = data;
+});
 /**
  * Add event listeners...
  */
@@ -167,9 +191,9 @@ app.on('activate', () => {
   if (mainWindow === null) createWindow();
 });
 //只允许运行一个实例(单例)
-const gotTheLock = app.requestSingleInstanceLock()
+const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
-  app.quit()
+  app.quit();
 } else {
   // logger.debug("single")
   // if (mainWindow) {
@@ -178,4 +202,3 @@ if (!gotTheLock) {
   //   mainWindow.focus()
   // }
 }
-
