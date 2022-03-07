@@ -6,14 +6,19 @@
  * @LastEditors: Yandong Hu
  * @Description:
  */
-import { Button } from 'antd';
+import { Button, Input } from 'antd';
 import React from 'react';
 import { TitleBar } from '../../components/title/title-bar';
 
 export const NoPage = () => {
+  let url = 'http://';
   const reload = () => {
     const webview: any = document.getElementById('webview-0');
-    webview.reload();
+    webview.src = url;
+  }
+  const changeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
+    url = e.target.value;
+    console.log(url);
   }
   return (
     <div className="no-page">
@@ -21,8 +26,9 @@ export const NoPage = () => {
       <div className="main">
 
         <div className="title">
-          <span>加载失败了，网络有问题。</span>
+          <span>加载失败了，网络有问题。请输入本地或者远程项目地址再试</span>
         </div>
+        <Input className="input-box" onChange={changeValue} defaultValue="http://"></Input>
 
         <Button type="primary" onClick={reload}>
           <span>重新加载</span>

@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2022-03-07 11:27:51
+ * @LastEditTime: 2022-03-07 11:58:37
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -130,30 +130,32 @@ const createWindow = async () => {
   ipcMain.on('openDevTools', () => {
     mainWindow?.webContents.openDevTools();
   });
-  ipcMain.on(
-    'RemoteWindow',
-    (_event: any, args: { type?: any; message: any }) => {
-      const { type, message } = args;
-      switch (type) {
-        case 'close':
-          closeRemoteWindow();
-          break;
-        case 'init':
-          const hrtcWindow = getTargetWindow('HrtcClassroom');
-          if (hrtcWindow) {
-            setRemoteSDKRenderMainWindow(hrtcWindow);
-          } else {
-            setRemoteSDKRenderMainWindow(mainWindow!);
-          }
-          initRemoteSDK();
-          break;
-        case 'desktop':
-          const { message } = args;
-          createDesktop(message);
-          break;
-      }
+  ipcMain.on('RemoteWindow', (_event: any, args: { type?: any; message: any; }) => {
+    try {
+      const {type, message} = args;
+    switch(type) {
+      case 'close':
+        closeRemoteWindow();
+        break;
+      case 'init':
+        const hrtcWindow = getTargetWindow('HrtcClassroom');
+        if(hrtcWindow) {
+          setRemoteSDKRenderMainWindow(hrtcWindow);
+        } else {
+          setRemoteSDKRenderMainWindow(mainWindow!);
+        }
+        initRemoteSDK();
+        break;
+      case 'desktop':
+        const { message} = args;
+        console.log(message);
+        createDesktop(message);
+        break;
     }
-  );
+    } catch (error) {
+      console.log(error)
+    }
+  });
 
   ipcMain.on('createBrowserWindow', (_event: any, args: any) => {
     const { options, webPreferences, url } = args;
