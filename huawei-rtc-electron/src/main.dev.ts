@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2022-03-07 11:58:37
+ * @LastEditTime: 2022-04-12 11:59:24
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -28,6 +28,9 @@ import {
   getStorageAsync,
   setStorage,
 } from './services/main-process/storage.service';
+import slsdkRemoteService from './services/main-process/slsdk/slsdk-remote.service';
+import slsdkService from './services/main-process/slsdk/slsdk.service';
+import slsdkClientService from './services/main-process/slsdk/slsdk-client.service';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -130,30 +133,55 @@ const createWindow = async () => {
   ipcMain.on('openDevTools', () => {
     mainWindow?.webContents.openDevTools();
   });
-  ipcMain.on('RemoteWindow', (_event: any, args: { type?: any; message: any; }) => {
-    try {
-      const {type, message} = args;
-    switch(type) {
+  ipcMain.on('slsdkRemote', (_event: any, args: { type: any; message: any; }) => {
+    const { type, message } = args;
+    switch (type) {
       case 'close':
-        closeRemoteWindow();
+        slsdkRemoteService.closeRemoteWindow();
         break;
       case 'init':
+        slsdkService.init();
         const hrtcWindow = getTargetWindow('HrtcClassroom');
-        if(hrtcWindow) {
-          setRemoteSDKRenderMainWindow(hrtcWindow);
+        if (hrtcWindow) {
+          slsdkRemoteService.setRemoteSDKRenderMainWindow(hrtcWindow);
         } else {
-          setRemoteSDKRenderMainWindow(mainWindow!);
+          slsdkRemoteService.setRemoteSDKRenderMainWindow(mainWindow!);
         }
-        initRemoteSDK();
+        slsdkRemoteService.initRemoteSDK();
         break;
       case 'desktop':
-        const { message} = args;
-        console.log(message);
-        createDesktop(message);
+        slsdkRemoteService.createDesktop(message);
+        break;
+      case 'destroy':
+        slsdkRemoteService.destroy();
         break;
     }
-    } catch (error) {
-      console.log(error)
+  });
+  ipcMain.on('slsdkClinet', (_event: any, args: { type?: any; openid?: any; openkey?: any; }) => {
+    const { type } = args;
+    switch (type) {
+      case 'init':
+        slsdkService.init();
+        const hrtcWindow = getTargetWindow('HrtcClassroom');
+        if (hrtcWindow) {
+          slsdkClientService.setMainWindow(hrtcWindow);
+        } else {
+          slsdkClientService.setMainWindow(mainWindow!);
+        }
+        slsdkClientService.init();
+        break;
+      case 'destroy':
+        slsdkClientService.destroy();
+        break;
+      case 'login':
+        const {openid, openkey} = args;
+        slsdkClientService.login(openid, openkey);
+        break;
+      case 'createSession':
+        slsdkClientService.createDesktopsession();
+        break;
+      case 'destroySession':
+        slsdkClientService.destroyDesktopsession();
     }
   });
 
@@ -192,7 +220,7 @@ app.on('activate', () => {
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) createWindow();
 });
-//只允许运行一个实例(单例)
+//只允许运行0一个实例(单例)
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
