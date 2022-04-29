@@ -2,13 +2,13 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2022-04-12 11:59:24
+ * @LastEditTime: 2022-04-29 17:37:19
  * @LastEditors: Yandong Hu
  * @Description:
  */
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import { app, BrowserWindow, ipcMain, Menu, screen, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, screen, shell, systemPreferences } from 'electron';
 import './node/ipc-main';
 import {
   createBrowserWindow,
@@ -90,9 +90,7 @@ const createWindow = async () => {
   mainWindow = createBrowserWindow();
   // mainWindow.setSize(1121, 882);
   // mainWindow.center();
-  // mainWindow.loadURL(`file://${__dirname}/index.html`);
-  mainWindow.loadURL(`http://localhost:8088`);
-  // mainWindow.loadURL(`https://test-tczx-client-star.tctm.life`);
+  mainWindow.loadURL(`file://${__dirname}/index.html`);
   if (process.env.NODE_ENV != 'development') {
     mainWindow!.webContents.openDevTools();
   }
@@ -114,7 +112,11 @@ const createWindow = async () => {
   });
   createMenu();
   createSystemShortcut();
-
+  ipcMain.on('PERMISSION_REQUEST', async (event: { returnValue: Boolean; }, arg: { type: any; }) => {
+    const type = arg.type;
+    const res = await systemPreferences.askForMediaAccess(type);
+    event.returnValue = res;
+  });
   ipcMain.on('close', () => {
     mainWindow?.close();
     //回收BrowserWindow对象
