@@ -11,7 +11,12 @@
   },
   "license": "MIT",
   "dependencies": {
+    "agora-electron-sdk": "^3.7.0-build.519",
     "bjysdk": "../sdk/bjysdk.tar.gz",
     "hrtc-electron-sdk": "../sdk/hrtc-electron-sdk.tar.gz"
+  },
+  "agora_electron": {
+    "electron_version": "5.0.8",
+    "prebuilt": true
   }
 }

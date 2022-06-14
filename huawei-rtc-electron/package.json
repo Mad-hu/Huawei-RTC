@@ -32,8 +32,8 @@
     ]
   },
   "build": {
-    "productName": "HuaweiRTCDemo",
-    "appId": "com.tedu.hrtc.remotecontrol",
+    "productName": "RTCDemo",
+    "appId": "com.tedu.rtc.demo",
     "nodeGypRebuild": false,
     "npmRebuild": false,
     "files": [
