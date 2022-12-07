@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2022-04-29 17:37:19
+ * @LastEditTime: 2022-06-18 15:45:36
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -12,6 +12,7 @@ import { app, BrowserWindow, ipcMain, Menu, screen, shell, systemPreferences } f
 import './node/ipc-main';
 import {
   createBrowserWindow,
+  destroyTargetWindow,
   getTargetWindow,
 } from './services/main-process/browser-window.services';
 import {
@@ -90,7 +91,8 @@ const createWindow = async () => {
   mainWindow = createBrowserWindow();
   // mainWindow.setSize(1121, 882);
   // mainWindow.center();
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  // mainWindow.loadURL(`file://${__dirname}/index.html`);
+  mainWindow.loadURL('http://localhost:8088');
   if (process.env.NODE_ENV != 'development') {
     mainWindow!.webContents.openDevTools();
   }
@@ -191,6 +193,13 @@ const createWindow = async () => {
     const { options, webPreferences, url } = args;
     console.log('createBrowserWindow', options, webPreferences, url);
     createBrowserWindow(options, webPreferences, url);
+  });
+  /**
+     * 销毁窗口
+     */
+   ipcMain.on('destoryBrowserWindow', (_event: any, args: { title: any; }) => {
+    const {title} = args;
+    destroyTargetWindow(title);
   });
 };
 
