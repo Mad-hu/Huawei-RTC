@@ -2,7 +2,7 @@
  * @Author: Yandong Hu
  * @github: https://github.com/Mad-hu
  * @Date: 2021-08-03 09:37:35
- * @LastEditTime: 2022-06-18 15:45:36
+ * @LastEditTime: 2023-01-03 17:07:11
  * @LastEditors: Yandong Hu
  * @Description:
  */
@@ -200,6 +200,9 @@ const createWindow = async () => {
    ipcMain.on('destoryBrowserWindow', (_event: any, args: { title: any; }) => {
     const {title} = args;
     destroyTargetWindow(title);
+  });
+  ipcMain.on('isAeroGlassEnabled', (event: { returnValue: boolean; }) => {
+    event.returnValue = systemPreferences.isAeroGlassEnabled();
   });
 };
 
